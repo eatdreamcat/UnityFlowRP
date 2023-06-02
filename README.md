@@ -1,6 +1,6 @@
 # UnityFlowRP
-## 2023.5.30 Project Create
+## 2023.6.2 CreateProject
 
-Create HDRP project.   
-Move the Core,HDRP, Visual scripting, package to Packages.
+- Create Project    
+- Only Render Entry  
 
