@@ -10,7 +10,7 @@ namespace UnityEngine.Rendering.FlowRP
     {
         #region Static Properties
 
-        public static readonly string packagePath = "Packages/com.chichi.render-pipelines.flow";
+       
 
         #endregion
 
@@ -21,8 +21,8 @@ namespace UnityEngine.Rendering.FlowRP
         [SerializeField] internal int m_DefaultRendererIndex = 0;
         
         // Default values set when a new UniversalRenderPipeline asset is created
-        [SerializeField] int k_AssetVersion = 9;
-        [SerializeField] int k_AssetPreviousVersion = 9;
+       int k_AssetVersion = 9;
+       int k_AssetPreviousVersion = 9;
 
         #endregion
 
@@ -73,7 +73,7 @@ namespace UnityEngine.Rendering.FlowRP
             else
                 dataPath = path;
             AssetDatabase.CreateAsset(data, dataPath);
-            ResourceReloader.ReloadAllNullIn(data, packagePath);
+            ResourceReloader.ReloadAllNullIn(data, FlowUtility.GetFlowRenderPipelinePath());
             return data;
         }
         
