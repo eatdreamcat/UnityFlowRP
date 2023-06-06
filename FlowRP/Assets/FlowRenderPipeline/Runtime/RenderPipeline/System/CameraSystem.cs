@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace UnityEngine.Rendering.FlowRP
+namespace UnityEngine.Rendering.FlowPipeline
 {
     
     internal class CameraSystem 

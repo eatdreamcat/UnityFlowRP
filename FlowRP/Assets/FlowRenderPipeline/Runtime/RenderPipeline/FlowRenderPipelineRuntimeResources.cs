@@ -2,7 +2,7 @@
 
 using System;
 
-namespace UnityEngine.Rendering.FlowRP
+namespace UnityEngine.Rendering.FlowPipeline
 {
     public class FlowRenderPipelineRuntimeResources : FlowRenderPipelineResources
     {

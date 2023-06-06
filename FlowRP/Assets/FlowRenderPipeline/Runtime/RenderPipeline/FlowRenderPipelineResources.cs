@@ -1,6 +1,6 @@
 
 
-namespace UnityEngine.Rendering.FlowRP
+namespace UnityEngine.Rendering.FlowPipeline
 {
     public class FlowRenderPipelineResources : RenderPipelineResources
     {

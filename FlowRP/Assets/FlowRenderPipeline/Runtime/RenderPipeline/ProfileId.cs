@@ -1,8 +1,13 @@
-namespace UnityEngine.Rendering.FlowRP
+namespace UnityEngine.Rendering.FlowPipeline
 {
     internal enum ProfileId
     {
-        CullResultsCull
+        CullResultsCull,
+        FlowPipelineRenderAllRenderRequest,
+        FlowRenderPipelineRenderCamera,
+        RecordRenderGraph,
+        ForwardOpaqueDebug,
+        ForwardOpaque
     }
     
 }

@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
 
-namespace UnityEngine.Rendering.FlowRP
+namespace UnityEngine.Rendering.FlowPipeline
 {
     [ExcludeFromPreset]
     public partial class FlowRenderPipelineAsset : RenderPipelineAsset, ISerializationCallbackReceiver

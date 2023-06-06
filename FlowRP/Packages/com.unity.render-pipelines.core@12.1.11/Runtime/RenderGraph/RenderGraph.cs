@@ -1247,7 +1247,8 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
                 CountReferences();
 
                 // First cull all passes thet produce unused output
-                CullUnusedPasses();
+                // TODO: enable passes culling 
+                // CullUnusedPasses();
 
                 // Create the renderer lists of the remaining passes
                 CreateRendererLists();
@@ -1330,8 +1331,9 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
 
         void ExecuteCompiledPass(ref CompiledPassInfo passInfo, int passIndex)
         {
-            if (passInfo.culled)
-                return;
+            // TODO: testing code
+            // if (passInfo.culled)
+            //     return;
 
             if (!passInfo.pass.HasRenderFunc())
             {
