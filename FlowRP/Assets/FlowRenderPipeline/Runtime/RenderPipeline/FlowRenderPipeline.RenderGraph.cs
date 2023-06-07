@@ -134,12 +134,13 @@ namespace UnityEngine.Rendering.FlowPipeline
                            : ProfilingSampler.Get(ProfileId.ForwardOpaque)))
             {
                 
+                builder.AllowPassCulling(false);
+                builder.AllowRendererListCulling(false);
+                
                 PrepareCommonForwardPassData(renderGraph, builder, passData, true, PrepareForwardOpaqueRendererList(cullResults, frpCamera));
+
+                builder.UseColorBuffer(colorBuffer, 0);
                 
-                
-                int index = 0;
-                builder.UseColorBuffer(colorBuffer, index++);
-                builder.UseDepthBuffer(colorBuffer, DepthAccess.Read);
 #if ENABLE_VIRTUALTEXTURES
                 builder.UseColorBuffer(vtFeedbackBuffer, index++);
 #endif
