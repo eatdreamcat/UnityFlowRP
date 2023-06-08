@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
-    public static class DSStyleUtility
+    public static class FRPViewStyleUtility
     {
         public static VisualElement AddClasses(this VisualElement element, params string[] classNames)
         {

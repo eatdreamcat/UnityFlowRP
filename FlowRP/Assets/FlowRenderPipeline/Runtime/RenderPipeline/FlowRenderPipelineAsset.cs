@@ -139,6 +139,14 @@ namespace UnityEngine.Rendering.FlowPipeline
                 return m_RenderGraphDataList[m_DefaultRendererIndex];
             }
         }
+
+        public FlowRenderGraphData[] FlowRenderGraphDataList
+        {
+            get
+            {
+                return m_RenderGraphDataList;
+            }
+        }
         
     }
 }

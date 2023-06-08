@@ -12,7 +12,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         public sealed class ShaderResources
         {
             // Defaults
-            [Reload("Runtime/Material/Lit/Lit.shader")]
+            [Reload("Runtime/Shaders/Lit/Lit.shader")]
             public Shader defaultPS;
         }
 
