@@ -29,8 +29,8 @@ namespace UnityEditor.Rendering.FlowPipeline
         private FlowRenderPipelineAsset m_PipelineAsset;
 
         private ToolbarMenu m_GraphDataListMenu;
-
-        private FRPGraphViewSavedData m_GraphViewSavedData;
+        
+        private Button m_SaveButton;
         
         #endregion
         
@@ -50,7 +50,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             AddStyles();
           
             
-            m_GraphView.OnGraphDataUpdate();
+            m_GraphView.Reload();
         }
 
         private void OnDisable()
@@ -61,6 +61,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         private void OnDestroy()
         {
             Debug.LogWarning("马老师顶住");
+            RemoveGraphView();
         }
 
         #endregion
@@ -75,8 +76,6 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             m_CurrentIndex = 0;
             m_CurrentSelectedGraphData = m_PipelineAsset.FlowRenderGraphDataList[0];
-
-            m_GraphViewSavedData = AssetDatabase.LoadAssetAtPath<FRPGraphViewSavedData>("");
             
             return true;
         }
@@ -87,8 +86,17 @@ namespace UnityEditor.Rendering.FlowPipeline
             Toolbar toolbar = new Toolbar();
             AddGraphDropdownList(toolbar);
 
+            m_SaveButton = FRPElementUtilities.CreateButton("Save", () => Save());
+            
+            toolbar.Add(m_SaveButton);
+            
             toolbar.AddStyleSheets("FRPToolbarStyles.uss");
             rootVisualElement.Add(toolbar);
+        }
+
+        private void Save()
+        {
+            m_GraphView.Save();
         }
 
         private void AddGraphDropdownList(Toolbar toolbar)
@@ -122,6 +130,8 @@ namespace UnityEditor.Rendering.FlowPipeline
             if (m_GraphView != null)
             {
                 rootVisualElement.Remove(m_GraphView);
+                m_GraphView.Dispose();
+                m_GraphView = null;
             }
         }
         
@@ -144,7 +154,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             m_CurrentIndex = newIndex;
             m_CurrentSelectedGraphData = m_PipelineAsset.FlowRenderGraphDataList[m_CurrentIndex];
-            m_GraphView.OnGraphDataUpdate();
+            m_GraphView.Reload();
             
             // update dropdown title
             m_GraphDataListMenu.text = m_CurrentSelectedGraphData.name;

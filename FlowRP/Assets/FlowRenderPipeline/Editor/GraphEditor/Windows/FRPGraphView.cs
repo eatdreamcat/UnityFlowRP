@@ -1,4 +1,5 @@
 
+using System;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.UIElements;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
-    public partial class FRPGraphView : GraphView
+    public partial class FRPGraphView : GraphView, IDisposable
     {
         private FRPGraphEditorWindow m_EditorWindow;
 
@@ -22,13 +23,9 @@ namespace UnityEditor.Rendering.FlowPipeline
             AddManipulators();
             AddSearchWindow();
             AddGridBackground();
-            AddEntryPoint();
             AddStyles();
-        }
-        
-        
-        public void OnGraphDataUpdate() {
-            
+
+            AddHook();
         }
         
         private void AddStyles()
@@ -102,9 +99,14 @@ namespace UnityEditor.Rendering.FlowPipeline
         }
         
         
-        private void AddEntryPoint()
+        private void AddEntryPoint(Vector2 position)
         {
-            AddElement(CreateNode(FlowRenderGraphData.FRPNodeType.FRPNodeBase, new Vector2(100, 200), true, true));
+            AddElement(CreateNode(FlowRenderGraphData.FRPNodeType.FRPNodeBase, position, true, true));
+        }
+        
+        public void Dispose()
+        {
+            RemoveHook();
         }
     }
 }

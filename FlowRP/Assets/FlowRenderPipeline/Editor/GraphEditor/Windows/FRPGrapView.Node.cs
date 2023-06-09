@@ -45,7 +45,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 node.Draw();
             }
-            
+            OnElementCreated(node);
             return node;
         }
         
@@ -57,7 +57,17 @@ namespace UnityEditor.Rendering.FlowPipeline
             };
 
             group.SetPosition(new Rect(position, Vector2.zero));
-            
+
+            foreach (var selectedElement in selection)
+            {
+                if (!(selectedElement is FRPNodeBase))
+                {
+                    continue;
+                }
+                
+                group.AddElement(selectedElement as FRPNodeBase);
+            }
+            OnElementCreated(group);
             return group;
         }
         
