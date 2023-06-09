@@ -15,6 +15,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         public static void Open()
         {
             GetWindow<FRPGraphEditorWindow>("Render Graph");
+            
         }
 
         #region Properties
@@ -28,6 +29,9 @@ namespace UnityEditor.Rendering.FlowPipeline
         private FlowRenderPipelineAsset m_PipelineAsset;
 
         private ToolbarMenu m_GraphDataListMenu;
+
+        private FRPGraphViewSavedData m_GraphViewSavedData;
+        
         #endregion
         
 
@@ -71,6 +75,8 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             m_CurrentIndex = 0;
             m_CurrentSelectedGraphData = m_PipelineAsset.FlowRenderGraphDataList[0];
+
+            m_GraphViewSavedData = AssetDatabase.LoadAssetAtPath<FRPGraphViewSavedData>("");
             
             return true;
         }

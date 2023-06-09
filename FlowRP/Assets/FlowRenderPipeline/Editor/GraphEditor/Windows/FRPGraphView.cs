@@ -1,6 +1,8 @@
 
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering.FlowPipeline;
 using UnityEngine.UIElements;
 
 namespace UnityEditor.Rendering.FlowPipeline
@@ -9,6 +11,8 @@ namespace UnityEditor.Rendering.FlowPipeline
     {
         private FRPGraphEditorWindow m_EditorWindow;
 
+        private FRPGraphSearchWindow m_SearchWindow;
+
         public FRPGraphView(FRPGraphEditorWindow editorWindow)
         {
             m_EditorWindow = editorWindow;
@@ -16,7 +20,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             
             AddManipulators();
-           
+            AddSearchWindow();
             AddGridBackground();
             AddEntryPoint();
             AddStyles();
@@ -42,11 +46,21 @@ namespace UnityEditor.Rendering.FlowPipeline
             Insert(0, gridBackground);
         }
 
+        private void AddSearchWindow()
+        {
+            if (m_SearchWindow == null)
+            {
+                m_SearchWindow = ScriptableObject.CreateInstance<FRPGraphSearchWindow>();
+                m_SearchWindow.Initialize(this);
+            }
+            
+            nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), m_SearchWindow);
+        }
         private void AddManipulators()
         {
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
             
-            this.AddManipulator(CreateNodeContextualMenu("Add Node", FRPNodeType.FRPNodeBase));
+            // this.AddManipulator(CreateNodeContextualMenu("Add Node", FRPNodeType.FRPNodeBase));
             
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
@@ -55,10 +69,10 @@ namespace UnityEditor.Rendering.FlowPipeline
             this.AddManipulator(CreateGroupContextualMenu());
         }
         
-        private IManipulator CreateNodeContextualMenu(string actionTitle, FRPNodeType nodeType)
+        private IManipulator CreateNodeContextualMenu(string actionTitle, FlowRenderGraphData.FRPNodeType nodeType)
         {
             ContextualMenuManipulator contextualMenuManipulator = new ContextualMenuManipulator(
-                menuEvent => menuEvent.menu.AppendAction(actionTitle, actionEvent => AddElement(CreateNode("NodeName", nodeType, GetLocalMousePosition(actionEvent.eventInfo.localMousePosition))))
+                menuEvent => menuEvent.menu.AppendAction(actionTitle, actionEvent => AddElement(CreateNode(nodeType, GetLocalMousePosition(actionEvent.eventInfo.localMousePosition))))
             );
 
             return contextualMenuManipulator;
@@ -90,7 +104,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         
         private void AddEntryPoint()
         {
-            AddElement(CreateNode("Entry", FRPNodeType.FRPNodeBase, new Vector2(100, 200), true, true));
+            AddElement(CreateNode(FlowRenderGraphData.FRPNodeType.FRPNodeBase, new Vector2(100, 200), true, true));
         }
     }
 }

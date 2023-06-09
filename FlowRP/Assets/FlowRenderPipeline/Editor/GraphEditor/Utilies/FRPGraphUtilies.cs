@@ -19,12 +19,19 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             foreach (string styleSheetName in styleSheetNames)
             {
-                StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/FlowRenderPipeline/Editor/GraphEditor/StyleSheets/" + styleSheetName);
+                StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(FRPPathUtility.kStyleSheetsPath + styleSheetName);
 
                 element.styleSheets.Add(styleSheet);
             }
 
             return element;
         }
+    }
+
+    public static class FRPPathUtility
+    {
+        public static readonly string kStyleSheetsPath = "Assets/FlowRenderPipeline/Editor/GraphEditor/StyleSheets/";
+        public static readonly string kGraphViewDataSavedPath = "Assets/FlowRenderPipeline/Editor/GraphEditor/Data/";
+        public static readonly string kIconPath = "Assets/FlowRenderPipeline/Editor/Resources/Icon/";
     }
 }

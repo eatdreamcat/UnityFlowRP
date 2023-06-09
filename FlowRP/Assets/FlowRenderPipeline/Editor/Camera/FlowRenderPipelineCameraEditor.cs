@@ -30,10 +30,12 @@ namespace UnityEditor.Rendering.FlowPipeline
 
         public override void OnInspectorGUI()
         {
+            base.OnInspectorGUI();
+            
             var rpAsset = FlowRenderPipeline.asset;
             if (rpAsset == null)
             {
-                base.OnInspectorGUI();
+               
                 return;
             }
 

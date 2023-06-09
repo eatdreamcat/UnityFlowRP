@@ -7,6 +7,27 @@ namespace UnityEngine.Rendering.FlowPipeline
 {
     public class FlowRenderGraphData : ScriptableObject
     {
+        
+        public enum FRPNodeType
+        {
+            FRPNodeBase,
+            // flow control
+            FRPBranchNode,
+            FPRLoopNode,
+            
+            // render pass
+            FRPRenderRequestNode,
+            
+            // render target
+            FRPRenderTargetNode,
+            
+            // render resources： TextureBuffer, DepthStencilBuffer, ComputeBuffer
+            FRPResourceNode,
+            FRPRenderTextureNode,
+        }
+
+        
+        
         protected FlowRenderGraphData Create()
         {
             if (!Application.isPlaying)
@@ -19,7 +40,21 @@ namespace UnityEngine.Rendering.FlowPipeline
         
         ///
         ///
-        ///    GraphData 
+        ///    GraphData
+        ///
+        ///    NodeList
+        ///      Node - use guid to map FRPGraphViewSavedData
+        ///
+        /// 
+        ///    ConnectionsMap
+        ///      node-connecttions
+        ///      guid - guid list
+        ///    NodeInputMap
+        ///      node-(input list)
+        ///      guid - guid list
+        ///    NodeOutputMap
+        ///      node-(output list)
+        ///      guid - guid list
         ///
         ///
 

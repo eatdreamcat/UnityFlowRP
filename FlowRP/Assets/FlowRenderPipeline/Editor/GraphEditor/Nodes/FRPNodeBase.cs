@@ -1,6 +1,7 @@
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering.FlowPipeline;
 using UnityEngine.UIElements;
 
 namespace UnityEditor.Rendering.FlowPipeline
@@ -119,7 +120,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         #endregion
 
         #region Protected
-
+        
         
 
         #endregion
@@ -134,12 +135,16 @@ namespace UnityEditor.Rendering.FlowPipeline
         public FRPNodeGroup Group { get; set; }
         public bool EntryPoint { get; set; }
 
-        public virtual void Initialize(string name, FRPGraphView view, Vector2 position, bool isEntryPoint = false)
+        public FlowRenderGraphData.FRPNodeType Type { get; set; }
+
+        public virtual void Initialize(string name, FRPGraphView view, Vector2 position, FlowRenderGraphData.FRPNodeType type, bool isEntryPoint = false)
         {
             ID = Guid.NewGuid().ToString();
 
             m_View = view;
 
+            Type = type;
+            
             Name = name;
             
             m_DefaultBackgroundColor = new Color(29f / 255f, 29f / 255f, 30f / 255f);

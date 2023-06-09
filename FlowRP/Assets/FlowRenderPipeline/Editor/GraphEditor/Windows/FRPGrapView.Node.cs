@@ -3,22 +3,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering.FlowPipeline;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
     public partial class FRPGraphView
     {
-        
-        public enum FRPNodeType
-        {
-            FRPNodeBase,
-            FRPBranchNode,
-            FRPRenderRequestNode,
-            FRPRenderTargetNode,
-            FRPResourceNode,
-            FRPRenderTextureNode,
-        }
-
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
             
@@ -45,16 +35,12 @@ namespace UnityEditor.Rendering.FlowPipeline
             return compatiblePorts;
         }
         
-        // private FRPSerializableDictionary<string, DSNodeErrorData> m_UngroupedNodes;
-        // private FRPSerializableDictionary<string, DSGroupErrorData> m_Groups;
-        // private FRPSerializableDictionary<Group, FRPSerializableDictionary<string, DSNodeErrorData>> m_GroupedNodes;
-        
-        FRPNodeBase CreateNode(string nodeName, FRPNodeType nodeType, Vector2 position, bool shouldDraw = true, bool isEntry = false)
+        public FRPNodeBase CreateNode(FlowRenderGraphData.FRPNodeType nodeType, Vector2 position, bool shouldDraw = true, bool isEntry = false)
         {
             Type nodeClass = Type.GetType($"UnityEditor.Rendering.FlowPipeline.{nodeType}");
             FRPNodeBase node = (FRPNodeBase)Activator.CreateInstance(nodeClass);
             
-            node.Initialize(nodeName, this, position, isEntry);
+            node.Initialize(isEntry ? "Entry" : nodeType.ToString(), this, position, nodeType, isEntry);
             if (shouldDraw)
             {
                 node.Draw();
@@ -75,38 +61,5 @@ namespace UnityEditor.Rendering.FlowPipeline
             return group;
         }
         
-        
-        
-        // static void AddUngroupedNode(FRPNodeBase node)
-        // {
-        //     string nodeName = node.DialogueName.ToLower();
-        //
-        //     if (!ungroupedNodes.ContainsKey(nodeName))
-        //     {
-        //         DSNodeErrorData nodeErrorData = new DSNodeErrorData();
-        //
-        //         nodeErrorData.Nodes.Add(node);
-        //
-        //         ungroupedNodes.Add(nodeName, nodeErrorData);
-        //
-        //         return;
-        //     }
-        //
-        //     List<DSNode> ungroupedNodesList = ungroupedNodes[nodeName].Nodes;
-        //
-        //     ungroupedNodesList.Add(node);
-        //
-        //     Color errorColor = ungroupedNodes[nodeName].ErrorData.Color;
-        //
-        //     node.SetErrorStyle(errorColor);
-        //
-        //     if (ungroupedNodesList.Count == 2)
-        //     {
-        //         ++NameErrorsAmount;
-        //
-        //         ungroupedNodesList[0].SetErrorStyle(errorColor);
-        //     }
-        // }
-
     }
 }
