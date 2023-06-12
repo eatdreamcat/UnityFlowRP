@@ -2,11 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using Unity.Collections;
 using UnityEditor;
+using UnityEditor.ProjectWindowCallback;
 
 namespace UnityEngine.Rendering.FlowPipeline
 {
-    public class FlowRenderGraphData : ScriptableObject
+    public class FlowRenderGraphData : ScriptableObject, ISerializationCallbackReceiver
     {
         
         public enum FRPNodeType
@@ -27,15 +30,31 @@ namespace UnityEngine.Rendering.FlowPipeline
             FRPRenderTextureNode,
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812")]
+        internal class CreateRenderGraphDataAsset : EndNameEditAction
+        {
+            public override void Action(int instanceId, string path, string resourceFile)
+            {
+                //Create asset
+                FlowRenderGraphData data = CreateInstance<FlowRenderGraphData>();
+                data.InitGUID();
+                AssetDatabase.CreateAsset(data, path);
+                FlowUtility.SaveAsset(data);
+                ResourceReloader.ReloadAllNullIn(data, FlowUtility.GetFlowRenderPipelinePath());
+            }
+        }
         
         
-        protected FlowRenderGraphData Create()
+        [MenuItem("Assets/Create/Rendering/Render Graph Data Asset", priority = CoreUtils.Sections.section2 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority + 1)]
+        static void Create()
         {
             if (!Application.isPlaying)
             {
                 // todo : reload all
             }
-            return new FlowRenderGraphData();
+            
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<CreateRenderGraphDataAsset>(),
+                "New Render Graph Data Asset.asset",null, null);
         }
         
         
@@ -73,23 +92,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             public string name;
             public FRPNodeType type;
         }
-        [Serializable]
-        public class PassNode : BaseNode
-        {
-            
-        }
-
-        [Serializable]
-        public class ResourceNode : BaseNode
-        {
-            
-        }
         
-        [Serializable]
-        public class BranchNode : BaseNode
-        {
-            
-        }
 
         [SerializeField]
         private List<BaseNode> m_NodeList = new List<BaseNode>();
@@ -101,18 +104,12 @@ namespace UnityEngine.Rendering.FlowPipeline
                 return m_NodeList;
             }
         }
-        private string m_GUID;
 
-        public string GUID
+        [SerializeField] public string GUID;
+
+        public void InitGUID()
         {
-           get
-           {
-               return m_GUID;
-           }
-           set
-           {
-               m_GUID = value;
-           }
+            GUID = Guid.NewGuid().ToString();
         }
         
         public bool IsEmpty()
@@ -130,7 +127,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             };
             m_NodeList.Add(newNode);
             
-            AssetDatabase.SaveAssets();
+            FlowUtility.SaveAsset(this);
             
             return new NodeCreationResult()
             {
@@ -138,5 +135,60 @@ namespace UnityEngine.Rendering.FlowPipeline
                 guid = newNode.guid
             };
         }
+
+        // TODO 
+        public void AddNode(BaseNode newNode)
+        {
+            // test code 
+            m_NodeList.Add(newNode);
+            
+            
+            switch (newNode.type)
+            {
+                // render request
+                case FRPNodeType.FRPRenderRequestNode:
+                {
+                    
+                }
+                    break;
+                
+                // render resources
+                case FRPNodeType.FRPResourceNode:
+                {
+                  
+                   
+            
+                   
+                }
+                    break;
+                
+                
+                /// flow control
+                case FRPNodeType.FPRLoopNode:
+                {
+                    
+                }
+                    break;
+                case FRPNodeType.FRPBranchNode:
+                {
+                    
+                }
+                    break;
+            }
+            
+           FlowUtility.SaveAsset(this);
+        }
+
+        public void OnBeforeSerialize()
+        {
+          //  throw new NotImplementedException();
+        }
+
+        public void OnAfterDeserialize()
+        {
+          //  throw new NotImplementedException();
+        }
+        
+        
     }
 }

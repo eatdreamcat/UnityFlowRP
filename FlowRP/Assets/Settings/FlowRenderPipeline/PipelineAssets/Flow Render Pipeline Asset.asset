@@ -13,10 +13,5 @@ MonoBehaviour:
   m_Name: Flow Render Pipeline Asset
   m_EditorClassIdentifier: 
   m_RenderGraphDataList:
-  - {fileID: 11400000, guid: 8819e6de87b04274d818ee110bfddfa0, type: 2}
-  - {fileID: 11400000, guid: c3d6ab9779e73a64182622b1e0bded76, type: 2}
-  - {fileID: 11400000, guid: 8e070db45e5b76e4cb85fa8fee844778, type: 2}
-  - {fileID: 11400000, guid: 40459169c05f193429d7bd6b7f1e36b0, type: 2}
-  - {fileID: 11400000, guid: ab2faacd9b6e8214788d5646e4c2295e, type: 2}
-  - {fileID: 11400000, guid: f09e4c47c62fafd4d814ae647f5d9a5a, type: 2}
+  - {fileID: 11400000, guid: 40b7286d734bedd458ebb972348ee6cc, type: 2}
   m_DefaultRendererIndex: 0

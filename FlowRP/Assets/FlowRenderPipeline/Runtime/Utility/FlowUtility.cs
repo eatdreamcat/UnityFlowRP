@@ -1,3 +1,5 @@
+using UnityEditor;
+
 namespace UnityEngine.Rendering.FlowPipeline
 {
     public class FlowUtility 
@@ -46,6 +48,13 @@ namespace UnityEngine.Rendering.FlowPipeline
                 return additionalCameraData;
 
             return s_DefaultFlowRPAdditionalCameraData;
+        }
+
+        public static void SaveAsset(ScriptableObject so)
+        {
+            EditorUtility.SetDirty(so);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 

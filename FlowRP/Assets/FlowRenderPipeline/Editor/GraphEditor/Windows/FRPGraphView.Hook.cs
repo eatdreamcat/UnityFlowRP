@@ -19,7 +19,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         /// viewTransformChanged
         private GraphViewChange OnGraphViewChanged(GraphViewChange graphViewChange)
         {
-            Debug.Log("-OnGraphViewChanged-");
+           
             if (graphViewChange.movedElements != null && graphViewChange.movedElements.Count > 0)
             {
                 foreach (var element in graphViewChange.movedElements)
@@ -30,7 +30,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                     }
                 }
             }
-            Debug.Log("move delta:" + graphViewChange.moveDelta);
+            
             
             if (graphViewChange.elementsToRemove != null && graphViewChange.elementsToRemove.Count > 0)
             {
@@ -60,7 +60,10 @@ namespace UnityEditor.Rendering.FlowPipeline
 
         private void OnElementCreated(GraphElement element)
         {
-            Debug.Log("- OnElementCreated - ");
+            if (element is FRPNodeBase)
+            {
+                AddNewNodeToData((FRPNodeBase) element);
+            }
         }
         private void OnElementsAddedToGroup(Group group, IEnumerable<GraphElement> elements)
         {

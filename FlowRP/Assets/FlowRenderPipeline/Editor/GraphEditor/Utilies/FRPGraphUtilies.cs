@@ -42,6 +42,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             EditorUtility.SetDirty(so);
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 }

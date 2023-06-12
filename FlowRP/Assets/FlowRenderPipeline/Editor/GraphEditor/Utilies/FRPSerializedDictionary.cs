@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
-   
+   [Serializable]
     public class FRPSerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
         [SerializeField]

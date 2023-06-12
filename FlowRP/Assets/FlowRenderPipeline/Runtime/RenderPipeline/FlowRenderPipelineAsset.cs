@@ -1,4 +1,5 @@
 
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
@@ -55,7 +56,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
         }
         
-        [MenuItem("Assets/Create/Rendering/FlowRP Asset", priority = CoreUtils.Sections.section2 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority + 1)]
+        [MenuItem("Assets/Create/Rendering/Flow Render Pipeline Asset", priority = CoreUtils.Sections.section2 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority + 1)]
         static void CreateFlowRenderPipeline()
         {
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<CreateFlowRenderPipelineAsset>(),
@@ -72,9 +73,11 @@ namespace UnityEngine.Rendering.FlowPipeline
                     $"{Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path))}_{suffix}{Path.GetExtension(path)}";
             else
                 dataPath = path;
-            AssetDatabase.CreateAsset(data, dataPath);
+            
             // we need store guid, cause we using guid to map the GraphViewSavedData.
-            data.GUID = AssetDatabase.AssetPathToGUID(dataPath);
+            data.InitGUID();
+            AssetDatabase.CreateAsset(data, dataPath);
+            FlowUtility.SaveAsset(data);
             ResourceReloader.ReloadAllNullIn(data, FlowUtility.GetFlowRenderPipelinePath());
             return data;
         }
@@ -115,7 +118,7 @@ namespace UnityEngine.Rendering.FlowPipeline
          */
         public void OnBeforeSerialize()
         {
-          //  throw new NotImplementedException();
+           // throw new NotImplementedException();
         }
 
         public void OnAfterDeserialize()

@@ -43,8 +43,9 @@ namespace UnityEditor.Rendering.FlowPipeline
         struct GraphViewData
         {
             public FRPGraphViewSavedData so;
-            
+            [SerializeField]
             public FRPSerializedDictionary<string, NodeData> nodeMaps;
+            [SerializeField]
             public FRPSerializedDictionary<string, GroupData> groupMaps;
 
             public void AddDefaultEntry(string guid, string name)
@@ -85,6 +86,17 @@ namespace UnityEditor.Rendering.FlowPipeline
                 
                 Debug.LogError($"Node {guid} Data missing. ");
             }
+            
+            public void AddNewNode(string guid, NodeData nodeData)
+            {
+                if (nodeMaps.ContainsKey(guid))
+                {
+                    Debug.LogError($"Node {guid} already exisit.");
+                    return;
+                }
+                
+                nodeMaps.Add(guid, nodeData);
+            }
         }
         
         //              graphView guid - GraphViewData
@@ -97,7 +109,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             if (!m_Datas.TryGetValue(graphGUID, out var viewData))
             {
-                Debug.Log("Create A new GraphViewData");
+                Debug.Log($"Create A new GraphViewData:{graphGUID}");
                 viewData = new GraphViewData()
                 {
                     so = this,
@@ -126,6 +138,12 @@ namespace UnityEditor.Rendering.FlowPipeline
         public void UpdateNodePosition(string guid, Vector2 position)
         {
             m_CurrentSelectedViewData.UpdateNodePosition(guid, position);
+            FRPAssetsUtility.SaveAsset(this);
+        }
+
+        public void AddNewNode(string guid, NodeData nodeData)
+        {
+            m_CurrentSelectedViewData.AddNewNode(guid, nodeData);
             FRPAssetsUtility.SaveAsset(this);
         }
     }

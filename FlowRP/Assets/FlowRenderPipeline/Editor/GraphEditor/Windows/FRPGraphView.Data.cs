@@ -1,5 +1,4 @@
-using System.Linq;
-using UnityEditor.Experimental.GraphView;
+
 using UnityEngine;
 using UnityEngine.Rendering.FlowPipeline;
 
@@ -33,6 +32,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 /// if not exist ViewData, then create one
                 if (m_GraphViewSavedData == null)
                 {
+                    Debug.Log($"Create A new GraphViewSavedData.");
                     m_GraphViewSavedData = ScriptableObject.CreateInstance<FRPGraphViewSavedData>();
                     AssetDatabase.CreateAsset(m_GraphViewSavedData, FRPPathUtility.kGraphViewDataSavedFullPath);
                     AssetDatabase.Refresh();
@@ -43,6 +43,8 @@ namespace UnityEditor.Rendering.FlowPipeline
             // TODO: store the preview ?
             
             m_CurrentRenderGraphData = currentRenderGraphData;
+            
+            Debug.Log($" Current Selected Graph Data:{m_CurrentRenderGraphData.name}");
             
             m_GraphViewSavedData.CreateViewDataIfNotExisit(m_CurrentRenderGraphData.GUID);
             
@@ -63,6 +65,23 @@ namespace UnityEditor.Rendering.FlowPipeline
             m_GraphViewSavedData.UpdateNodePosition(node.ID, node.GetPosition().position);
         }
 
+        public void AddNewNodeToData(FRPNodeBase node)
+        {
+            m_GraphViewSavedData.AddNewNode(node.ID, new FRPGraphViewSavedData.NodeData()
+            {
+                name = node.Name,
+                groupGuid = "",
+                position = node.GetPosition().position
+            });
+
+            m_CurrentRenderGraphData.AddNode(new FlowRenderGraphData.BaseNode()
+            {
+                name = node.Name,
+                guid = node.ID,
+                type = node.Type
+            });
+        }
+        
         private void Draw()
         {
 
