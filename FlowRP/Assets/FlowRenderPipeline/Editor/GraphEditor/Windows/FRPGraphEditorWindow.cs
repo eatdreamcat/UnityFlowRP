@@ -50,7 +50,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             AddStyles();
           
             
-            m_GraphView.Reload();
+            m_GraphView.Reload(m_CurrentSelectedGraphData);
         }
 
         private void OnDisable()
@@ -154,7 +154,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             m_CurrentIndex = newIndex;
             m_CurrentSelectedGraphData = m_PipelineAsset.FlowRenderGraphDataList[m_CurrentIndex];
-            m_GraphView.Reload();
+            m_GraphView.Reload(m_CurrentSelectedGraphData);
             
             // update dropdown title
             m_GraphDataListMenu.text = m_CurrentSelectedGraphData.name;

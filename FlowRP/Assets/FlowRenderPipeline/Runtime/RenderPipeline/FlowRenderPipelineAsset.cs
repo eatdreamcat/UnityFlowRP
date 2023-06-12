@@ -10,7 +10,7 @@ namespace UnityEngine.Rendering.FlowPipeline
     {
         #region Static Properties
 
-       
+        public static readonly string kIconPath = "Assets/FlowRenderPipeline/Editor/Resources/Icon/";
 
         #endregion
 
@@ -56,10 +56,10 @@ namespace UnityEngine.Rendering.FlowPipeline
         }
         
         [MenuItem("Assets/Create/Rendering/FlowRP Asset", priority = CoreUtils.Sections.section2 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority + 1)]
-        static void CreateCatPipeline()
+        static void CreateFlowRenderPipeline()
         {
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<CreateFlowRenderPipelineAsset>(),
-                "New Flow Render Pipeline Asset.asset", null, null);
+                "New Flow Render Pipeline Asset.asset",null, null);
         }
 
         internal static FlowRenderGraphData CreateRendererAsset(string path,
@@ -73,6 +73,8 @@ namespace UnityEngine.Rendering.FlowPipeline
             else
                 dataPath = path;
             AssetDatabase.CreateAsset(data, dataPath);
+            // we need store guid, cause we using guid to map the GraphViewSavedData.
+            data.GUID = AssetDatabase.AssetPathToGUID(dataPath);
             ResourceReloader.ReloadAllNullIn(data, FlowUtility.GetFlowRenderPipelinePath());
             return data;
         }

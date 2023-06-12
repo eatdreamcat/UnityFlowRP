@@ -35,17 +35,30 @@ namespace UnityEditor.Rendering.FlowPipeline
             return compatiblePorts;
         }
         
-        public FRPNodeBase CreateNode(FlowRenderGraphData.FRPNodeType nodeType, Vector2 position, bool shouldDraw = true, bool isEntry = false)
+        public FRPNodeBase CreateNode(FlowRenderGraphData.FRPNodeType nodeType, Vector2 position, string guid = "")
         {
-            Type nodeClass = Type.GetType($"UnityEditor.Rendering.FlowPipeline.{nodeType}");
+            string nodeTypeName = "";
+            switch (nodeType)
+            {
+                case FlowRenderGraphData.FRPNodeType.Entry:
+                    nodeTypeName = "FRPNodeBase";
+                    break;
+                default:
+                    nodeTypeName = nodeType.ToString();
+                    break;
+            }
+            Type nodeClass = Type.GetType($"UnityEditor.Rendering.FlowPipeline.{nodeTypeName}");
             FRPNodeBase node = (FRPNodeBase)Activator.CreateInstance(nodeClass);
             
-            node.Initialize(isEntry ? "Entry" : nodeType.ToString(), this, position, nodeType, isEntry);
-            if (shouldDraw)
+            node.Initialize( nodeType.ToString(), this, position, nodeType, guid);
+            node.Draw();
+
+            if (guid == "")
             {
-                node.Draw();
+                // if no guid, means that node is created from CreateNode action , not from data loading
+                // so we need to call this function to save the new node.
+                OnElementCreated(node);
             }
-            OnElementCreated(node);
             return node;
         }
         

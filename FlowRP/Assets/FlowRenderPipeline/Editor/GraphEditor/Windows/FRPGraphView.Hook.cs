@@ -24,7 +24,10 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 foreach (var element in graphViewChange.movedElements)
                 {
-                    Debug.Log("moved element:" + element.name);
+                    if (element is FRPNodeBase)
+                    {
+                        UpdateNodePositionData((FRPNodeBase)element);
+                    }
                 }
             }
             Debug.Log("move delta:" + graphViewChange.moveDelta);

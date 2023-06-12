@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UnityEditor.Rendering.FlowPipeline
@@ -31,7 +32,16 @@ namespace UnityEditor.Rendering.FlowPipeline
     public static class FRPPathUtility
     {
         public static readonly string kStyleSheetsPath = "Assets/FlowRenderPipeline/Editor/GraphEditor/StyleSheets/";
-        public static readonly string kGraphViewDataSavedPath = "Assets/FlowRenderPipeline/Editor/GraphEditor/Data/";
+        public static readonly string kGraphViewDataSavedFullPath = "Assets/FlowRenderPipeline/Editor/GraphEditor/Data/GraphViewSavedData.asset";
         public static readonly string kIconPath = "Assets/FlowRenderPipeline/Editor/Resources/Icon/";
+    }
+
+    public static class FRPAssetsUtility
+    {
+        public static void SaveAsset(ScriptableObject so) {
+            
+            EditorUtility.SetDirty(so);
+            AssetDatabase.SaveAssets();
+        }
     }
 }

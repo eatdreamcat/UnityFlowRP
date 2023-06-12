@@ -98,15 +98,24 @@ namespace UnityEditor.Rendering.FlowPipeline
             return localMousePosition;
         }
         
-        
-        private void AddEntryPoint(Vector2 position)
+        private void RemoveAllElements()
         {
-            AddElement(CreateNode(FlowRenderGraphData.FRPNodeType.FRPNodeBase, position, true, true));
+            // Create a list containing all the elements in the graph view
+            var allElements = graphElements.ToList();
+
+            // Remove all elements from the graph view
+            while (allElements.Count > 0)
+            {
+                RemoveElement(allElements[0]);
+                allElements.RemoveAt(0);
+            }
         }
         
         public void Dispose()
         {
+           
             RemoveHook();
+            RemoveData();
         }
     }
 }

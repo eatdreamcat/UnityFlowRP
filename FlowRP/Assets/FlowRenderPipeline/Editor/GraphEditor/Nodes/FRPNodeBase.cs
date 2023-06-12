@@ -78,11 +78,11 @@ namespace UnityEditor.Rendering.FlowPipeline
                 Port nextPort = this.CreatePort("Next");
                 outputContainer.Add(nextPort);
             }
-            else
+            else if (Type != FlowRenderGraphData.FRPNodeType.FRPResourceNode)
             {
                 /* INPUT CONTAINER */
 
-                Port inputPort = this.CreatePort("Input", Orientation.Horizontal, Direction.Input, Port.Capacity.Multi);
+                Port inputPort = this.CreatePort("Connection", Orientation.Horizontal, Direction.Input, Port.Capacity.Multi);
                 inputContainer.Add(inputPort);
             }
         }
@@ -133,13 +133,20 @@ namespace UnityEditor.Rendering.FlowPipeline
         public string ID { get; set; }
 
         public FRPNodeGroup Group { get; set; }
-        public bool EntryPoint { get; set; }
+
+        public bool EntryPoint
+        {
+            get
+            {
+                return Type == FlowRenderGraphData.FRPNodeType.Entry;
+            }
+        }
 
         public FlowRenderGraphData.FRPNodeType Type { get; set; }
 
-        public virtual void Initialize(string name, FRPGraphView view, Vector2 position, FlowRenderGraphData.FRPNodeType type, bool isEntryPoint = false)
+        public virtual void Initialize(string name, FRPGraphView view, Vector2 position, FlowRenderGraphData.FRPNodeType type, string guid)
         {
-            ID = Guid.NewGuid().ToString();
+            ID = guid != "" ? guid : Guid.NewGuid().ToString();
 
             m_View = view;
 
@@ -154,8 +161,6 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             SetPosition(new Rect(position, new Vector2(100, 150)));
 
-            EntryPoint = isEntryPoint;
-            
         }
 
         

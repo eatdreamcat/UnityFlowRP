@@ -11,12 +11,12 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             Button button = new Button(onClick)
             {
-               // text = text,
-                style =
-                {
-                    backgroundImage = (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Save_Icon.png") as Texture2D),
-                     
-                }
+                text = text,
+                // style =
+                // {
+                //     backgroundImage = (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Save_Icon.png") as Texture2D),
+                //      
+                // }
             };
 
             return button;
