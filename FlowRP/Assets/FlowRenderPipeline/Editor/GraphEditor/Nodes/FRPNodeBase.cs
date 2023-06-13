@@ -56,7 +56,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             if (EntryPoint)
             {
-                FlowOut = this.CreatePort("Next");
+                FlowOut = this.CreatePort("Start");
                 outputContainer.Add(FlowOut);
             }
             else 

@@ -26,16 +26,15 @@ MonoBehaviour:
       outputList: []
       flowIn: []
       flowOut:
-      - 65657bba-a7dd-4058-bd55-77f18d7561c2
+      - bda378fa-d483-45a2-9255-f43f6f690505
     - guid: 65657bba-a7dd-4058-bd55-77f18d7561c2
       name: FRPRenderRequestNode
       type: 3
       inputList: []
       outputList: []
       flowIn:
-      - 648bea12-2183-4059-937f-a453d652c381
-      flowOut:
       - bda378fa-d483-45a2-9255-f43f6f690505
+      flowOut: []
     - guid: c143543c-d857-4f4b-9547-39d580f54ad5
       name: FRPRenderTargetNode
       type: 4
@@ -49,7 +48,8 @@ MonoBehaviour:
       inputList: []
       outputList: []
       flowIn:
+      - 648bea12-2183-4059-937f-a453d652c381
+      flowOut:
       - 65657bba-a7dd-4058-bd55-77f18d7561c2
-      flowOut: []
   GraphGuid: 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
   EntryGuid: 648bea12-2183-4059-937f-a453d652c381

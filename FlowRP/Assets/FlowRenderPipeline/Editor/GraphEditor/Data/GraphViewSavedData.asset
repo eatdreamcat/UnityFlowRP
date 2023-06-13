@@ -25,16 +25,16 @@ MonoBehaviour:
         - bda378fa-d483-45a2-9255-f43f6f690505
         m_ValueData:
         - name: Entry
-          position: {x: 28, y: 85}
+          position: {x: 123, y: 178}
           groupGuid: 
         - name: FRPRenderRequestNode
-          position: {x: 355, y: 176}
+          position: {x: 754, y: 255}
           groupGuid: 
         - name: FRPRenderTargetNode
-          position: {x: 75, y: 438}
+          position: {x: 74, y: 449}
           groupGuid: 
         - name: FRPRenderRequestNode
-          position: {x: 626, y: 270}
+          position: {x: 446, y: 81}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []
