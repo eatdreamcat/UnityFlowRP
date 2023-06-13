@@ -86,9 +86,11 @@ namespace UnityEditor.Rendering.FlowPipeline
             Toolbar toolbar = new Toolbar();
             AddGraphDropdownList(toolbar);
 
+            /*
             m_SaveButton = FRPElementUtilities.CreateButton("Save", () => Save());
             
             toolbar.Add(m_SaveButton);
+            */
             
             toolbar.AddStyleSheets("FRPToolbarStyles.uss");
             rootVisualElement.Add(toolbar);

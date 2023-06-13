@@ -110,7 +110,9 @@ namespace UnityEngine.Rendering
         public void OnAfterDeserialize()
         {
             for (int i = 0; i < m_Keys.Count; i++)
+            {
                 Add(DeserializeKey(m_Keys[i]), DeserializeValue(m_Values[i]));
+            }
 
             m_Keys.Clear();
             m_Values.Clear();

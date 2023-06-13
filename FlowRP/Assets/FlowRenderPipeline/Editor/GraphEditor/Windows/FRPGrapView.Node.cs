@@ -35,7 +35,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             return compatiblePorts;
         }
         
-        public FRPNodeBase CreateNode(FlowRenderGraphData.FRPNodeType nodeType, Vector2 position, string guid = "")
+        public FRPNodeBase CreateNode(FlowRenderGraphData.FRPNodeType nodeType, Vector2 position, string guid = "", string name = "")
         {
             string nodeTypeName = "";
             switch (nodeType)
@@ -50,14 +50,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             Type nodeClass = Type.GetType($"UnityEditor.Rendering.FlowPipeline.{nodeTypeName}");
             FRPNodeBase node = (FRPNodeBase)Activator.CreateInstance(nodeClass);
             
-            node.Initialize( nodeType.ToString(), this, position, nodeType, guid);
+            node.Initialize(name == "" ? nodeType.ToString() : name, this, position, nodeType, guid);
             node.Draw();
 
             if (guid == "")
             {
                 // if no guid, means that node is created from CreateNode action , not from data loading
                 // so we need to call this function to save the new node.
-                OnElementCreated(node);
+                OnElementCreated(node, position);
             }
             return node;
         }
@@ -80,7 +80,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 
                 group.AddElement(selectedElement as FRPNodeBase);
             }
-            OnElementCreated(group);
+            OnElementCreated(group, position);
             return group;
         }
         

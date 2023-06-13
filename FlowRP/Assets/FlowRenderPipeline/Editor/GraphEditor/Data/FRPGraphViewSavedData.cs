@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
@@ -38,15 +39,20 @@ namespace UnityEditor.Rendering.FlowPipeline
             public Vector2 position;
             public string name;
         }
-        
+
         [Serializable]
-        struct GraphViewData
+        public sealed class NodeDataDictionary : SerializedDictionary<string, NodeData> { }
+        [Serializable]
+        public  sealed class GroupDataDictionary : SerializedDictionary<string, GroupData> { }
+
+        [Serializable]
+        public struct GraphViewData
         {
             public FRPGraphViewSavedData so;
             [SerializeField]
-            public FRPSerializedDictionary<string, NodeData> nodeMaps;
+            public NodeDataDictionary nodeMaps;
             [SerializeField]
-            public FRPSerializedDictionary<string, GroupData> groupMaps;
+            public GroupDataDictionary groupMaps;
 
             public void AddDefaultEntry(string guid, string name)
             {
@@ -87,6 +93,20 @@ namespace UnityEditor.Rendering.FlowPipeline
                 Debug.LogError($"Node {guid} Data missing. ");
             }
             
+            public void UpdateNodeName(string guid, string newName)
+            {
+                if (nodeMaps.TryGetValue(guid, out var nodeData))
+                {
+                    nodeData.name = newName;
+                    nodeMaps[guid] = nodeData;
+                    
+                    return;
+                }
+                
+                Debug.LogError($"Node {guid} Data missing. ");
+            }
+            
+            
             public void AddNewNode(string guid, NodeData nodeData)
             {
                 if (nodeMaps.ContainsKey(guid))
@@ -98,10 +118,13 @@ namespace UnityEditor.Rendering.FlowPipeline
                 nodeMaps.Add(guid, nodeData);
             }
         }
-        
+
+        [Serializable]
+        internal sealed class GraphViewDataDictionary : SerializedDictionary<string, GraphViewData> { }
+
         //              graphView guid - GraphViewData
         [SerializeField]
-        private FRPSerializedDictionary<string, GraphViewData> m_Datas = new FRPSerializedDictionary<string, GraphViewData>();
+        private GraphViewDataDictionary m_Datas = new GraphViewDataDictionary();
 
         private GraphViewData m_CurrentSelectedViewData;
         
@@ -113,8 +136,8 @@ namespace UnityEditor.Rendering.FlowPipeline
                 viewData = new GraphViewData()
                 {
                     so = this,
-                    nodeMaps = new FRPSerializedDictionary<string, NodeData>(),
-                    groupMaps = new FRPSerializedDictionary<string, GroupData>()
+                    nodeMaps = new NodeDataDictionary(),
+                    groupMaps = new GroupDataDictionary()
                 };
                 m_Datas.Add(graphGUID, viewData);
                 FRPAssetsUtility.SaveAsset(this);
@@ -138,6 +161,12 @@ namespace UnityEditor.Rendering.FlowPipeline
         public void UpdateNodePosition(string guid, Vector2 position)
         {
             m_CurrentSelectedViewData.UpdateNodePosition(guid, position);
+            FRPAssetsUtility.SaveAsset(this);
+        }
+        
+        public void UpdateNodeName(string guid, string name)
+        {
+            m_CurrentSelectedViewData.UpdateNodeName(guid, name);
             FRPAssetsUtility.SaveAsset(this);
         }
 

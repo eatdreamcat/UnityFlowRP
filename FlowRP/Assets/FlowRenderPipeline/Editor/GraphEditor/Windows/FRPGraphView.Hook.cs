@@ -58,11 +58,11 @@ namespace UnityEditor.Rendering.FlowPipeline
             Debug.Log($"{group.name} -OnGroupTitleChanged- {title}");
         }
 
-        private void OnElementCreated(GraphElement element)
+        private void OnElementCreated(GraphElement element, Vector2 position)
         {
             if (element is FRPNodeBase)
             {
-                AddNewNodeToData((FRPNodeBase) element);
+                AddNewNodeToData((FRPNodeBase) element, position);
             }
         }
         private void OnElementsAddedToGroup(Group group, IEnumerable<GraphElement> elements)

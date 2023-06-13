@@ -44,9 +44,9 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             m_CurrentRenderGraphData = currentRenderGraphData;
             
-            Debug.Log($" Current Selected Graph Data:{m_CurrentRenderGraphData.name}");
+            // Debug.Log($" Current Selected Graph Data:{m_CurrentRenderGraphData.name}");
             
-            m_GraphViewSavedData.CreateViewDataIfNotExisit(m_CurrentRenderGraphData.GUID);
+            m_GraphViewSavedData.CreateViewDataIfNotExisit(m_CurrentRenderGraphData.GraphGuid);
             
             
             if (m_CurrentRenderGraphData.IsEmpty())
@@ -65,13 +65,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             m_GraphViewSavedData.UpdateNodePosition(node.ID, node.GetPosition().position);
         }
 
-        public void AddNewNodeToData(FRPNodeBase node)
+        public void AddNewNodeToData(FRPNodeBase node, Vector2 position)
         {
+            
             m_GraphViewSavedData.AddNewNode(node.ID, new FRPGraphViewSavedData.NodeData()
             {
                 name = node.Name,
                 groupGuid = "",
-                position = node.GetPosition().position
+                position = position
             });
 
             m_CurrentRenderGraphData.AddNode(new FlowRenderGraphData.BaseNode()
@@ -80,6 +81,13 @@ namespace UnityEditor.Rendering.FlowPipeline
                 guid = node.ID,
                 type = node.Type
             });
+        }
+
+        public void UpdateNodeTitle(string newTitle, FRPNodeBase node)
+        {
+            m_GraphViewSavedData.UpdateNodeName(node.ID, newTitle);
+            m_CurrentRenderGraphData.UpdateNodeName(node.ID, newTitle);
+            
         }
         
         private void Draw()
@@ -93,7 +101,7 @@ namespace UnityEditor.Rendering.FlowPipeline
            {
                var node = nodeList[i];
                var nodeViewData = m_GraphViewSavedData.TryGetNodeData(node.guid);
-               AddElement(CreateNode(node.type, nodeViewData.position, node.guid));
+               AddElement(CreateNode(node.type, nodeViewData.position, node.guid, node.name));
            }
         }
     }

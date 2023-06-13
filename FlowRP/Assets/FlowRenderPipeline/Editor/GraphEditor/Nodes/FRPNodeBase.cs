@@ -27,37 +27,18 @@ namespace UnityEditor.Rendering.FlowPipeline
 
                 if (string.IsNullOrEmpty(target.value))
                 {
-                    if (!string.IsNullOrEmpty(Name))
-                    {
-                        // ++graphView.NameErrorsAmount;
-                    }
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(Name))
-                    {
-                        //  --graphView.NameErrorsAmount;
-                    }
-                }
-
-                if (Group == null)
-                {
-                    //  m_View.RemoveUngroupedNode(this);
-
-                    Name = target.value;
-
-                    //    graphView.AddUngroupedNode(this);
-
+                    EditorUtility.DisplayDialog("Damn!", "Name cant be null or empty, OK? ", "Yes Sir!");
                     return;
                 }
 
-                FRPNodeGroup currentGroup = Group;
-
-                //       m_View.RemoveGroupedNode(this, Group);
-
+                if (target.value == Name)
+                {
+                    return;
+                }
+               
                 Name = target.value;
-
-                //        m_View.AddGroupedNode(this, currentGroup);
+                m_View.UpdateNodeTitle(Name, this);
+                
             }, EntryPoint);
 
             
@@ -78,12 +59,27 @@ namespace UnityEditor.Rendering.FlowPipeline
                 Port nextPort = this.CreatePort("Next");
                 outputContainer.Add(nextPort);
             }
-            else if (Type != FlowRenderGraphData.FRPNodeType.FRPResourceNode)
+            else 
             {
-                /* INPUT CONTAINER */
-
-                Port inputPort = this.CreatePort("Connection", Orientation.Horizontal, Direction.Input, Port.Capacity.Multi);
-                inputContainer.Add(inputPort);
+                switch (Type)
+                {
+                    case FlowRenderGraphData.FRPNodeType.FRPResourceNode:
+                    {
+                        Port outPort = this.CreatePort("Assign-To");
+                        outputContainer.Add(outPort);
+                    }
+                        break;
+                    case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+                    {
+                        /* INPUT CONTAINER */
+                        Port inPort = this.CreatePort("Flow-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Single);
+                        inputContainer.Add(inPort);
+                
+                        Port outPort = this.CreatePort("Flow-Out");
+                        outputContainer.Add(outPort);
+                    }
+                        break;
+                }
             }
         }
 

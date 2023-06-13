@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Unity.Collections;
 using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
@@ -91,42 +92,56 @@ namespace UnityEngine.Rendering.FlowPipeline
             public string guid;
             public string name;
             public FRPNodeType type;
+            public List<string> inputList;
+            public List<string> outputList;
+           
+            public List<string> flowIn;
+            public List<string> flowOut;
         }
+
+        [Serializable]
+        internal sealed class NodeDictionary : SerializedDictionary<string, BaseNode> { }
         
 
         [SerializeField]
-        private List<BaseNode> m_NodeList = new List<BaseNode>();
+        private NodeDictionary m_NodesMap = new  NodeDictionary();
 
         public List<BaseNode> NodeList
         {
             get
             {
-                return m_NodeList;
+                return m_NodesMap.Values.ToList();
             }
         }
 
-        [SerializeField] public string GUID;
+        [SerializeField] public string GraphGuid;
+        [SerializeField] public string EntryGuid;
 
         public void InitGUID()
         {
-            GUID = Guid.NewGuid().ToString();
+            GraphGuid = Guid.NewGuid().ToString();
         }
         
         public bool IsEmpty()
         {
-            return m_NodeList.Count <= 0;
+            return NodeList.Count <= 0;
         }
         
         public NodeCreationResult AddEntryNode()
         {
+            if (EntryGuid != null && EntryGuid != "")
+            {
+                Debug.LogError("Damn!!!!!!!!! This Graph already has a entry!!!");
+            }
+            
             var newNode = new BaseNode()
             {
                 guid = Guid.NewGuid().ToString(),
                 type = FRPNodeType.Entry,
                 name = "Entry"
             };
-            m_NodeList.Add(newNode);
-            
+            m_NodesMap.Add(newNode.guid, newNode);
+            EntryGuid = newNode.guid;
             FlowUtility.SaveAsset(this);
             
             return new NodeCreationResult()
@@ -140,8 +155,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         public void AddNode(BaseNode newNode)
         {
             // test code 
-            m_NodeList.Add(newNode);
-            
+            m_NodesMap.Add(newNode.guid, newNode);
             
             switch (newNode.type)
             {
@@ -177,6 +191,19 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
             
            FlowUtility.SaveAsset(this);
+        }
+
+        public void UpdateNodeName(string guid, string newName)
+        {
+            if (m_NodesMap.TryGetValue(guid, out var node))
+            {
+                node.name = newName;
+                FlowUtility.SaveAsset(this);
+            }
+            else
+            {
+                Debug.LogError($"Node {guid} not exist.");
+            }
         }
 
         public void OnBeforeSerialize()
