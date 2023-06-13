@@ -1,4 +1,6 @@
 
+using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Rendering.FlowPipeline;
 
@@ -75,12 +77,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 position = position
             });
 
-            m_CurrentRenderGraphData.AddNode(new FlowRenderGraphData.BaseNode()
-            {
-                name = node.Name,
-                guid = node.ID,
-                type = node.Type
-            });
+            m_CurrentRenderGraphData.AddNode(FlowUtility.CreateBaseNode(node.Name, node.ID, node.Type));
         }
 
         public void UpdateNodeTitle(string newTitle, FRPNodeBase node)
@@ -90,18 +87,76 @@ namespace UnityEditor.Rendering.FlowPipeline
             
         }
         
+        public void DeleteNode(FRPNodeBase nodeToDelete)
+        {
+            m_CurrentRenderGraphData.DeleteNode(nodeToDelete.ID);
+            m_GraphViewSavedData.DeleteNode(nodeToDelete);
+        }
+
+        public void AddEdge(Edge edge)
+        {
+            FRPNodeBase inNode = edge.input.node as FRPNodeBase;
+            FRPNodeBase outNode = edge.output.node as FRPNodeBase;
+            
+            m_CurrentRenderGraphData.AddFlowInOut(inNode.ID, outNode.ID);
+        }
+        
+        public void DeleteEdge(Edge edge)
+        {
+            FRPNodeBase inNode = edge.input.node as FRPNodeBase;
+            FRPNodeBase outNode = edge.output.node as FRPNodeBase;
+            m_CurrentRenderGraphData.DeleteFlowInOut(inNode.ID, outNode.ID);
+        }
+
         private void Draw()
         {
 
             RemoveAllElements();
             
-           // draw nodes 
+           // 1. draw nodes 
            var nodeList = m_CurrentRenderGraphData.NodeList;
+
+           Dictionary<string, FRPNodeBase> frpNodeMap = new Dictionary<string, FRPNodeBase>();
+           
+           // add nodes
            for (int i = 0; i < nodeList.Count; ++i)
            {
-               var node = nodeList[i];
-               var nodeViewData = m_GraphViewSavedData.TryGetNodeData(node.guid);
-               AddElement(CreateNode(node.type, nodeViewData.position, node.guid, node.name));
+               var graphNodeData = nodeList[i];
+               var nodeViewData = m_GraphViewSavedData.TryGetNodeData(graphNodeData.guid);
+              
+               var graphNode = CreateNode(graphNodeData.type, nodeViewData.position, graphNodeData.guid, graphNodeData.name, false);
+               
+               // todo: initialize inout data ( port name ...)
+               
+               //NOTE: we need to draw first , because in draw method, we will create actual element like ports which we need later when making connections.
+               graphNode.Draw();
+               AddElement(graphNode);
+               frpNodeMap.Add(graphNode.ID, graphNode);
+           }
+           
+           // 2. set flow connections
+           for (int i = 0; i < nodeList.Count; ++i)
+           {
+               var graphNodeData = nodeList[i];
+               if (frpNodeMap.TryGetValue(graphNodeData.guid, out var graphNode))
+               {
+                   // for branch node, may exist multiple flow-outs
+                   for (int j = 0; j < graphNodeData.flowOut.Count; ++j)
+                   {
+                       var targetNodeID = graphNodeData.flowOut[j];
+                       var targetNode = frpNodeMap[targetNodeID];
+                       if (targetNode == null)
+                       {
+                           Debug.LogError($"[GraphView.Draw] Node {graphNodeData.guid} flow out connection target {targetNodeID} is null ");
+                           continue;
+                       }
+
+                       // add edge
+                       var edge = graphNode.FlowOut.ConnectTo(targetNode.FlowIn);
+                       edge.userData = true;
+                       AddElement(edge);
+                   }
+               }
            }
         }
     }

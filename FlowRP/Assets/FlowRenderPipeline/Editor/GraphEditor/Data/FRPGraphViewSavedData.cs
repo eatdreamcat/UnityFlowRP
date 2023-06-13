@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.FlowPipeline;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
@@ -41,28 +41,36 @@ namespace UnityEditor.Rendering.FlowPipeline
         }
 
         [Serializable]
-        public sealed class NodeDataDictionary : SerializedDictionary<string, NodeData> { }
+        public sealed class NodeDataDictionary : FRPSerializedDictionary<string, NodeData> { }
         [Serializable]
-        public  sealed class GroupDataDictionary : SerializedDictionary<string, GroupData> { }
+        public  sealed class GroupDataDictionary : FRPSerializedDictionary<string, GroupData> { }
 
         [Serializable]
-        public struct GraphViewData
+        public class GraphViewData
         {
-            public FRPGraphViewSavedData so;
+            [HideInInspector]
+            private FRPGraphViewSavedData m_So;
             [SerializeField]
-            public NodeDataDictionary nodeMaps;
+            private NodeDataDictionary m_NodeMap;
             [SerializeField]
-            public GroupDataDictionary groupMaps;
+            private GroupDataDictionary m_GroupMap;
 
+            public GraphViewData(FRPGraphViewSavedData so, NodeDataDictionary nodeMap, GroupDataDictionary groupMap)
+            {
+                m_So = so;
+                m_NodeMap = nodeMap;
+                m_GroupMap = groupMap;
+            }
+            
             public void AddDefaultEntry(string guid, string name)
             {
-                if (nodeMaps.ContainsKey(guid))
+                if (m_NodeMap.ContainsKey(guid))
                 {
-                    Debug.LogError($"Node {name} is already exist! ");
+                    Debug.LogError($"[ViewSavedData.AddDefaultEntry] Node {name} is already exist! ");
                     return;
                 }
                 
-                nodeMaps.Add(guid, new NodeData()
+                m_NodeMap.Add(guid, new NodeData()
                 {
                     name = name,
                     position = new Vector2(100, 200),
@@ -72,9 +80,9 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             public NodeData TryGetNodeData(string guid)
             {
-                if (!nodeMaps.TryGetValue(guid, out var nodeData))
+                if (!m_NodeMap.TryGetValue(guid, out var nodeData))
                 {
-                    Debug.LogError($"Node {guid} Data missing. ");
+                    Debug.LogError($"[ViewSavedData.TryGetNodeData] Node {guid} Data missing. ");
                 }
 
                 return nodeData;
@@ -82,47 +90,61 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             public void UpdateNodePosition(string guid, Vector2 position)
             {
-                if (nodeMaps.TryGetValue(guid, out var nodeData))
+                if (m_NodeMap.TryGetValue(guid, out var nodeData))
                 {
                     nodeData.position = position;
-                    nodeMaps[guid] = nodeData;
+                    m_NodeMap[guid] = nodeData;
                     
                     return;
                 }
                 
-                Debug.LogError($"Node {guid} Data missing. ");
+                Debug.LogError($"[ViewSavedData.UpdateNodePosition] Node {guid} Data missing. ");
             }
             
             public void UpdateNodeName(string guid, string newName)
             {
-                if (nodeMaps.TryGetValue(guid, out var nodeData))
+                if (m_NodeMap.TryGetValue(guid, out var nodeData))
                 {
                     nodeData.name = newName;
-                    nodeMaps[guid] = nodeData;
+                    m_NodeMap[guid] = nodeData;
                     
                     return;
                 }
                 
-                Debug.LogError($"Node {guid} Data missing. ");
+                Debug.LogError($"[ViewSavedData.UpdateNodeName] Node {guid} Data missing. ");
             }
             
             
             public void AddNewNode(string guid, NodeData nodeData)
             {
-                if (nodeMaps.ContainsKey(guid))
+                if (m_NodeMap.ContainsKey(guid))
                 {
-                    Debug.LogError($"Node {guid} already exisit.");
+                    Debug.LogError($"[ViewSavedData.AddNewNode] Node {guid} already exisit.");
                     return;
                 }
                 
-                nodeMaps.Add(guid, nodeData);
+                m_NodeMap.Add(guid, nodeData);
             }
+
+            public void DeleteNode(string guid)
+            {
+                if (m_NodeMap.ContainsKey(guid))
+                {
+                    m_NodeMap.Remove(guid);
+                    
+                    return;
+                }
+                
+                Debug.LogError($"[ViewSavedData.DeleteNode] Node {guid} already exisit.");
+            }
+            
+            
         }
 
-        [Serializable]
-        internal sealed class GraphViewDataDictionary : SerializedDictionary<string, GraphViewData> { }
+        [Serializable]//                                            graphView guid - GraphViewData
+        internal sealed class GraphViewDataDictionary : FRPSerializedDictionary<string, GraphViewData> { }
 
-        //              graphView guid - GraphViewData
+        
         [SerializeField]
         private GraphViewDataDictionary m_Datas = new GraphViewDataDictionary();
 
@@ -133,12 +155,8 @@ namespace UnityEditor.Rendering.FlowPipeline
             if (!m_Datas.TryGetValue(graphGUID, out var viewData))
             {
                 Debug.Log($"Create A new GraphViewData:{graphGUID}");
-                viewData = new GraphViewData()
-                {
-                    so = this,
-                    nodeMaps = new NodeDataDictionary(),
-                    groupMaps = new GroupDataDictionary()
-                };
+                viewData = new GraphViewData(this, new NodeDataDictionary(), new GroupDataDictionary());
+               
                 m_Datas.Add(graphGUID, viewData);
                 FRPAssetsUtility.SaveAsset(this);
             }
@@ -173,6 +191,12 @@ namespace UnityEditor.Rendering.FlowPipeline
         public void AddNewNode(string guid, NodeData nodeData)
         {
             m_CurrentSelectedViewData.AddNewNode(guid, nodeData);
+            FRPAssetsUtility.SaveAsset(this);
+        }
+
+        public void DeleteNode(FRPNodeBase nodeToDelete)
+        {
+            m_CurrentSelectedViewData.DeleteNode(nodeToDelete.ID);
             FRPAssetsUtility.SaveAsset(this);
         }
     }

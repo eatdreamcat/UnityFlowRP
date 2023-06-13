@@ -13,33 +13,47 @@ MonoBehaviour:
   m_Name: GraphViewSavedData
   m_EditorClassIdentifier: 
   m_Datas:
-    m_Keys:
+    m_KeyData:
     - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
-    m_Values:
-    - so: {fileID: 11400000}
-      nodeMaps:
-        m_Keys:
-        - b71abfb3-def3-4d8f-91f8-57cbfc661ff9
-        - 4a5ee19e-8a44-4ca5-b13b-3029e83b0ec9
-        - c45d6a87-dbe3-4833-bc3d-5f6f712f0b9a
-        - 6e83e397-cac0-4079-93c1-497949333180
-        - a44f5bb5-e420-49af-bfba-43763ecabcfb
-        m_Values:
+    - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
+    m_ValueData:
+    - m_NodeMap:
+        m_KeyData:
+        - 648bea12-2183-4059-937f-a453d652c381
+        - 65657bba-a7dd-4058-bd55-77f18d7561c2
+        - c143543c-d857-4f4b-9547-39d580f54ad5
+        - bda378fa-d483-45a2-9255-f43f6f690505
+        m_ValueData:
         - name: Entry
-          position: {x: 59, y: 341}
-          groupGuid: 
-        - name: FRPResourceNode
-          position: {x: 466, y: 114}
+          position: {x: 28, y: 85}
           groupGuid: 
         - name: FRPRenderRequestNode
-          position: {x: 592, y: 341}
-          groupGuid: 
-        - name: FRPBranchNode
-          position: {x: 226, y: 226}
+          position: {x: 355, y: 176}
           groupGuid: 
         - name: FRPRenderTargetNode
-          position: {x: 299, y: 470}
+          position: {x: 75, y: 438}
           groupGuid: 
-      groupMaps:
-        m_Keys: []
-        m_Values: []
+        - name: FRPRenderRequestNode
+          position: {x: 626, y: 270}
+          groupGuid: 
+      m_GroupMap:
+        m_KeyData: []
+        m_ValueData: []
+    - m_NodeMap:
+        m_KeyData:
+        - ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
+        - 685e36cb-0be3-46f6-829f-bfbdd0e51218
+        - 08704e4b-3280-4aa4-a609-8e8d3cbe613f
+        m_ValueData:
+        - name: Entry
+          position: {x: 100, y: 200}
+          groupGuid: 
+        - name: FRPRenderTargetNode
+          position: {x: 610, y: 317}
+          groupGuid: 
+        - name: FRPRenderRequestNode
+          position: {x: 559, y: 146}
+          groupGuid: 
+      m_GroupMap:
+        m_KeyData: []
+        m_ValueData: []

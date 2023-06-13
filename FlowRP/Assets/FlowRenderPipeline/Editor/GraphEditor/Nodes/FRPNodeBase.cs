@@ -56,8 +56,8 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             if (EntryPoint)
             {
-                Port nextPort = this.CreatePort("Next");
-                outputContainer.Add(nextPort);
+                FlowOut = this.CreatePort("Next");
+                outputContainer.Add(FlowOut);
             }
             else 
             {
@@ -65,27 +65,27 @@ namespace UnityEditor.Rendering.FlowPipeline
                 {
                     case FlowRenderGraphData.FRPNodeType.FRPResourceNode:
                     {
-                        Port outPort = this.CreatePort("Assign-To");
-                        outputContainer.Add(outPort);
+                        FlowOut = this.CreatePort("Assign-To");
+                        outputContainer.Add(FlowOut);
                     }
                         break;
                     case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
                     {
                         /* INPUT CONTAINER */
-                        Port inPort = this.CreatePort("Flow-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Single);
-                        inputContainer.Add(inPort);
-                
-                        Port outPort = this.CreatePort("Flow-Out");
-                        outputContainer.Add(outPort);
+                        FlowIn = this.CreatePort("Flow-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Single);
+                        inputContainer.Add(FlowIn);
+
+                        FlowOut = this.CreatePort("Flow-Out");
+                        outputContainer.Add(FlowOut);
                     }
                         break;
                 }
             }
         }
 
-        private void DrawExtensionContent()
+        protected virtual void DrawExtensionContent()
         {
-            
+            // do nothing
         }
         
         
@@ -127,6 +127,9 @@ namespace UnityEditor.Rendering.FlowPipeline
         
         public string Name { get; set; }
         public string ID { get; set; }
+
+        public Port FlowIn { get; set; }
+        public Port FlowOut { get; set; }
 
         public FRPNodeGroup Group { get; set; }
 

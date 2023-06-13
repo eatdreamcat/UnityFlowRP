@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 
 namespace UnityEngine.Rendering.FlowPipeline
@@ -55,6 +56,18 @@ namespace UnityEngine.Rendering.FlowPipeline
             EditorUtility.SetDirty(so);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
+
+        public static FlowRenderGraphData.BaseNode CreateBaseNode(string name, string guid, FlowRenderGraphData.FRPNodeType type)
+        {
+            return new FlowRenderGraphData.BaseNode()
+            {
+                flowIn = new List<string>(),
+                flowOut = new List<string>(),
+                name = name,
+                guid = guid,
+                type = type
+            };
         }
     }
 

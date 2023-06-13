@@ -100,7 +100,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         }
 
         [Serializable]
-        internal sealed class NodeDictionary : SerializedDictionary<string, BaseNode> { }
+        internal sealed class NodeDictionary : FRPSerializedDictionary<string, BaseNode> { }
         
 
         [SerializeField]
@@ -131,15 +131,10 @@ namespace UnityEngine.Rendering.FlowPipeline
         {
             if (EntryGuid != null && EntryGuid != "")
             {
-                Debug.LogError("Damn!!!!!!!!! This Graph already has a entry!!!");
+                Debug.LogError("[GraphData.AddEntryNode] Damn!!!!!!!!! This Graph already has a entry!!!");
             }
-            
-            var newNode = new BaseNode()
-            {
-                guid = Guid.NewGuid().ToString(),
-                type = FRPNodeType.Entry,
-                name = "Entry"
-            };
+
+            var newNode = FlowUtility.CreateBaseNode("Entry", Guid.NewGuid().ToString(), FRPNodeType.Entry);
             m_NodesMap.Add(newNode.guid, newNode);
             EntryGuid = newNode.guid;
             FlowUtility.SaveAsset(this);
@@ -202,9 +197,71 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
             else
             {
-                Debug.LogError($"Node {guid} not exist.");
+                Debug.LogError($"[GraphData.UpdateNodeName] Node {guid} not exist.");
             }
         }
+
+        public void DeleteNode(string guid)
+        {
+            if (m_NodesMap.ContainsKey(guid))
+            {
+                m_NodesMap.Remove(guid);
+                
+                FlowUtility.SaveAsset(this);
+                
+                return;
+            }
+            
+            Debug.LogError($"[GraphData.DeleteNode] Node {guid} not exist.");
+        }
+
+        // flowOut -> flowIn
+        public void AddFlowInOut(string flowInID, string flowOutID)
+        {
+            if (m_NodesMap.TryGetValue(flowInID, out BaseNode inNode))
+             {
+                 inNode.flowIn.Add(flowOutID);
+             }
+             else
+             {
+                 Debug.LogError($"[GraphData.AddFlowInOut] Node(In) {flowInID} not exist.");
+             }
+
+             if (m_NodesMap.TryGetValue(flowOutID, out BaseNode outNode))
+             {
+                 outNode.flowOut.Add(flowInID);
+             }
+             else
+             {
+                 Debug.LogError($"[GraphData.AddFlowInOut] Node(Out) {flowOutID} not exist.");
+             }
+             
+             FlowUtility.SaveAsset(this);
+        }
+        
+        public void DeleteFlowInOut(string flowInID, string flowOutID)
+        {
+            if (m_NodesMap.TryGetValue(flowInID, out BaseNode inNode))
+            {
+                inNode.flowIn.Remove(flowOutID);
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.DeleteFlowInOut] Node(In) {flowInID} not exist.");
+            }
+
+            if (m_NodesMap.TryGetValue(flowOutID, out BaseNode outNode))
+            {
+                outNode.flowOut.Remove(flowInID);
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.DeleteFlowInOut] Node(Out) {flowOutID} not exist.");
+            }
+            
+            FlowUtility.SaveAsset(this);
+        }
+        
 
         public void OnBeforeSerialize()
         {

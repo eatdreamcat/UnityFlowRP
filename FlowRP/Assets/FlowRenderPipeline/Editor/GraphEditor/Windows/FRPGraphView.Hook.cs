@@ -36,7 +36,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 foreach (var element in graphViewChange.elementsToRemove)
                 {
-                    Debug.Log("to remove element:" + element.name);
+                    if (element is FRPNodeBase)
+                    {
+                        DeleteNode((FRPNodeBase) element);
+                        
+                    } else if (element is Edge)
+                    {
+                        DeleteEdge((Edge) element);
+                    } 
                 }
             }
 
@@ -44,7 +51,11 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 foreach (var element in graphViewChange.edgesToCreate)
                 {
-                    Debug.Log("edges To Create:" + element.name);
+                    // we only hook edge created by editing.
+                    if (element.userData == null || (bool) element.userData == false)
+                    {
+                        AddEdge(element);
+                    }
                 }
             }
             

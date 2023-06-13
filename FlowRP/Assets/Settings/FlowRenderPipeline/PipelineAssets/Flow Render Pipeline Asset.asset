@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_RenderGraphDataList:
   - {fileID: 11400000, guid: 40b7286d734bedd458ebb972348ee6cc, type: 2}
+  - {fileID: 11400000, guid: fd8c30b74040945408c150822db38e9c, type: 2}
   m_DefaultRendererIndex: 0

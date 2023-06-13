@@ -4,35 +4,35 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace UnityEditor.Rendering.FlowPipeline
+namespace UnityEngine.Rendering.FlowPipeline
 {
    [Serializable]
-    public class FRPSerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
+    public abstract class FRPSerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
         [SerializeField]
-        private List<TKey> keyData = new List<TKey>();
+        private List<TKey> m_KeyData = new List<TKey>();
 	  
         [SerializeField]
-        private List<TValue> valueData = new List<TValue>();
+        private List<TValue> m_ValueData = new List<TValue>();
    
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             this.Clear();
-            for (int i = 0; i < this.keyData.Count && i < this.valueData.Count; i++)
+            for (int i = 0; i < this.m_KeyData.Count && i < this.m_ValueData.Count; i++)
             {
-                this[this.keyData[i]] = this.valueData[i];
+                this[this.m_KeyData[i]] = this.m_ValueData[i];
             }
         }
    
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            this.keyData.Clear();
-            this.valueData.Clear();
+            this.m_KeyData.Clear();
+            this.m_ValueData.Clear();
    
             foreach (var item in this)
             {
-                this.keyData.Add(item.Key);
-                this.valueData.Add(item.Value);
+                this.m_KeyData.Add(item.Key);
+                this.m_ValueData.Add(item.Value);
             }
         }
     }

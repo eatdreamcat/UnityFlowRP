@@ -10,9 +10,9 @@ namespace UnityEditor.Rendering.FlowPipeline
         
         public string ID { get; set; }
 
-        public FRPNodeGroup(string groupTitle, Vector2 position)
+        public FRPNodeGroup(string groupTitle, Vector2 position, string guid = "")
         {
-            ID = Guid.NewGuid().ToString();
+            ID = guid != "" ? guid : Guid.NewGuid().ToString();
             
             title = groupTitle;
             

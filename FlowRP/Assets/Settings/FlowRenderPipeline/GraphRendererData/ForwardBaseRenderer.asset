@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a59c23e1b32adb41a507d270aa05e1e, type: 3}
+  m_Name: ForwardBaseRenderer
+  m_EditorClassIdentifier: 
+  m_NodesMap:
+    m_KeyData:
+    - ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
+    - 685e36cb-0be3-46f6-829f-bfbdd0e51218
+    - 08704e4b-3280-4aa4-a609-8e8d3cbe613f
+    m_ValueData:
+    - guid: ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
+      name: Entry
+      type: 0
+      inputList: []
+      outputList: []
+      flowIn: []
+      flowOut:
+      - 08704e4b-3280-4aa4-a609-8e8d3cbe613f
+    - guid: 685e36cb-0be3-46f6-829f-bfbdd0e51218
+      name: FRPRenderTargetNode
+      type: 4
+      inputList: []
+      outputList: []
+      flowIn: []
+      flowOut: []
+    - guid: 08704e4b-3280-4aa4-a609-8e8d3cbe613f
+      name: FRPRenderRequestNode
+      type: 3
+      inputList: []
+      outputList: []
+      flowIn:
+      - ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
+      flowOut: []
+  GraphGuid: c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
+  EntryGuid: ba99f7b9-1d87-49d3-a6db-5b4aaabc3957

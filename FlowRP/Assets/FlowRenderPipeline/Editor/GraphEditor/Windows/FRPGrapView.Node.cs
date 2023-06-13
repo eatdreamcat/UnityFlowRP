@@ -35,7 +35,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             return compatiblePorts;
         }
         
-        public FRPNodeBase CreateNode(FlowRenderGraphData.FRPNodeType nodeType, Vector2 position, string guid = "", string name = "")
+        public FRPNodeBase CreateNode(FlowRenderGraphData.FRPNodeType nodeType, Vector2 position, string guid = "", string name = "", bool shouldDraw = true)
         {
             string nodeTypeName = "";
             switch (nodeType)
@@ -51,7 +51,11 @@ namespace UnityEditor.Rendering.FlowPipeline
             FRPNodeBase node = (FRPNodeBase)Activator.CreateInstance(nodeClass);
             
             node.Initialize(name == "" ? nodeType.ToString() : name, this, position, nodeType, guid);
-            node.Draw();
+
+            if (shouldDraw)
+            {
+                node.Draw();
+            }
 
             if (guid == "")
             {
@@ -62,15 +66,10 @@ namespace UnityEditor.Rendering.FlowPipeline
             return node;
         }
         
-        public Group CreateGroup(string title, Vector2 position)
+        public FRPNodeGroup CreateGroup(string title, Vector2 position)
         {
-            Group group = new Group()
-            {
-                title = title
-            };
-
-            group.SetPosition(new Rect(position, Vector2.zero));
-
+            FRPNodeGroup group = new FRPNodeGroup(title, position);
+            
             foreach (var selectedElement in selection)
             {
                 if (!(selectedElement is FRPNodeBase))
