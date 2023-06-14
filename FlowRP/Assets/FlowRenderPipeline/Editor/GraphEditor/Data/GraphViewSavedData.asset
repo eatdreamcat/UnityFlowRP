@@ -12,47 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15263655a02bc6e40bd0702613bcf990, type: 3}
   m_Name: GraphViewSavedData
   m_EditorClassIdentifier: 
+  m_ViewTransformDatas:
+    m_KeyData:
+    - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
+    m_ValueData:
+    - position: {x: 100, y: 0, z: 0}
+      scale: {x: 1, y: 1, z: 1}
   m_Datas:
     m_KeyData:
     - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
-    - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
     m_ValueData:
     - m_NodeMap:
         m_KeyData:
-        - 648bea12-2183-4059-937f-a453d652c381
-        - 65657bba-a7dd-4058-bd55-77f18d7561c2
-        - c143543c-d857-4f4b-9547-39d580f54ad5
-        - bda378fa-d483-45a2-9255-f43f6f690505
+        - 29bf8e13-75d7-4721-af53-e1cb4d054bb7
         m_ValueData:
         - name: Entry
-          position: {x: 123, y: 178}
-          groupGuid: 
-        - name: FRPRenderRequestNode
-          position: {x: 754, y: 255}
-          groupGuid: 
-        - name: FRPRenderTargetNode
-          position: {x: 74, y: 449}
-          groupGuid: 
-        - name: FRPRenderRequestNode
-          position: {x: 446, y: 81}
-          groupGuid: 
-      m_GroupMap:
-        m_KeyData: []
-        m_ValueData: []
-    - m_NodeMap:
-        m_KeyData:
-        - ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
-        - 685e36cb-0be3-46f6-829f-bfbdd0e51218
-        - 08704e4b-3280-4aa4-a609-8e8d3cbe613f
-        m_ValueData:
-        - name: Entry
-          position: {x: 100, y: 200}
-          groupGuid: 
-        - name: FRPRenderTargetNode
-          position: {x: 610, y: 317}
-          groupGuid: 
-        - name: FRPRenderRequestNode
-          position: {x: 559, y: 146}
+          position: {x: 149, y: 301}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

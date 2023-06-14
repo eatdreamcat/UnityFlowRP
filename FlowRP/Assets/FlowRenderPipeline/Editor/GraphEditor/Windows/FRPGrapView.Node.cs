@@ -63,23 +63,34 @@ namespace UnityEditor.Rendering.FlowPipeline
                 // so we need to call this function to save the new node.
                 OnElementCreated(node, position);
             }
+            
             return node;
         }
         
-        public FRPNodeGroup CreateGroup(string title, Vector2 position)
+        public FRPNodeGroup CreateGroup(string title, Vector2 position, string guid = "")
         {
-            FRPNodeGroup group = new FRPNodeGroup(title, position);
+            FRPNodeGroup group = new FRPNodeGroup(title, position, guid);
             
-            foreach (var selectedElement in selection)
+            if (guid == "")
             {
-                if (!(selectedElement is FRPNodeBase))
-                {
-                    continue;
-                }
+                // if no guid, means that group is created from CreateGroup action , not from data loading
+                // so we need to call this function to save the new group.
+                OnElementCreated(group, position);
                 
-                group.AddElement(selectedElement as FRPNodeBase);
+                foreach (var selectedElement in selection)
+                {
+                    if (!(selectedElement is FRPNodeBase))
+                    {
+                        continue;
+                    }
+
+                    OnElementsAddedToGroup(group, new [] { (GraphElement)selectedElement });
+                    
+                    group.AddElement(selectedElement as FRPNodeBase);
+                    
+                }
             }
-            OnElementCreated(group, position);
+            
             return group;
         }
         

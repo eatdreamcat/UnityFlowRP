@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.FlowPipeline;
+using UnityEngine.UIElements;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
@@ -37,7 +41,15 @@ namespace UnityEditor.Rendering.FlowPipeline
         public struct GroupData
         {
             public Vector2 position;
-            public string name;
+            public string title;
+            public string guid;
+        }
+        
+        [Serializable]
+        public struct ViewTransformData
+        {
+            public Vector3 position;
+            public Vector3 scale;
         }
 
         [Serializable]
@@ -46,6 +58,9 @@ namespace UnityEditor.Rendering.FlowPipeline
         public  sealed class GroupDataDictionary : FRPSerializedDictionary<string, GroupData> { }
 
         [Serializable]
+        /**
+         * Store nodes view data in graphview
+         */
         public class GraphViewData
         {
             [HideInInspector]
@@ -54,6 +69,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             private NodeDataDictionary m_NodeMap;
             [SerializeField]
             private GroupDataDictionary m_GroupMap;
+
+            public List<GroupData> GroupList
+            {
+                get
+                {
+                    return m_GroupMap.Values.ToList();
+                } 
+            }
 
             public GraphViewData(FRPGraphViewSavedData so, NodeDataDictionary nodeMap, GroupDataDictionary groupMap)
             {
@@ -87,6 +110,16 @@ namespace UnityEditor.Rendering.FlowPipeline
 
                 return nodeData;
             }
+            
+            public GroupData TryGetGroupData(string guid)
+            {
+                if (!m_GroupMap.TryGetValue(guid, out var groupData))
+                {
+                    Debug.LogError($"[ViewSavedData.TryGetGroupData] Group {guid} Data missing. ");
+                }
+
+                return groupData;
+            }
 
             public void UpdateNodePosition(string guid, Vector2 position)
             {
@@ -99,6 +132,22 @@ namespace UnityEditor.Rendering.FlowPipeline
                 }
                 
                 Debug.LogError($"[ViewSavedData.UpdateNodePosition] Node {guid} Data missing. ");
+            }
+
+            /**
+             * we still store group position cause there may exist some empty groups...
+             */
+            public void UpdateGroupPosition(string guid, Vector2 position)
+            {
+                if (m_GroupMap.TryGetValue(guid, out var groupData))
+                {
+                    groupData.position = position;
+                    m_GroupMap[guid] = groupData;
+                    
+                    return;
+                }
+                
+                Debug.LogError($"[ViewSavedData.UpdateGroupPosition] Group {guid} Data missing. ");
             }
             
             public void UpdateNodeName(string guid, string newName)
@@ -114,7 +163,32 @@ namespace UnityEditor.Rendering.FlowPipeline
                 Debug.LogError($"[ViewSavedData.UpdateNodeName] Node {guid} Data missing. ");
             }
             
-            
+            public void UpdateGroupTitle(string guid, string title)
+            {
+                if (m_GroupMap.TryGetValue(guid, out var groupData))
+                {
+                    groupData.title = title;
+                    m_GroupMap[guid] = groupData;
+                    
+                    return;
+                }
+                
+                Debug.LogError($"[ViewSavedData.UpdateGroupTitle] Group {guid} Data missing. ");
+            }
+
+            public void BindGroup(string nodeID, string groupID)
+            {
+                if (m_NodeMap.TryGetValue(nodeID, out var nodeData))
+                {
+                    nodeData.groupGuid = groupID;
+                    m_NodeMap[nodeID] = nodeData;
+                    
+                    return;
+                }
+                
+                Debug.LogError($"[ViewSavedData.BindGroup] Node {nodeID} Data missing. ");
+            }
+
             public void AddNewNode(string guid, NodeData nodeData)
             {
                 if (m_NodeMap.ContainsKey(guid))
@@ -125,6 +199,18 @@ namespace UnityEditor.Rendering.FlowPipeline
                 
                 m_NodeMap.Add(guid, nodeData);
             }
+            
+            public void AddNewGroup(string guid, GroupData groupData)
+            {
+                if (m_GroupMap.ContainsKey(guid))
+                {
+                    Debug.LogError($"[ViewSavedData.AddNewGroup] Group {guid} already exisit.");
+                    return;
+                }
+                
+                m_GroupMap.Add(guid, groupData);
+            }
+            
 
             public void DeleteNode(string guid)
             {
@@ -143,25 +229,77 @@ namespace UnityEditor.Rendering.FlowPipeline
 
         [Serializable]//                                            graphView guid - GraphViewData
         internal sealed class GraphViewDataDictionary : FRPSerializedDictionary<string, GraphViewData> { }
-
         
-        [SerializeField]
-        private GraphViewDataDictionary m_Datas = new GraphViewDataDictionary();
+        [Serializable]
+        internal sealed class GraphViewTransformDictionary : FRPSerializedDictionary<string, ViewTransformData> { }
 
+
+        [SerializeField] private GraphViewTransformDictionary m_ViewTransformDatas = new GraphViewTransformDictionary();
+        
+        [SerializeField] private GraphViewDataDictionary m_Datas = new GraphViewDataDictionary();
+        
         private GraphViewData m_CurrentSelectedViewData;
-        
-        public void CreateViewDataIfNotExisit(string graphGUID)
+
+        public List<GroupData> GroupViewList
         {
-            if (!m_Datas.TryGetValue(graphGUID, out var viewData))
+            get
+            {
+                return m_CurrentSelectedViewData.GroupList;
+            }
+        }
+
+        public void UpdateViewTransform(string guid, ViewTransformData transform)
+        {
+            
+            if (m_ViewTransformDatas.TryGetValue(guid, out var _))
+            {
+                m_ViewTransformDatas[guid] = transform;
+                
+                return;
+            }
+            
+            Debug.LogError($"View {guid} doesn't exist.");
+        }
+        
+        public void CreateViewDataIfNotExisit(string graphGUID, ViewTransformData viewTransformData)
+        {
+            var dirty = false;
+            if (!m_Datas.TryGetValue(graphGUID, out var graphViewData))
             {
                 Debug.Log($"Create A new GraphViewData:{graphGUID}");
-                viewData = new GraphViewData(this, new NodeDataDictionary(), new GroupDataDictionary());
-               
-                m_Datas.Add(graphGUID, viewData);
+                graphViewData = new GraphViewData(this, new NodeDataDictionary(), new GroupDataDictionary());
+                m_Datas.Add(graphGUID, graphViewData);
+                dirty = true;
+            }
+           
+
+            if (!m_ViewTransformDatas.TryGetValue(graphGUID, out var transformData))
+            {
+                Debug.Log($"Create A new GraphViewTransformData:{graphGUID}");
+                m_ViewTransformDatas.Add(graphGUID, viewTransformData);
+                dirty = true;
+            }
+           
+            m_CurrentSelectedViewData = graphViewData;
+
+            if (dirty)
+            {
                 FRPAssetsUtility.SaveAsset(this);
             }
+            
+        }
 
-            m_CurrentSelectedViewData = viewData;
+        public ViewTransformData TryGetViewTransformData(string viewID)
+        {
+            if (m_ViewTransformDatas.TryGetValue(viewID, out var transformData))
+            {
+            }
+            else
+            {
+                Debug.LogError($"View {viewID} transform data not exist.");
+            }
+
+            return transformData;
         }
 
         public void AddDefaultEntry(string guid, string name)
@@ -173,12 +311,22 @@ namespace UnityEditor.Rendering.FlowPipeline
         public NodeData TryGetNodeData(string guid)
         {
             return m_CurrentSelectedViewData.TryGetNodeData(guid);
-            FRPAssetsUtility.SaveAsset(this);
+        }
+
+        public GroupData TryGetGroupData(string guid)
+        {
+            return m_CurrentSelectedViewData.TryGetGroupData(guid);
         }
 
         public void UpdateNodePosition(string guid, Vector2 position)
         {
             m_CurrentSelectedViewData.UpdateNodePosition(guid, position);
+            FRPAssetsUtility.SaveAsset(this);
+        }
+
+        public void UpdateGroupPosition(string guid, Vector2 position)
+        {
+            m_CurrentSelectedViewData.UpdateGroupPosition(guid, position);
             FRPAssetsUtility.SaveAsset(this);
         }
         
@@ -188,9 +336,27 @@ namespace UnityEditor.Rendering.FlowPipeline
             FRPAssetsUtility.SaveAsset(this);
         }
 
+        public void UpdateGroupTitle(string guid, string title)
+        {
+            m_CurrentSelectedViewData.UpdateGroupTitle(guid, title);
+            FRPAssetsUtility.SaveAsset(this);
+        }
+
         public void AddNewNode(string guid, NodeData nodeData)
         {
             m_CurrentSelectedViewData.AddNewNode(guid, nodeData);
+            FRPAssetsUtility.SaveAsset(this);
+        }
+
+        public void AddNewGroup(string guid, GroupData groupData)
+        {
+            m_CurrentSelectedViewData.AddNewGroup(guid, groupData);
+            FRPAssetsUtility.SaveAsset(this);
+        }
+
+        public void BindGroup(string nodeID, string groupID)
+        {
+            m_CurrentSelectedViewData.BindGroup(nodeID, groupID);
             FRPAssetsUtility.SaveAsset(this);
         }
 

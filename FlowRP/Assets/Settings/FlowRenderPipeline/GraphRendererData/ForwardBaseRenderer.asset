@@ -13,33 +13,7 @@ MonoBehaviour:
   m_Name: ForwardBaseRenderer
   m_EditorClassIdentifier: 
   m_NodesMap:
-    m_KeyData:
-    - ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
-    - 685e36cb-0be3-46f6-829f-bfbdd0e51218
-    - 08704e4b-3280-4aa4-a609-8e8d3cbe613f
-    m_ValueData:
-    - guid: ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
-      name: Entry
-      type: 0
-      inputList: []
-      outputList: []
-      flowIn: []
-      flowOut:
-      - 08704e4b-3280-4aa4-a609-8e8d3cbe613f
-    - guid: 685e36cb-0be3-46f6-829f-bfbdd0e51218
-      name: FRPRenderTargetNode
-      type: 4
-      inputList: []
-      outputList: []
-      flowIn: []
-      flowOut: []
-    - guid: 08704e4b-3280-4aa4-a609-8e8d3cbe613f
-      name: FRPRenderRequestNode
-      type: 3
-      inputList: []
-      outputList: []
-      flowIn:
-      - ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
-      flowOut: []
+    m_KeyData: []
+    m_ValueData: []
   GraphGuid: c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
-  EntryGuid: ba99f7b9-1d87-49d3-a6db-5b4aaabc3957
+  EntryGuid: 

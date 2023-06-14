@@ -14,42 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_NodesMap:
     m_KeyData:
-    - 648bea12-2183-4059-937f-a453d652c381
-    - 65657bba-a7dd-4058-bd55-77f18d7561c2
-    - c143543c-d857-4f4b-9547-39d580f54ad5
-    - bda378fa-d483-45a2-9255-f43f6f690505
+    - 29bf8e13-75d7-4721-af53-e1cb4d054bb7
     m_ValueData:
-    - guid: 648bea12-2183-4059-937f-a453d652c381
+    - guid: 29bf8e13-75d7-4721-af53-e1cb4d054bb7
       name: Entry
       type: 0
       inputList: []
       outputList: []
       flowIn: []
-      flowOut:
-      - bda378fa-d483-45a2-9255-f43f6f690505
-    - guid: 65657bba-a7dd-4058-bd55-77f18d7561c2
-      name: FRPRenderRequestNode
-      type: 3
-      inputList: []
-      outputList: []
-      flowIn:
-      - bda378fa-d483-45a2-9255-f43f6f690505
       flowOut: []
-    - guid: c143543c-d857-4f4b-9547-39d580f54ad5
-      name: FRPRenderTargetNode
-      type: 4
-      inputList: []
-      outputList: []
-      flowIn: []
-      flowOut: []
-    - guid: bda378fa-d483-45a2-9255-f43f6f690505
-      name: FRPRenderRequestNode
-      type: 3
-      inputList: []
-      outputList: []
-      flowIn:
-      - 648bea12-2183-4059-937f-a453d652c381
-      flowOut:
-      - 65657bba-a7dd-4058-bd55-77f18d7561c2
   GraphGuid: 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
-  EntryGuid: 648bea12-2183-4059-937f-a453d652c381
+  EntryGuid: 29bf8e13-75d7-4721-af53-e1cb4d054bb7

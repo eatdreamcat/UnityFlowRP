@@ -27,6 +27,9 @@ namespace UnityEditor.Rendering.FlowPipeline
                     if (element is FRPNodeBase)
                     {
                         UpdateNodePositionData((FRPNodeBase)element);
+                    } else if (element is FRPNodeGroup)
+                    {
+                        UpdateGroupPositionData((FRPNodeGroup)element);
                     }
                 }
             }
@@ -63,22 +66,29 @@ namespace UnityEditor.Rendering.FlowPipeline
             return graphViewChange;
         }
 
-        /* this is called by manully in GraphView.Node file. */
+       
         private void OnGroupTitleChanged(Group group, string title)
         {
-            Debug.Log($"{group.name} -OnGroupTitleChanged- {title}");
+            UpdateGroupTitle(title, group as FRPNodeGroup);
         }
-
+        
+        /* this is called by manully in GraphView.Node file. */
         private void OnElementCreated(GraphElement element, Vector2 position)
         {
             if (element is FRPNodeBase)
             {
                 AddNewNodeToData((FRPNodeBase) element, position);
+                
+            } else if (element is FRPNodeGroup)
+            {
+                AddNewGroupToData((FRPNodeGroup) element, position);
             }
         }
-        private void OnElementsAddedToGroup(Group group, IEnumerable<GraphElement> elements)
+        public void OnElementsAddedToGroup(Group group, IEnumerable<GraphElement> elements)
         {
-            Debug.Log($"{group.name} -OnGroupTitleChanged- {elements.Count()}");
+            FRPNodeGroup frpGroup = group as FRPNodeGroup;
+
+            AddNodesToGroup(frpGroup, elements.ToList());
         }
         
         private void OnElementsRemovedFromGroup(Group group, IEnumerable<GraphElement> elements)
@@ -102,6 +112,16 @@ namespace UnityEditor.Rendering.FlowPipeline
             Debug.Log($"{visualElement.name} -OnElementResized- ");
         }
 
+        private void OnViewTransformChanged(GraphView view)
+        {
+            m_GraphViewSavedData.UpdateViewTransform(m_CurrentRenderGraphData.GraphGuid,
+                new FRPGraphViewSavedData.ViewTransformData()
+                {
+                    position = viewTransform.position,
+                    scale = viewTransform.scale,
+                });
+        }
+
         private void AddHook()
         {
             graphViewChanged += OnGraphViewChanged;
@@ -111,6 +131,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             elementsInsertedToStackNode += OnElementsInsertedToStackNode;
             elementsRemovedFromStackNode += OnElementsRemovedFromStackNode;
             elementResized += OnElementResized;
+            viewTransformChanged += OnViewTransformChanged;
         }
 
         private void RemoveHook()
@@ -122,6 +143,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             elementsInsertedToStackNode -= OnElementsInsertedToStackNode;
             elementsRemovedFromStackNode -= OnElementsRemovedFromStackNode;
             elementResized -= OnElementResized;
+            viewTransformChanged -= OnViewTransformChanged;
         }
         
     }

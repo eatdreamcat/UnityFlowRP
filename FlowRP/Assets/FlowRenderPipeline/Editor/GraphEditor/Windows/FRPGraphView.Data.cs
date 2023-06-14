@@ -1,8 +1,11 @@
 
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.Rendering.FlowPipeline;
+using Edge = UnityEditor.Experimental.GraphView.Edge;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
@@ -48,7 +51,11 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             // Debug.Log($" Current Selected Graph Data:{m_CurrentRenderGraphData.name}");
             
-            m_GraphViewSavedData.CreateViewDataIfNotExisit(m_CurrentRenderGraphData.GraphGuid);
+            m_GraphViewSavedData.CreateViewDataIfNotExisit(m_CurrentRenderGraphData.GraphGuid,  new FRPGraphViewSavedData.ViewTransformData()
+            {
+                position = contentContainer.transform.position,
+                scale = contentContainer.transform.scale,
+            });
             
             
             if (m_CurrentRenderGraphData.IsEmpty())
@@ -58,6 +65,11 @@ namespace UnityEditor.Rendering.FlowPipeline
                 m_GraphViewSavedData.AddDefaultEntry(creationResult.guid, creationResult.name);
             }
             
+            // set view transform
+            var currentTransform = m_GraphViewSavedData.TryGetViewTransformData(m_CurrentRenderGraphData.GraphGuid);
+
+            viewTransform.position = currentTransform.position;
+            viewTransform.scale = currentTransform.scale;
             
             Draw();
         }
@@ -67,6 +79,37 @@ namespace UnityEditor.Rendering.FlowPipeline
             m_GraphViewSavedData.UpdateNodePosition(node.ID, node.GetPosition().position);
         }
 
+        public void UpdateGroupPositionData(FRPNodeGroup group)
+        {
+            foreach (var element in group.containedElements)
+            {
+                if (element is FRPNodeBase)
+                {
+                    UpdateNodePositionData(element as FRPNodeBase);
+                }
+            }
+            
+            m_GraphViewSavedData.UpdateGroupPosition(group.ID, group.GetPosition().position);
+        }
+
+        public void AddNewGroupToData(FRPNodeGroup group, Vector2 position)
+        {
+            m_GraphViewSavedData.AddNewGroup(group.ID, new FRPGraphViewSavedData.GroupData()
+            {
+               title = group.title,
+               position = position,
+               guid = group.ID
+            });
+        }
+
+        public void AddNodesToGroup(FRPNodeGroup frpGroup, List<GraphElement> nodeList)
+        {
+            foreach (var node in nodeList)
+            {
+                m_GraphViewSavedData.BindGroup((node as FRPNodeBase).ID, frpGroup.ID);
+            }
+        }
+        
         public void AddNewNodeToData(FRPNodeBase node, Vector2 position)
         {
             
@@ -84,7 +127,11 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             m_GraphViewSavedData.UpdateNodeName(node.ID, newTitle);
             m_CurrentRenderGraphData.UpdateNodeName(node.ID, newTitle);
-            
+        }
+        
+        public void UpdateGroupTitle(string newTitle, FRPNodeGroup group)
+        {
+            m_GraphViewSavedData.UpdateGroupTitle(group.ID, newTitle);
         }
         
         public void DeleteNode(FRPNodeBase nodeToDelete)
@@ -117,6 +164,7 @@ namespace UnityEditor.Rendering.FlowPipeline
            var nodeList = m_CurrentRenderGraphData.NodeList;
 
            Dictionary<string, FRPNodeBase> frpNodeMap = new Dictionary<string, FRPNodeBase>();
+           Dictionary<string, FRPNodeGroup> frpGroupMap = new Dictionary<string, FRPNodeGroup>();
            
            // add nodes
            for (int i = 0; i < nodeList.Count; ++i)
@@ -131,7 +179,29 @@ namespace UnityEditor.Rendering.FlowPipeline
                //NOTE: we need to draw first , because in draw method, we will create actual element like ports which we need later when making connections.
                graphNode.Draw();
                AddElement(graphNode);
+               
                frpNodeMap.Add(graphNode.ID, graphNode);
+               
+               // add group 
+               if (!string.IsNullOrEmpty(nodeViewData.groupGuid))
+               {
+                   var groupViewData = m_GraphViewSavedData.TryGetGroupData(nodeViewData.groupGuid);
+
+                   if (frpGroupMap.TryGetValue(nodeViewData.groupGuid, out var groupElement))
+                   {
+                       // do nothing
+                   }
+                   else
+                   {
+                       groupElement = CreateGroup(groupViewData.title, groupViewData.position, nodeViewData.groupGuid);
+                       AddElement(groupElement);
+                       frpGroupMap.Add(groupElement.ID, groupElement);
+                   }
+                   
+                   
+                   groupElement.AddElement(graphNode);
+                   
+               }
            }
            
            // 2. set flow connections
@@ -156,6 +226,18 @@ namespace UnityEditor.Rendering.FlowPipeline
                        edge.userData = true;
                        AddElement(edge);
                    }
+               }
+           }
+           
+           // 3. draw empty group
+           var groupViewList = m_GraphViewSavedData.GroupViewList;
+           foreach (var groupData in groupViewList)
+           {
+               if (!frpGroupMap.TryGetValue(groupData.guid, out var groupElement))
+               {
+                   groupElement = CreateGroup(groupData.title, groupData.position, groupData.guid);
+                   AddElement(groupElement);
+                   frpGroupMap.Add(groupElement.ID, groupElement);
                }
            }
         }

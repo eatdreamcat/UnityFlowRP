@@ -18,8 +18,6 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             m_EditorWindow = editorWindow;
             
-            
-            
             AddManipulators();
             AddSearchWindow();
             AddGridBackground();
