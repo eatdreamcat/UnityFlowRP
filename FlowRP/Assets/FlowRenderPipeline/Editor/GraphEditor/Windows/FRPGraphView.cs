@@ -22,10 +22,33 @@ namespace UnityEditor.Rendering.FlowPipeline
             AddSearchWindow();
             AddGridBackground();
             AddStyles();
-
+            AddMiniMap();
             AddHook();
         }
-        
+
+        private void AddMiniMap()
+        {
+            MiniMap miniMap = new MiniMap()
+            {
+                anchored = true
+            };
+            
+            miniMap.SetPosition(new Rect(15, 50, 200, 180));
+            Add(miniMap);
+            
+            //add style 
+            StyleColor backgroundColor = new StyleColor(new Color32(29, 29, 30, 255));
+            StyleColor borderColor = new StyleColor(new Color32(51, 51, 51, 255));
+
+            miniMap.style.backgroundColor = backgroundColor;
+            miniMap.style.borderTopColor = borderColor;
+            miniMap.style.borderRightColor = borderColor;
+            miniMap.style.borderBottomColor = borderColor;
+            miniMap.style.borderLeftColor = borderColor;
+            
+            
+        }
+
         private void AddStyles()
         {
             this.AddStyleSheets(

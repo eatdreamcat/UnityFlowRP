@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: ForwardBaseRenderer
   m_EditorClassIdentifier: 
   m_NodesMap:
-    m_KeyData: []
-    m_ValueData: []
+    m_KeyData:
+    - a8f56782-f490-4287-92b7-2bb1044aec96
+    m_ValueData:
+    - guid: a8f56782-f490-4287-92b7-2bb1044aec96
+      name: Entry
+      type: 0
+      inputList: []
+      outputList: []
+      flowIn: []
+      flowOut: []
   GraphGuid: c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
-  EntryGuid: 
+  EntryGuid: a8f56782-f490-4287-92b7-2bb1044aec96

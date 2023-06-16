@@ -15,6 +15,8 @@ MonoBehaviour:
   m_NodesMap:
     m_KeyData:
     - 29bf8e13-75d7-4721-af53-e1cb4d054bb7
+    - 74333019-181f-443a-b631-1865970665ef
+    - 595f7dee-5c3d-4a58-b103-b5348c01e822
     m_ValueData:
     - guid: 29bf8e13-75d7-4721-af53-e1cb4d054bb7
       name: Entry
@@ -22,6 +24,24 @@ MonoBehaviour:
       inputList: []
       outputList: []
       flowIn: []
+      flowOut:
+      - 74333019-181f-443a-b631-1865970665ef
+    - guid: 74333019-181f-443a-b631-1865970665ef
+      name: FRPRenderRequestNode
+      type: 3
+      inputList: []
+      outputList: []
+      flowIn:
+      - 29bf8e13-75d7-4721-af53-e1cb4d054bb7
+      flowOut:
+      - 595f7dee-5c3d-4a58-b103-b5348c01e822
+    - guid: 595f7dee-5c3d-4a58-b103-b5348c01e822
+      name: FRPRenderRequestNode
+      type: 3
+      inputList: []
+      outputList: []
+      flowIn:
+      - 74333019-181f-443a-b631-1865970665ef
       flowOut: []
   GraphGuid: 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
   EntryGuid: 29bf8e13-75d7-4721-af53-e1cb4d054bb7
