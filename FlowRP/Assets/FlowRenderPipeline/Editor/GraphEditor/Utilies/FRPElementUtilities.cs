@@ -43,12 +43,31 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             return textField;
         }
-        
-        
-        
-        public static Port CreatePort(this FRPNodeBase node, string portName = "", Orientation orientation = Orientation.Horizontal, Direction direction = Direction.Output, Port.Capacity capacity = Port.Capacity.Single)
+
+        public static bool CanAcceptConnector(Port startPort, Port endPort)
         {
-            Port port = node.InstantiatePort(orientation, direction, capacity, typeof(bool));
+            if (endPort.node != null && startPort.portType == endPort.portType)
+            {
+                return true; // Allow connection
+            }
+            else
+            {
+                return false; // Block connection
+            } 
+        }
+        
+        public static Port CreatePort(
+            this FRPNodeBase node, 
+            string portName = "",
+            Orientation orientation = Orientation.Horizontal, 
+            Direction direction = Direction.Output, 
+            Port.Capacity capacity = Port.Capacity.Single,
+            Type allowedNodeType = null
+            )
+        {
+            allowedNodeType = allowedNodeType == null ? typeof(FRPNodeBase) : allowedNodeType;
+            
+            Port port = node.InstantiatePort(orientation, direction, capacity, allowedNodeType);
 
             port.portName = portName;
 

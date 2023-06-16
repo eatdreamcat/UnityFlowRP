@@ -27,9 +27,9 @@ namespace UnityEditor.Rendering.FlowPipeline
                     if (element is FRPNodeBase)
                     {
                         UpdateNodePositionData((FRPNodeBase)element);
-                    } else if (element is FRPNodeGroup)
+                    } else if (element is FRPGroup)
                     {
-                        UpdateGroupPositionData((FRPNodeGroup)element);
+                        UpdateGroupPositionData((FRPGroup)element);
                     }
                 }
             }
@@ -69,7 +69,7 @@ namespace UnityEditor.Rendering.FlowPipeline
        
         private void OnGroupTitleChanged(Group group, string title)
         {
-            UpdateGroupTitle(title, group as FRPNodeGroup);
+            UpdateGroupTitle(title, group as FRPGroup);
         }
         
         /* this is called by manully in GraphView.Node file. */
@@ -79,14 +79,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 AddNewNodeToData((FRPNodeBase) element, position);
                 
-            } else if (element is FRPNodeGroup)
+            } else if (element is FRPGroup)
             {
-                AddNewGroupToData((FRPNodeGroup) element, position);
+                AddNewGroupToData((FRPGroup) element, position);
             }
         }
         public void OnElementsAddedToGroup(Group group, IEnumerable<GraphElement> elements)
         {
-            FRPNodeGroup frpGroup = group as FRPNodeGroup;
+            FRPGroup frpGroup = group as FRPGroup;
 
             AddNodesToGroup(frpGroup, elements.ToList());
         }

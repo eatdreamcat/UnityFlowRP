@@ -29,8 +29,14 @@ namespace UnityEditor.Rendering.FlowPipeline
                 {
                     return;
                 }
+
+                if (!FRPElementUtilities.CanAcceptConnector(startPort, port))
+                {
+                    return;
+                }
             
                 compatiblePorts.Add(port);
+                
             });
             return compatiblePorts;
         }
@@ -67,9 +73,9 @@ namespace UnityEditor.Rendering.FlowPipeline
             return node;
         }
         
-        public FRPNodeGroup CreateGroup(string title, Vector2 position, string guid = "")
+        public FRPGroup CreateGroup(string title, Vector2 position, string guid = "")
         {
-            FRPNodeGroup group = new FRPNodeGroup(title, position, guid);
+            FRPGroup group = new FRPGroup(title, position, guid);
             
             if (guid == "")
             {

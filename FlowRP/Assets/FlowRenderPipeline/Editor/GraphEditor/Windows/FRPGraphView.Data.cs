@@ -79,7 +79,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             m_GraphViewSavedData.UpdateNodePosition(node.ID, node.GetPosition().position);
         }
 
-        public void UpdateGroupPositionData(FRPNodeGroup group)
+        public void UpdateGroupPositionData(FRPGroup group)
         {
             foreach (var element in group.containedElements)
             {
@@ -92,7 +92,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             m_GraphViewSavedData.UpdateGroupPosition(group.ID, group.GetPosition().position);
         }
 
-        public void AddNewGroupToData(FRPNodeGroup group, Vector2 position)
+        public void AddNewGroupToData(FRPGroup group, Vector2 position)
         {
             m_GraphViewSavedData.AddNewGroup(group.ID, new FRPGraphViewSavedData.GroupData()
             {
@@ -102,7 +102,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             });
         }
 
-        public void AddNodesToGroup(FRPNodeGroup frpGroup, List<GraphElement> nodeList)
+        public void AddNodesToGroup(FRPGroup frpGroup, List<GraphElement> nodeList)
         {
             foreach (var node in nodeList)
             {
@@ -129,7 +129,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             m_CurrentRenderGraphData.UpdateNodeName(node.ID, newTitle);
         }
         
-        public void UpdateGroupTitle(string newTitle, FRPNodeGroup group)
+        public void UpdateGroupTitle(string newTitle, FRPGroup group)
         {
             m_GraphViewSavedData.UpdateGroupTitle(group.ID, newTitle);
         }
@@ -164,7 +164,7 @@ namespace UnityEditor.Rendering.FlowPipeline
            var nodeList = m_CurrentRenderGraphData.NodeList;
 
            Dictionary<string, FRPNodeBase> frpNodeMap = new Dictionary<string, FRPNodeBase>();
-           Dictionary<string, FRPNodeGroup> frpGroupMap = new Dictionary<string, FRPNodeGroup>();
+           Dictionary<string, FRPGroup> frpGroupMap = new Dictionary<string, FRPGroup>();
            
            // add nodes
            for (int i = 0; i < nodeList.Count; ++i)

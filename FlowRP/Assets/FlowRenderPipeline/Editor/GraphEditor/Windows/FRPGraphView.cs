@@ -76,7 +76,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         }
         private void AddManipulators()
         {
-            SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
+            SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale * 2);
             
             // this.AddManipulator(CreateNodeContextualMenu("Add Node", FRPNodeType.FRPNodeBase));
             
@@ -87,14 +87,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             this.AddManipulator(CreateGroupContextualMenu());
         }
         
-        private IManipulator CreateNodeContextualMenu(string actionTitle, FlowRenderGraphData.FRPNodeType nodeType)
-        {
-            ContextualMenuManipulator contextualMenuManipulator = new ContextualMenuManipulator(
-                menuEvent => menuEvent.menu.AppendAction(actionTitle, actionEvent => AddElement(CreateNode(nodeType, GetLocalMousePosition(actionEvent.eventInfo.localMousePosition))))
-            );
-
-            return contextualMenuManipulator;
-        }
+        // private IManipulator CreateNodeContextualMenu(string actionTitle, FlowRenderGraphData.FRPNodeType nodeType)
+        // {
+        //     ContextualMenuManipulator contextualMenuManipulator = new ContextualMenuManipulator(
+        //         menuEvent => menuEvent.menu.AppendAction(actionTitle, actionEvent => AddElement(CreateNode(nodeType, GetLocalMousePosition(actionEvent.eventInfo.localMousePosition))))
+        //     );
+        //
+        //     return contextualMenuManipulator;
+        // }
 
         private IManipulator CreateGroupContextualMenu()
         {

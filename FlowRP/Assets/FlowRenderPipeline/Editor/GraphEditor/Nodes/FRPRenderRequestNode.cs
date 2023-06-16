@@ -77,6 +77,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             base.Initialize(name, view, position, type, guid);
 
             // initialize blocks
+            
             foreach (var foldoutInfo in FoldoutList)
             {
                 var block = new VisualElement();
@@ -89,7 +90,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 {
                     block = block,
                     foldout = foldout,
-                    assignIn = foldoutInfo.Item2 ? this.CreatePort("Assign-In", Orientation.Horizontal, Direction.Input) : null
+                    assignIn = foldoutInfo.Item2 ? this.CreatePort("Assign-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(FRPBranchNode)) : null
                 });
                 
                 mainContainer.Add(foldout);

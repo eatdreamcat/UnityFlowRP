@@ -131,7 +131,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         public Port FlowIn { get; set; }
         public Port FlowOut { get; set; }
 
-        public FRPNodeGroup Group { get; set; }
+        public FRPGroup Group { get; set; }
 
         public bool EntryPoint
         {

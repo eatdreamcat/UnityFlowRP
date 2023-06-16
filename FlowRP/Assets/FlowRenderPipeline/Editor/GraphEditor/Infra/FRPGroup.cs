@@ -5,12 +5,12 @@ using UnityEngine;
 namespace UnityEditor.Rendering.FlowPipeline
 {
     
-    public class FRPNodeGroup : Group
+    public class FRPGroup : Group
     {
         
         public string ID { get; set; }
 
-        public FRPNodeGroup(string groupTitle, Vector2 position, string guid = "")
+        public FRPGroup(string groupTitle, Vector2 position, string guid = "")
         {
             ID = guid != "" ? guid : Guid.NewGuid().ToString();
             
