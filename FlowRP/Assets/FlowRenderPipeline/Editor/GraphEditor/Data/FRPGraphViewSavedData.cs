@@ -310,52 +310,70 @@ namespace UnityEditor.Rendering.FlowPipeline
         
         public NodeData TryGetNodeData(string guid)
         {
+            Debug.Assert(!string.IsNullOrEmpty(guid), "guid is null.");
+            
             return m_CurrentSelectedViewData.TryGetNodeData(guid);
         }
 
         public GroupData TryGetGroupData(string guid)
         {
+            Debug.Assert(!string.IsNullOrEmpty(guid), "guid is null.");
+            
             return m_CurrentSelectedViewData.TryGetGroupData(guid);
         }
 
         public void UpdateNodePosition(string guid, Vector2 position)
         {
+            Debug.Assert(!string.IsNullOrEmpty(guid), "guid is null.");
+            
             m_CurrentSelectedViewData.UpdateNodePosition(guid, position);
             FRPAssetsUtility.SaveAsset(this);
         }
 
         public void UpdateGroupPosition(string guid, Vector2 position)
         {
+            Debug.Assert(!string.IsNullOrEmpty(guid), "guid is null.");
+            
             m_CurrentSelectedViewData.UpdateGroupPosition(guid, position);
             FRPAssetsUtility.SaveAsset(this);
         }
         
         public void UpdateNodeName(string guid, string name)
         {
+            Debug.Assert(!string.IsNullOrEmpty(guid), "guid is null.");
+            
             m_CurrentSelectedViewData.UpdateNodeName(guid, name);
             FRPAssetsUtility.SaveAsset(this);
         }
 
         public void UpdateGroupTitle(string guid, string title)
         {
+            Debug.Assert(!string.IsNullOrEmpty(guid), "guid is null.");
+            
             m_CurrentSelectedViewData.UpdateGroupTitle(guid, title);
             FRPAssetsUtility.SaveAsset(this);
         }
 
         public void AddNewNode(string guid, NodeData nodeData)
         {
+            Debug.Assert(!string.IsNullOrEmpty(guid), "guid is null.");
+            
             m_CurrentSelectedViewData.AddNewNode(guid, nodeData);
             FRPAssetsUtility.SaveAsset(this);
         }
 
         public void AddNewGroup(string guid, GroupData groupData)
         {
+            Debug.Assert(!string.IsNullOrEmpty(guid), "guid is null.");
+            
             m_CurrentSelectedViewData.AddNewGroup(guid, groupData);
             FRPAssetsUtility.SaveAsset(this);
         }
 
         public void BindGroup(string nodeID, string groupID)
         {
+            Debug.Assert(!string.IsNullOrEmpty(nodeID) && !string.IsNullOrEmpty(groupID), "nodeID or groupID is null.");
+            
             m_CurrentSelectedViewData.BindGroup(nodeID, groupID);
             FRPAssetsUtility.SaveAsset(this);
         }

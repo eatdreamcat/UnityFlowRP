@@ -2,62 +2,39 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Unity.Collections;
-using UnityEditor;
-using UnityEditor.ProjectWindowCallback;
 
 namespace UnityEngine.Rendering.FlowPipeline
 {
-    public class FlowRenderGraphData : ScriptableObject, ISerializationCallbackReceiver
+    public partial class FlowRenderGraphData : ScriptableObject, ISerializationCallbackReceiver
     {
         
         public enum FRPNodeType
         {
             Entry,
-            // flow control
+            
+            // buffer
+            BackBuffer,
+            FrontBuffer,
+            CameraTarget,
+            RenderBuffer,
+            
+            // logic
             FRPBranchNode,
-            FPRLoopNode,
+            FRPLoopNode,
             
-            // render pass
+            // pass
+            FRPCameraParameterNode,
+            FRPCullingParameterNode,
+            FRPRenderMaterialNode,
             FRPRenderRequestNode,
+            FRPRenderStateNode,
             
-            // render target
-            FRPRenderTargetNode,
+            // variables
             
-            // render resources： TextureBuffer, DepthStencilBuffer, ComputeBuffer
-            FRPResourceNode,
-            FRPRenderTextureNode,
-        }
+            
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812")]
-        internal class CreateRenderGraphDataAsset : EndNameEditAction
-        {
-            public override void Action(int instanceId, string path, string resourceFile)
-            {
-                //Create asset
-                FlowRenderGraphData data = CreateInstance<FlowRenderGraphData>();
-                data.InitGUID();
-                AssetDatabase.CreateAsset(data, path);
-                FlowUtility.SaveAsset(data);
-                ResourceReloader.ReloadAllNullIn(data, FlowUtility.GetFlowRenderPipelinePath());
-            }
         }
-        
-        
-        [MenuItem("Assets/Create/Rendering/Render Graph Data Asset", priority = CoreUtils.Sections.section2 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority + 1)]
-        static void Create()
-        {
-            if (!Application.isPlaying)
-            {
-                // todo : reload all
-            }
-            
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<CreateRenderGraphDataAsset>(),
-                "New Render Graph Data Asset.asset",null, null);
-        }
-        
         
         ///
         ///
@@ -84,185 +61,99 @@ namespace UnityEngine.Rendering.FlowPipeline
             public string guid;
             public string name;
         }
-        
-        [Serializable]
-        public class BaseNode
-        {
-            /* using for tracking layout data*/
-            public string guid;
-            public string name;
-            public FRPNodeType type;
-            public List<string> inputList;
-            public List<string> outputList;
-           
-            public List<string> flowIn;
-            public List<string> flowOut;
-        }
+
+        #region Dictionary Definition
 
         [Serializable]
-        internal sealed class NodeDictionary : FRPSerializedDictionary<string, BaseNode> { }
+        internal sealed class CullingNodeDictionary : FRPSerializedDictionary<string, CullingParameterNode> { }
+        [Serializable]
+        internal sealed class RenderStateNodeDictionary : FRPSerializedDictionary<string, RenderStateNode> { }
+        [Serializable]
+        internal sealed class MaterialNodeDictionary : FRPSerializedDictionary<string, MaterialParameterNode> { }
+        [Serializable]
+        internal sealed class CameraNodeDictionary : FRPSerializedDictionary<string, CameraParameterNode> { }
+        [Serializable]
+        internal sealed class RenderRequestNodeDictionary : FRPSerializedDictionary<string, RenderRequestNode> { }
         
-
         [SerializeField]
-        private NodeDictionary m_NodesMap = new  NodeDictionary();
+        private CullingNodeDictionary m_CullingNodesMap = new  CullingNodeDictionary();
+        [SerializeField]
+        private RenderStateNodeDictionary m_RenderStateNodesMap = new  RenderStateNodeDictionary();
+        [SerializeField]
+        private MaterialNodeDictionary m_MaterialNodesMap = new  MaterialNodeDictionary();
+        [SerializeField]
+        private CameraNodeDictionary m_CameraNodesMap = new  CameraNodeDictionary();
+        [SerializeField]
+        private RenderRequestNodeDictionary m_RenderRequestNodesMap = new  RenderRequestNodeDictionary();
+        
+        
+        #endregion
+       
+       
+        #region NodeList Interface
 
-        public List<BaseNode> NodeList
+        public List<CullingParameterNode> CullingNodeList
         {
             get
             {
-                return m_NodesMap.Values.ToList();
+                return m_CullingNodesMap.Values.ToList();
             }
         }
         
+        public List<RenderStateNode> RenderStateNodeList
+        {
+            get
+            {
+                return m_RenderStateNodesMap.Values.ToList();
+            }
+        }
+        
+        public List<MaterialParameterNode> MaterialNodeList
+        {
+            get
+            {
+                return m_MaterialNodesMap.Values.ToList();
+            }
+        }
+        
+        
+        public List<CameraParameterNode> CameraNodeList
+        {
+            get
+            {
+                return m_CameraNodesMap.Values.ToList();
+            }
+        }
+        
+        public List<RenderRequestNode> PassNodeList
+        {
+            get
+            {
+                return m_RenderRequestNodesMap.Values.ToList();
+            }
+        }
+
+        #endregion
+        
+        [SerializeField] private EntryNode m_EntryNode;
         [SerializeField] public string GraphGuid;
-        [SerializeField] public string EntryGuid;
 
-        public void InitGUID()
+        public string EntryID
         {
-            GraphGuid = Guid.NewGuid().ToString();
+            get
+            {
+                return m_EntryNode.guid;
+            }
+        }
+
+        public EntryNode Entry
+        {
+            get
+            {
+                return m_EntryNode;
+            }
         }
         
-        public bool IsEmpty()
-        {
-            return NodeList.Count <= 0;
-        }
-        
-        public NodeCreationResult AddEntryNode()
-        {
-            if (EntryGuid != null && EntryGuid != "")
-            {
-                Debug.LogError("[GraphData.AddEntryNode] Damn!!!!!!!!! This Graph already has a entry!!!");
-            }
-
-            var newNode = FlowUtility.CreateBaseNode("Entry", Guid.NewGuid().ToString(), FRPNodeType.Entry);
-            m_NodesMap.Add(newNode.guid, newNode);
-            EntryGuid = newNode.guid;
-            FlowUtility.SaveAsset(this);
-            
-            return new NodeCreationResult()
-            {
-                name = "Entry",
-                guid = newNode.guid
-            };
-        }
-
-        // TODO 
-        public void AddNode(BaseNode newNode)
-        {
-            // test code 
-            m_NodesMap.Add(newNode.guid, newNode);
-            
-            switch (newNode.type)
-            {
-                // render request
-                case FRPNodeType.FRPRenderRequestNode:
-                {
-                    
-                }
-                    break;
-                
-                // render resources
-                case FRPNodeType.FRPResourceNode:
-                {
-                  
-                   
-            
-                   
-                }
-                    break;
-                
-                
-                /// flow control
-                case FRPNodeType.FPRLoopNode:
-                {
-                    
-                }
-                    break;
-                case FRPNodeType.FRPBranchNode:
-                {
-                    
-                }
-                    break;
-            }
-            
-           FlowUtility.SaveAsset(this);
-        }
-
-        public void UpdateNodeName(string guid, string newName)
-        {
-            if (m_NodesMap.TryGetValue(guid, out var node))
-            {
-                node.name = newName;
-                FlowUtility.SaveAsset(this);
-            }
-            else
-            {
-                Debug.LogError($"[GraphData.UpdateNodeName] Node {guid} not exist.");
-            }
-        }
-
-        public void DeleteNode(string guid)
-        {
-            if (m_NodesMap.ContainsKey(guid))
-            {
-                m_NodesMap.Remove(guid);
-                
-                FlowUtility.SaveAsset(this);
-                
-                return;
-            }
-            
-            Debug.LogError($"[GraphData.DeleteNode] Node {guid} not exist.");
-        }
-
-        // flowOut -> flowIn
-        public void AddFlowInOut(string flowInID, string flowOutID)
-        {
-            if (m_NodesMap.TryGetValue(flowInID, out BaseNode inNode))
-             {
-                 inNode.flowIn.Add(flowOutID);
-             }
-             else
-             {
-                 Debug.LogError($"[GraphData.AddFlowInOut] Node(In) {flowInID} not exist.");
-             }
-
-             if (m_NodesMap.TryGetValue(flowOutID, out BaseNode outNode))
-             {
-                 outNode.flowOut.Add(flowInID);
-             }
-             else
-             {
-                 Debug.LogError($"[GraphData.AddFlowInOut] Node(Out) {flowOutID} not exist.");
-             }
-             
-             FlowUtility.SaveAsset(this);
-        }
-        
-        public void DeleteFlowInOut(string flowInID, string flowOutID)
-        {
-            if (m_NodesMap.TryGetValue(flowInID, out BaseNode inNode))
-            {
-                inNode.flowIn.Remove(flowOutID);
-            }
-            else
-            {
-                Debug.LogError($"[GraphData.DeleteFlowInOut] Node(In) {flowInID} not exist.");
-            }
-
-            if (m_NodesMap.TryGetValue(flowOutID, out BaseNode outNode))
-            {
-                outNode.flowOut.Remove(flowInID);
-            }
-            else
-            {
-                Debug.LogError($"[GraphData.DeleteFlowInOut] Node(Out) {flowOutID} not exist.");
-            }
-            
-            FlowUtility.SaveAsset(this);
-        }
-        
-
         public void OnBeforeSerialize()
         {
           //  throw new NotImplementedException();

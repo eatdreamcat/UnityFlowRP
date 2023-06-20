@@ -13,7 +13,6 @@ namespace UnityEditor.Rendering.FlowPipeline
         #region Private
 
         private FRPGraphView m_View;
-        private Color m_DefaultBackgroundColor;
 
 
         private void DrawTitle()
@@ -63,12 +62,34 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 switch (Type)
                 {
-                    case FlowRenderGraphData.FRPNodeType.FRPResourceNode:
+                    case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
                     {
-                        FlowOut = this.CreatePort("Assign-To");
+                        FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPCameraParameterNode));
                         outputContainer.Add(FlowOut);
                     }
                         break;
+                    
+                    case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
+                    {
+                        FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPCullingParameterNode));
+                        outputContainer.Add(FlowOut);
+                    }
+                        break;
+                    
+                    case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:
+                    {
+                        FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPRenderMaterialNode));
+                        outputContainer.Add(FlowOut);
+                    }
+                        break;
+                    
+                    case FlowRenderGraphData.FRPNodeType.FRPRenderStateNode:
+                    {
+                        FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPRenderStateNode));
+                        outputContainer.Add(FlowOut);
+                    }
+                        break;
+                    
                     case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
                     {
                         /* INPUT CONTAINER */
@@ -153,12 +174,12 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             Name = name;
             
-            m_DefaultBackgroundColor = new Color(29f / 255f, 29f / 255f, 30f / 255f);
-
             mainContainer.AddToClassList("ds-node__main-container");
             extensionContainer.AddToClassList("ds-node__extension-container");
             
             SetPosition(new Rect(position, new Vector2(100, 150)));
+
+            layer = 0;
 
         }
 

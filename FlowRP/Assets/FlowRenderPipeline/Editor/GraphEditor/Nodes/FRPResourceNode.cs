@@ -1,6 +1,6 @@
 namespace UnityEditor.Rendering.FlowPipeline
 {
-    public class FRPResourceNode : FRPNodeBase
+    public class FRPBufferNode : FRPNodeBase
     {
         
     }

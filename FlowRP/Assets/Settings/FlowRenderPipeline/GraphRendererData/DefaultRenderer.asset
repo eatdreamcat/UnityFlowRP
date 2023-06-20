@@ -12,44 +12,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a59c23e1b32adb41a507d270aa05e1e, type: 3}
   m_Name: DefaultRenderer
   m_EditorClassIdentifier: 
-  m_NodesMap:
+  m_CullingNodesMap:
     m_KeyData:
-    - 29bf8e13-75d7-4721-af53-e1cb4d054bb7
-    - 74333019-181f-443a-b631-1865970665ef
-    - 595f7dee-5c3d-4a58-b103-b5348c01e822
-    - ba651c32-f3d7-4aef-bd77-cd8f75c7aca4
+    - 724f1dd0-f6b2-430b-b3e8-16aa049c62f6
     m_ValueData:
-    - guid: 29bf8e13-75d7-4721-af53-e1cb4d054bb7
-      name: Entry
+    - guid: 724f1dd0-f6b2-430b-b3e8-16aa049c62f6
+      name: FRPCullingParameterNode
+      type: 8
+      isAllowPassCulling: 1
+      isAllowRendererCulling: 1
+      cullingMask:
+        serializedVersion: 2
+        m_Bits: 4294967295
+  m_RenderStateNodesMap:
+    m_KeyData:
+    - 4e12de6c-d47d-47a3-8da3-3cdebe6af4f1
+    m_ValueData:
+    - guid: 4e12de6c-d47d-47a3-8da3-3cdebe6af4f1
+      name: FRPRenderStateNode
+      type: 11
+  m_MaterialNodesMap:
+    m_KeyData:
+    - 57988190-9533-40e6-9a75-4f049c16603c
+    m_ValueData:
+    - guid: 57988190-9533-40e6-9a75-4f049c16603c
+      name: FRPRenderMaterialNode
       type: 0
-      inputList: []
-      outputList: []
-      flowIn: []
-      flowOut:
-      - 74333019-181f-443a-b631-1865970665ef
-    - guid: 74333019-181f-443a-b631-1865970665ef
+      shaderTagList:
+      - SRPDefaultUnlit
+      - FRPForward
+      - FRPForwardOnly
+      shaderPath: 
+      overrideMaterial: {fileID: 0}
+  m_CameraNodesMap:
+    m_KeyData:
+    - 6a532614-fc59-4ab6-9c56-df50e14a7417
+    m_ValueData:
+    - guid: 
+      name: aaaaa
+      type: 0
+      fov: 60
+      offset: {x: 0, y: 0, z: 0}
+  m_RenderRequestNodesMap:
+    m_KeyData:
+    - f5775b8c-903c-4f50-a8ab-4b383523bcd4
+    m_ValueData:
+    - guid: f5775b8c-903c-4f50-a8ab-4b383523bcd4
       name: FRPRenderRequestNode
-      type: 3
-      inputList: []
-      outputList: []
-      flowIn:
-      - 29bf8e13-75d7-4721-af53-e1cb4d054bb7
-      flowOut:
-      - 595f7dee-5c3d-4a58-b103-b5348c01e822
-    - guid: 595f7dee-5c3d-4a58-b103-b5348c01e822
-      name: FRPRenderRequestNode
-      type: 3
-      inputList: []
-      outputList: []
-      flowIn:
-      - 74333019-181f-443a-b631-1865970665ef
-      flowOut: []
-    - guid: ba651c32-f3d7-4aef-bd77-cd8f75c7aca4
-      name: FRPBranchNode
-      type: 1
-      inputList: []
-      outputList: []
+      type: 10
+      isEnabled: 1
       flowIn: []
       flowOut: []
+      culling: 
+      state: 
+      material: 
+      camera: 
+      inputList: []
+      outputList: []
+  m_EntryNode:
+    guid: 5f5bf63c-4221-415e-840d-84d59eeddf2e
+    name: Entry
+    type: 0
+    firstNode: 3bc5caa0-7407-45b4-b784-b597199fb7a1
   GraphGuid: 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
-  EntryGuid: 29bf8e13-75d7-4721-af53-e1cb4d054bb7

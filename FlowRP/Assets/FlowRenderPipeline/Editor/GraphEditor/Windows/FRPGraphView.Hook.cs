@@ -54,6 +54,8 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 foreach (var element in graphViewChange.edgesToCreate)
                 {
+                    element.layer = 1;
+                    
                     // we only hook edge created by editing.
                     if (element.userData == null || (bool) element.userData == false)
                     {

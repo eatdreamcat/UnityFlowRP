@@ -10,10 +10,13 @@ namespace UnityEditor.Rendering.FlowPipeline
     {
        
         private FRPGraphView m_View;
+        private Texture2D m_EmptyTexture;
         public void Initialize(FRPGraphView view)
         {
             m_View = view;
-         
+            m_EmptyTexture = new Texture2D(1, 1);
+            m_EmptyTexture.SetPixel(0,0, Color.clear);
+            m_EmptyTexture.Apply();
         }
         
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
@@ -24,55 +27,66 @@ namespace UnityEditor.Rendering.FlowPipeline
                 new SearchTreeGroupEntry(new GUIContent("Create Element")),
                 
                 /// level 1 menu -- node
-                new SearchTreeGroupEntry(new GUIContent("Graph Node",(EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)), 1),
+                new SearchTreeGroupEntry(new GUIContent("Node"), 1),
                 
                 /// level 2
-                new SearchTreeGroupEntry(new GUIContent("Resource Node", (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)), 2),
-                new SearchTreeEntry(new GUIContent("Resource",  (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)))
-                {
-                    level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPResourceNode
-                },
-                
-                new SearchTreeEntry(new GUIContent("RenderTarget",   (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)))
-                {
-                    level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPRenderTargetNode
-                },
-                
-                new SearchTreeEntry(new GUIContent("RenderTexture",   (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)))
-                {
-                    level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPRenderTextureNode
-                },
-                
+                new SearchTreeGroupEntry(new GUIContent("Buffer Node"), 2),
+
                 /// level 2
-                new SearchTreeGroupEntry(new GUIContent("Pass Node",(EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)), 2),
-                new SearchTreeEntry(new GUIContent("RenderPass",   (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)))
+                new SearchTreeGroupEntry(new GUIContent("Pass Node"), 2),
+                new SearchTreeEntry(new GUIContent("RenderPass", m_EmptyTexture))
                 {
                     level = 3,
                     userData = FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode
                 },
                 
+                new SearchTreeEntry(new GUIContent("Culling Options", m_EmptyTexture))
+                {
+                    level = 3,
+                    userData = FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode
+                },
+                
+                new SearchTreeEntry(new GUIContent("Material", m_EmptyTexture))
+                {
+                    level = 3,
+                    userData = FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode
+                },
+                
+                new SearchTreeEntry(new GUIContent("Camera Options", m_EmptyTexture))
+                {
+                    level = 3,
+                    userData = FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode
+                },
+                
+                new SearchTreeEntry(new GUIContent("Render State", m_EmptyTexture))
+                {
+                    level = 3,
+                    userData = FlowRenderGraphData.FRPNodeType.FRPRenderStateNode
+                },
+                
                 /// level 2
-                new SearchTreeGroupEntry(new GUIContent("Flow Control",(EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)), 2),
-                new SearchTreeEntry(new GUIContent("Branch",   (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)))
+                new SearchTreeGroupEntry(new GUIContent("Logic Flow Control"), 2),
+                new SearchTreeEntry(new GUIContent("Branch", m_EmptyTexture))
                 {
                     level = 3,
                     userData = FlowRenderGraphData.FRPNodeType.FRPBranchNode
                 },
-                new SearchTreeEntry(new GUIContent("Loop",   (EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)))
+                new SearchTreeEntry(new GUIContent("Loop", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FPRLoopNode
+                    userData = FlowRenderGraphData.FRPNodeType.FRPLoopNode
                 },
+                
+                
+                /// level 2
+                new SearchTreeGroupEntry(new GUIContent("Variables"), 2),
                 
                 
                 // end of node
                 
                 // level 1 menu -- group
-                new SearchTreeGroupEntry(new GUIContent("Group",(EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)), 1),
-                new SearchTreeEntry(new GUIContent("Single Group",(EditorGUIUtility.Load(FRPPathUtility.kIconPath + "Resource_Icon.png") as Texture2D)))
+                new SearchTreeGroupEntry(new GUIContent("Group"), 1),
+                new SearchTreeEntry(new GUIContent("Single Group", m_EmptyTexture))
                 {
                     level = 2,
                     userData = new Group()
@@ -89,20 +103,23 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             switch (SearchTreeEntry.userData)
             {
-               // resources
-               case FlowRenderGraphData.FRPNodeType.FRPResourceNode:
-               case FlowRenderGraphData.FRPNodeType.FRPRenderTargetNode:
-               case FlowRenderGraphData.FRPNodeType.FRPRenderTextureNode:
+               // buffer
+             
+               
                // render pass
-
                case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
-               // flow control
+               case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
+               case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
+               case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:
+               case FlowRenderGraphData.FRPNodeType.FRPRenderStateNode:
 
+               // logic flow control
                case FlowRenderGraphData.FRPNodeType.FRPBranchNode:
-               case FlowRenderGraphData.FRPNodeType.FPRLoopNode:
+               case FlowRenderGraphData.FRPNodeType.FRPLoopNode:
                {
                    m_View.AddElement(m_View.CreateNode((FlowRenderGraphData.FRPNodeType)SearchTreeEntry.userData, localMousePosition));
                }
+                   
                    return true;
                
                // group

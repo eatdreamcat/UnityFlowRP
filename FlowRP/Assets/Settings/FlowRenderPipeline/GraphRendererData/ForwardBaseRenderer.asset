@@ -12,16 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a59c23e1b32adb41a507d270aa05e1e, type: 3}
   m_Name: ForwardBaseRenderer
   m_EditorClassIdentifier: 
-  m_NodesMap:
-    m_KeyData:
-    - a8f56782-f490-4287-92b7-2bb1044aec96
-    m_ValueData:
-    - guid: a8f56782-f490-4287-92b7-2bb1044aec96
-      name: Entry
-      type: 0
-      inputList: []
-      outputList: []
-      flowIn: []
-      flowOut: []
+  m_CullingNodesMap:
+    m_KeyData: []
+    m_ValueData: []
+  m_RenderStateNodesMap:
+    m_KeyData: []
+    m_ValueData: []
+  m_MaterialNodesMap:
+    m_KeyData: []
+    m_ValueData: []
+  m_CameraNodesMap:
+    m_KeyData: []
+    m_ValueData: []
+  m_RenderRequestNodesMap:
+    m_KeyData: []
+    m_ValueData: []
   GraphGuid: c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
-  EntryGuid: a8f56782-f490-4287-92b7-2bb1044aec96
+  m_EntryNode:
+    guid: a6e3c37f-a755-4d81-b32f-5a2a1686763f
+    name: Entry
+    type: 0
+    firstNode: 

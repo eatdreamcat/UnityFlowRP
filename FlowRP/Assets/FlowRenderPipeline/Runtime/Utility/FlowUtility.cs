@@ -57,18 +57,6 @@ namespace UnityEngine.Rendering.FlowPipeline
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
-
-        public static FlowRenderGraphData.BaseNode CreateBaseNode(string name, string guid, FlowRenderGraphData.FRPNodeType type)
-        {
-            return new FlowRenderGraphData.BaseNode()
-            {
-                flowIn = new List<string>(),
-                flowOut = new List<string>(),
-                name = name,
-                guid = guid,
-                type = type
-            };
-        }
     }
 
 
