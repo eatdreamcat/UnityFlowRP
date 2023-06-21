@@ -11,6 +11,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         
         public enum FRPNodeType
         {
+            Unknow,
             Entry,
             
             // buffer
@@ -74,6 +75,8 @@ namespace UnityEngine.Rendering.FlowPipeline
         internal sealed class CameraNodeDictionary : FRPSerializedDictionary<string, CameraParameterNode> { }
         [Serializable]
         internal sealed class RenderRequestNodeDictionary : FRPSerializedDictionary<string, RenderRequestNode> { }
+        [Serializable]
+        internal sealed class FlowNodeDictionary : FRPSerializedDictionary<string, FlowNode> { }
         
         [SerializeField]
         private CullingNodeDictionary m_CullingNodesMap = new  CullingNodeDictionary();
@@ -85,7 +88,8 @@ namespace UnityEngine.Rendering.FlowPipeline
         private CameraNodeDictionary m_CameraNodesMap = new  CameraNodeDictionary();
         [SerializeField]
         private RenderRequestNodeDictionary m_RenderRequestNodesMap = new  RenderRequestNodeDictionary();
-        
+        [SerializeField]
+        private FlowNodeDictionary m_FlowNodesMap = new  FlowNodeDictionary();
         
         #endregion
        
@@ -133,6 +137,12 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
         }
 
+        public RenderRequestNode TryGetRenderPassNode(string nodeID)
+        {
+            Debug.Assert(m_RenderRequestNodesMap.ContainsKey(nodeID), $"Pass Node {nodeID} not exist.");
+            return m_RenderRequestNodesMap[nodeID];
+        }
+        
         #endregion
         
         [SerializeField] private EntryNode m_EntryNode;

@@ -31,13 +31,34 @@ MonoBehaviour:
     - guid: 4e12de6c-d47d-47a3-8da3-3cdebe6af4f1
       name: FRPRenderStateNode
       type: 11
+      rasterState:
+        cullingMode: 0
+        offsetUnits: 0
+        offsetFactor: 0
+        depthClip: 0
+      depthState:
+        writeEnabled: 0
+        compareFunction: 0
+      stencilState:
+        enabled: 0
+        readMask: 0
+        writeMask: 0
+        compareFunctionFront: 0
+        passOperationFront: 0
+        failOperationFront: 0
+        zFailOperationFront: 0
+        compareFunctionBack: 0
+        passOperationBack: 0
+        failOperationBack: 0
+        zFailOperationBack: 0
+      blendStates: []
   m_MaterialNodesMap:
     m_KeyData:
     - 57988190-9533-40e6-9a75-4f049c16603c
     m_ValueData:
     - guid: 57988190-9533-40e6-9a75-4f049c16603c
       name: FRPRenderMaterialNode
-      type: 0
+      type: 9
       shaderTagList:
       - SRPDefaultUnlit
       - FRPForward
@@ -48,9 +69,9 @@ MonoBehaviour:
     m_KeyData:
     - 6a532614-fc59-4ab6-9c56-df50e14a7417
     m_ValueData:
-    - guid: 
-      name: aaaaa
-      type: 0
+    - guid: 6a532614-fc59-4ab6-9c56-df50e14a7417
+      name: FRPCameraParameterNode
+      type: 7
       fov: 60
       offset: {x: 0, y: 0, z: 0}
   m_RenderRequestNodesMap:
@@ -61,7 +82,8 @@ MonoBehaviour:
       name: FRPRenderRequestNode
       type: 10
       isEnabled: 1
-      flowIn: []
+      flowIn:
+      - 5f5bf63c-4221-415e-840d-84d59eeddf2e
       flowOut: []
       culling: 
       state: 

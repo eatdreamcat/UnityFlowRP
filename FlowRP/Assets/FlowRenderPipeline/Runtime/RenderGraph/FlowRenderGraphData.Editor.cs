@@ -61,6 +61,8 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
 
             m_EntryNode = CreateEntryNode("Entry", Guid.NewGuid().ToString());
+            m_FlowNodesMap.Add(EntryID, CreateFlowNode("Entry", EntryID, EntryID, FRPNodeType.Entry));
+            
             FlowUtility.SaveAsset(this);
 
             return new NodeCreationResult()
@@ -78,12 +80,14 @@ namespace UnityEngine.Rendering.FlowPipeline
                 case FRPNodeType.FRPRenderRequestNode:
                 {
                     // check and set the first render request
-                    if (string.IsNullOrEmpty(m_EntryNode.firstNode))
+                    if (string.IsNullOrEmpty(m_EntryNode.startPoint))
                     {
-                        m_EntryNode.firstNode = guid;
+                        m_EntryNode.startPoint = guid;
                     }
-                    
-                    m_RenderRequestNodesMap.Add(guid, CreateRenderRequestNode(nodeName, guid));
+
+                    var renderRequestNode = CreateRenderRequestNode(nodeName, guid);
+                    m_RenderRequestNodesMap.Add(guid, renderRequestNode);
+                    m_FlowNodesMap.Add(guid, CreateFlowNode(renderRequestNode.name, renderRequestNode.guid, renderRequestNode.guid, FRPNodeType.FRPRenderRequestNode));
                 }
                     break;
 
@@ -160,23 +164,27 @@ namespace UnityEngine.Rendering.FlowPipeline
             Debug.LogError($"[GraphData.DeleteNode] Node {guid} not exist.");
         }
 
+
+
+        #region Flow Management
+
         // flowOut -> flowIn
-        public void AddFlowInOut(string flowInID, string flowOutID)
+        public void AddFlowInOut(string flowOutID, string flowInID)
         {
             Debug.Assert(!string.IsNullOrEmpty(flowInID) && !string.IsNullOrEmpty(flowOutID), "Flow In or Out ID invalid.");
             
-            if (m_RenderRequestNodesMap.TryGetValue(flowInID, out var inNode))
+            if (m_FlowNodesMap.TryGetValue(flowInID, out var inNode))
             {
-                (inNode as RenderRequestNode).flowIn.Add(flowOutID);
+                inNode.flowIn.Add(flowOutID);
             }
             else
             {
                 Debug.LogError($"[GraphData.AddFlowInOut] Node(In) {flowInID} not exist.");
             }
 
-            if (m_RenderRequestNodesMap.TryGetValue(flowOutID, out var outNode))
+            if (m_FlowNodesMap.TryGetValue(flowOutID, out var outNode))
             {
-                (outNode as RenderRequestNode).flowOut.Add(flowInID);
+                outNode.flowOut.Add(flowInID);
             }
             else
             {
@@ -186,9 +194,9 @@ namespace UnityEngine.Rendering.FlowPipeline
             FlowUtility.SaveAsset(this);
         }
 
-        public void DeleteFlowInOut(string flowInID, string flowOutID)
+        public void DeleteFlowInOut(string flowOutID, string flowInID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(flowInID, out var inNode))
+            if (m_FlowNodesMap.TryGetValue(flowInID, out var inNode))
             {
                 inNode.flowIn.Remove(flowOutID);
             }
@@ -197,7 +205,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                 Debug.LogError($"[GraphData.DeleteFlowInOut] Node(In) {flowInID} not exist.");
             }
 
-            if (m_RenderRequestNodesMap.TryGetValue(flowOutID, out var outNode))
+            if (m_FlowNodesMap.TryGetValue(flowOutID, out var outNode))
             {
                 outNode.flowOut.Remove(flowInID);
             }
@@ -208,6 +216,113 @@ namespace UnityEngine.Rendering.FlowPipeline
 
             FlowUtility.SaveAsset(this);
         }
+
+        #endregion
+
+        
+        #region RenderRequestNode
+        
+        public void AddCullingAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                inNode.culling = assignIn;
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.AddCullingAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+
+        public void DeleteCullingAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                Debug.Assert(inNode.culling == assignIn, "Current assignment is not equal to the to-disconnected one .");
+                inNode.culling = "";
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.DeleteCullingAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+
+        public void AddRenderStateAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                inNode.state = assignIn;
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.AddRenderStateAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+
+        public void DeleteRenderStateAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                Debug.Assert(inNode.state == assignIn, "Current assignment is not equal to the to-disconnected one .");
+                inNode.state = "";
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.DeleteRenderStateAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+
+        public void AddMaterialAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                inNode.material = assignIn;
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.AddMaterialAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+
+        public void DeleteMaterialAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                Debug.Assert(inNode.material == assignIn, "Current assignment is not equal to the to-disconnected one .");
+                inNode.material = "";
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.DeleteMaterialAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+
+        public void AddCameraAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                inNode.camera = assignIn;
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.AddCameraAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+
+        public void DeleteCameraAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                Debug.Assert(inNode.camera == assignIn, "Current assignment is not equal to the to-disconnected one .");
+                inNode.camera = "";
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.DeleteCameraAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+        
+        #endregion
     }
     
 #endif

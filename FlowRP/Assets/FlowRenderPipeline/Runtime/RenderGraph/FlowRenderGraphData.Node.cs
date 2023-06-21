@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine.Experimental.Rendering.RenderGraphModule;
 
 namespace UnityEngine.Rendering.FlowPipeline
 {
@@ -15,11 +13,46 @@ namespace UnityEngine.Rendering.FlowPipeline
             public string name;
             public FRPNodeType type;
         }
+
+        [Serializable]
+        public class FlowNode : BaseNode
+        {
+            // for a flow node , it only contains flow information, data id is used to bind a extra data , like render request data
+            public string dataID;
+            public FRPNodeType dataType;
+            
+            public List<string> flowIn;
+            public List<string> flowOut;
+        }
+
+        public FlowNode CreateFlowNode(string nodeName, string guid, string dataID = "",
+            FRPNodeType dataType = FRPNodeType.Unknow)
+        {
+            return new FlowNode()
+            {
+                name = name,
+                guid = guid,
+                dataType = dataType,
+                dataID = dataID
+            };
+        }
+
+        [Serializable]
+        public class BranchNode : FlowNode
+        {
+            
+        }
         
         [Serializable]
-        public class EntryNode: BaseNode
+        public class LoopNode : FlowNode
         {
-            public string firstNode;
+            public int loopCount;
+        }
+        
+        [Serializable]
+        public class EntryNode : BaseNode
+        {
+            public string startPoint;
         }
         
         public static EntryNode CreateEntryNode(string name, string guid)
@@ -29,7 +62,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                 name = name,
                 guid = guid,
                 type = FRPNodeType.Entry,
-                firstNode = ""
+                startPoint = ""
             };
         }
         
@@ -38,10 +71,6 @@ namespace UnityEngine.Rendering.FlowPipeline
         public class RenderRequestNode : BaseNode
         {
             public bool isEnabled;
-            
-            public List<string> flowIn;
-            public List<string> flowOut;
-
             public string culling;
             public string state;
             public string material;
@@ -59,8 +88,6 @@ namespace UnityEngine.Rendering.FlowPipeline
                 guid = guid,
                 type = FRPNodeType.FRPRenderRequestNode,
                 isEnabled = true,
-                flowOut = new List<string>(),
-                flowIn = new List<string>()
             };
         }
 

@@ -50,13 +50,13 @@ namespace UnityEditor.Rendering.FlowPipeline
             public Port assignIn; // maybe null 
         }
 
-        private static readonly string kCullingFoldoutName = "Culling";
-        private static readonly string kStateFoldoutName = "State";
-        private static readonly string kMaterialFoldoutName = "Material";
-        private static readonly string kCameraFoldoutName = "Camera";
+        public static readonly string kCullingFoldoutName = "Culling";
+        public static readonly string kStateFoldoutName = "State";
+        public static readonly string kMaterialFoldoutName = "Material";
+        public static readonly string kCameraFoldoutName = "Camera";
         
-        private static readonly string kInputOutputBlockName = "Input-Output";
-        private static readonly string kParametersBlockName = "Parameters";
+        public static readonly string kInputOutputBlockName = "Input-Output";
+        public static readonly string kParametersBlockName = "Parameters";
 
         public struct FoldoutDisplay
         {
@@ -175,6 +175,17 @@ namespace UnityEditor.Rendering.FlowPipeline
             
         }
 
+        public Port GetBlockPort(string blockName)
+        {
+            if (m_FoldoutBlocks.TryGetValue(blockName, out var block))
+            {
+                return block.assignIn;
+            }
+
+            Debug.LogError($"Cant find a proper port named by {blockName}");
+            return null;
+        }
+        
         #region Culling
         private void DrawCullingBlock(ChangeEvent<bool> evt)
         {

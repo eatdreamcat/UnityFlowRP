@@ -142,15 +142,80 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             FRPNodeBase inNode = edge.input.node as FRPNodeBase;
             FRPNodeBase outNode = edge.output.node as FRPNodeBase;
-            
-            m_CurrentRenderGraphData.AddFlowInOut(inNode.ID, outNode.ID);
+
+            switch (outNode.Type)
+            {
+                case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
+                {
+                    m_CurrentRenderGraphData.AddCullingAssignment(outNode.ID, inNode.ID);
+                }
+                    break;
+
+                case FlowRenderGraphData.FRPNodeType.FRPRenderStateNode:
+                {
+                    m_CurrentRenderGraphData.AddRenderStateAssignment(outNode.ID, inNode.ID);
+                }
+                    break;
+
+                case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:
+                {
+                    m_CurrentRenderGraphData.AddMaterialAssignment(outNode.ID, inNode.ID);
+                }
+                    break;
+
+                case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
+                {
+                    m_CurrentRenderGraphData.AddCameraAssignment(outNode.ID, inNode.ID);
+                }
+                    break;
+
+                case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+                case FlowRenderGraphData.FRPNodeType.Entry:    
+                {
+                    m_CurrentRenderGraphData.AddFlowInOut(outNode.ID, inNode.ID);
+                }
+                    break;
+            }
+          
         }
         
         public void DeleteEdge(Edge edge)
         {
             FRPNodeBase inNode = edge.input.node as FRPNodeBase;
-            FRPNodeBase outNode = edge.output.node as FRPNodeBase;
-            m_CurrentRenderGraphData.DeleteFlowInOut(inNode.ID, outNode.ID);
+            FRPNodeBase outNode = edge.output.node as FRPNodeBase; 
+            
+            switch (outNode.Type)
+            {
+                case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
+                {
+                    m_CurrentRenderGraphData.DeleteCullingAssignment(outNode.ID, inNode.ID);
+                }
+                    break;
+
+                case FlowRenderGraphData.FRPNodeType.FRPRenderStateNode:
+                {
+                    m_CurrentRenderGraphData.DeleteRenderStateAssignment(outNode.ID, inNode.ID);
+                }
+                    break;
+
+                case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:
+                {
+                    m_CurrentRenderGraphData.DeleteMaterialAssignment(outNode.ID, inNode.ID);
+                }
+                    break;
+
+                case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
+                {
+                    m_CurrentRenderGraphData.DeleteCameraAssignment(outNode.ID, inNode.ID);
+                }
+                    break;
+
+                case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+                {
+                    m_CurrentRenderGraphData.DeleteFlowInOut(outNode.ID, inNode.ID);
+                }
+                    break;
+            }
         }
 
        

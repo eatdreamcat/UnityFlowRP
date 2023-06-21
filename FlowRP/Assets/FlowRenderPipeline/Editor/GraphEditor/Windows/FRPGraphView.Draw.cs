@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Rendering.FlowPipeline;
 
@@ -67,6 +68,63 @@ namespace UnityEditor.Rendering.FlowPipeline
                 DrawNode(nodeList[i]);
             }
         }
+
+        private void DrawNodeConnections(string entryID)
+        {
+            void AddEdgeManually(Edge edge)
+            {
+                edge.userData = true;
+                AddElement(edge);
+            };
+
+            void DrawAssignment(string assignID, string kBlockName, FRPRenderRequestNode renderRequestNode)
+            {
+                if (!string.IsNullOrEmpty(assignID))
+                {
+                    var parameterNode = m_FrpNodeMap[assignID];
+                    Debug.Assert(parameterNode != null, $"parameterNode {assignID} is null.");
+                    AddEdgeManually(parameterNode.FlowOut.ConnectTo(renderRequestNode.GetBlockPort(kBlockName)));
+                }
+            }
+            
+            for (int i = 0; i < nodeList.Count; ++i)
+            {
+                
+                var graphNodeData = nodeList[i];
+                if (m_FrpNodeMap.TryGetValue(graphNodeData.guid, out var graphNode))
+                {
+                    FRPRenderRequestNode renderRequestNode = (FRPRenderRequestNode)graphNode;
+                    // 1. draw node flow connections
+                    
+                    // for branch node, may exist multiple flow-outs
+                    for (int j = 0; j < graphNodeData.flowOut.Count; ++j)
+                    {
+                        var targetNodeID = graphNodeData.flowOut[j];
+                        var targetNode = m_FrpNodeMap[targetNodeID];
+                        if (targetNode == null)
+                        {
+                            Debug.LogError($"[GraphView.Draw] Node {graphNodeData.guid} flow out connection target {targetNodeID} is null ");
+                            continue;
+                        }
+            
+                        // add edge
+                        AddEdgeManually(renderRequestNode.FlowOut.ConnectTo(targetNode.FlowIn));
+                    }
+                    
+                    // 2. draw node culling assignment
+                    DrawAssignment(graphNodeData.culling, FRPRenderRequestNode.kCullingFoldoutName, renderRequestNode);
+                    
+                    // 3. draw node state assignment
+                    DrawAssignment(graphNodeData.state, FRPRenderRequestNode.kStateFoldoutName, renderRequestNode);
+                    
+                    // 4. draw node material assignment
+                    DrawAssignment(graphNodeData.material, FRPRenderRequestNode.kMaterialFoldoutName, renderRequestNode);
+                    
+                    // 5. draw node camera assignment
+                    DrawAssignment(graphNodeData.camera, FRPRenderRequestNode.kCameraFoldoutName, renderRequestNode);
+                }
+            }
+        }
         
         private void DrawCullingNodeList(List<FlowRenderGraphData.CullingParameterNode> nodeList)
         {
@@ -100,7 +158,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             }
         }
         
-         private void Draw()
+        private void Draw()
         {
             
             RemoveAllElements();
@@ -111,47 +169,24 @@ namespace UnityEditor.Rendering.FlowPipeline
             // 0. draw entry node
             DrawNode(m_CurrentRenderGraphData.Entry);
             
-            
             // 1. draw nodes 
-           var passNodeList = m_CurrentRenderGraphData.PassNodeList;
-           var cullingNodeList = m_CurrentRenderGraphData.CullingNodeList;
-           var renderStateNodeList = m_CurrentRenderGraphData.RenderStateNodeList;
-           var materialNodeList = m_CurrentRenderGraphData.MaterialNodeList;
-           var cameraNodeList = m_CurrentRenderGraphData.CameraNodeList;
+            var passNodeList = m_CurrentRenderGraphData.PassNodeList;
+            var cullingNodeList = m_CurrentRenderGraphData.CullingNodeList;
+            var renderStateNodeList = m_CurrentRenderGraphData.RenderStateNodeList;
+            var materialNodeList = m_CurrentRenderGraphData.MaterialNodeList;
+            var cameraNodeList = m_CurrentRenderGraphData.CameraNodeList;
            
-           DrawPassNodeList(passNodeList);
-           DrawCullingNodeList(cullingNodeList);
-           DrawRenderStateNodeList(renderStateNodeList);
-           DrawMaterialNodeList(materialNodeList);
-           DrawCameraNodeList(cameraNodeList);
+            DrawPassNodeList(passNodeList);
+            DrawCullingNodeList(cullingNodeList);
+            DrawRenderStateNodeList(renderStateNodeList);
+            DrawMaterialNodeList(materialNodeList);
+            DrawCameraNodeList(cameraNodeList);
            
-           // 2. set flow connections
-           // for (int i = 0; i < nodeList.Count; ++i)
-           // {
-           //     var graphNodeData = nodeList[i];
-           //     if (frpNodeMap.TryGetValue(graphNodeData.guid, out var graphNode))
-           //     {
-           //         // for branch node, may exist multiple flow-outs
-           //         for (int j = 0; j < graphNodeData.flowOut.Count; ++j)
-           //         {
-           //             var targetNodeID = graphNodeData.flowOut[j];
-           //             var targetNode = frpNodeMap[targetNodeID];
-           //             if (targetNode == null)
-           //             {
-           //                 Debug.LogError($"[GraphView.Draw] Node {graphNodeData.guid} flow out connection target {targetNodeID} is null ");
-           //                 continue;
-           //             }
-           //
-           //             // add edge
-           //             var edge = graphNode.FlowOut.ConnectTo(targetNode.FlowIn);
-           //             edge.userData = true;
-           //             AddElement(edge);
-           //         }
-           //     }
-           // }
+            // 2. set flow connections
+            DrawNodeConnections(m_CurrentRenderGraphData.EntryID);
            
-           // 3. draw empty group
-           DrawEmptyGroup();
+            // 3. draw empty group
+            DrawEmptyGroup();
            
         }
     }
