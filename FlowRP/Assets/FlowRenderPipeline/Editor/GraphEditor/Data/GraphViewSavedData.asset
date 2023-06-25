@@ -17,8 +17,8 @@ MonoBehaviour:
     - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
     - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
     m_ValueData:
-    - position: {x: -139, y: -40, z: 0}
-      scale: {x: 1, y: 1, z: 1}
+    - position: {x: 185, y: -12, z: 0}
+      scale: {x: 0.65751624, y: 0.65751624, z: 1}
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
   m_Datas:
@@ -33,21 +33,41 @@ MonoBehaviour:
         - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
         - e38ad947-bfa7-4ae1-87e5-dc19a9a47968
         - 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+        - 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
+        - 294472d9-4d26-41af-9e9b-1b823d8d0b16
+        - 7918c6e3-5df9-49d9-a726-28b3af1fa191
+        - dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
+        - 7695cc14-5ad3-43a7-83d2-58e4ab5933de
         m_ValueData:
         - name: Entry
           position: {x: 225, y: 281}
           groupGuid: 
         - name: FRPRenderRequestNode
-          position: {x: 803, y: 234}
+          position: {x: 820, y: 345}
           groupGuid: 
         - name: aaa
-          position: {x: 1092, y: 281}
+          position: {x: 1202, y: 235}
           groupGuid: 
         - name: FRPRenderRequestNode
-          position: {x: 1461, y: 157}
+          position: {x: 1552, y: 110}
           groupGuid: 
         - name: FRPRenderRequestNode
-          position: {x: 529, y: 444}
+          position: {x: 493, y: 385}
+          groupGuid: 
+        - name: FRPCullingParameterNode
+          position: {x: 397, y: 157}
+          groupGuid: 
+        - name: FRPRenderMaterialNode
+          position: {x: 251, y: 710}
+          groupGuid: 
+        - name: FRPRenderMaterialNode
+          position: {x: 711, y: 749}
+          groupGuid: 
+        - name: FRPCameraParameterNode
+          position: {x: 1051, y: 690}
+          groupGuid: 
+        - name: FRPRenderStateNode
+          position: {x: 772, y: 33}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

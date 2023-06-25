@@ -170,8 +170,9 @@ namespace UnityEditor.Rendering.FlowPipeline
                     break;
 
                 case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
-                case FlowRenderGraphData.FRPNodeType.Entry:    
+                case FlowRenderGraphData.FRPNodeType.Entry:
                 {
+                    edge.style.color = Color.cyan;
                     m_CurrentRenderGraphData.AddFlowInOut(outNode.ID, inNode.ID);
                 }
                     break;

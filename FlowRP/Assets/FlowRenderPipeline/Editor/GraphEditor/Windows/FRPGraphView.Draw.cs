@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Rendering.FlowPipeline;
+using UnityEngine.UIElements;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
@@ -71,10 +72,17 @@ namespace UnityEditor.Rendering.FlowPipeline
 
         private void DrawNodeConnections(string entryID)
         {
-            void AddEdgeManually(Edge edge)
+            void AddEdgeManually(Edge edge, bool isMainFlow = false)
             {
                 edge.userData = true;
                 AddElement(edge);
+                
+                if (isMainFlow)
+                {
+                    edge.edgeControl.inputColor = new Color(199,299,333,255);
+                    edge.edgeControl.edgeWidth = 100;
+                    edge.MarkDirtyRepaint();
+                }
             };
 
             void DrawAssignment(string assignID, string kBlockName, FRPRenderRequestNode renderRequestNode)
@@ -106,7 +114,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                                 var targetNode = m_FrpNodeMap[targetNodeID];
                                 Debug.Assert(targetNode != null, $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
                                 // add edge
-                                AddEdgeManually(graphNode.FlowOut.ConnectTo(targetNode.FlowIn));
+                                AddEdgeManually(graphNode.FlowOut.ConnectTo(targetNode.FlowIn), true);
                                 
                                 if (flowNode.flowOut.Count > 0)
                                 {
@@ -148,7 +156,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                                     var targetNode = m_FrpNodeMap[targetNodeID];
                                     Debug.Assert(targetNode != null, $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
                                     // add edge
-                                    AddEdgeManually(renderRequestNode.FlowOut.ConnectTo(targetNode.FlowIn));
+                                    AddEdgeManually(renderRequestNode.FlowOut.ConnectTo(targetNode.FlowIn), true);
                                     
                                     // pass node only has one flow output.
                                     flowNode = m_CurrentRenderGraphData.TryFlowNode(flowNode.flowOut[0]);

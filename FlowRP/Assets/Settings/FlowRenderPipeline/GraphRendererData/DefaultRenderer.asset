@@ -13,17 +13,77 @@ MonoBehaviour:
   m_Name: DefaultRenderer
   m_EditorClassIdentifier: 
   m_CullingNodesMap:
-    m_KeyData: []
-    m_ValueData: []
+    m_KeyData:
+    - 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
+    m_ValueData:
+    - guid: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
+      name: FRPCullingParameterNode
+      type: 10
+      isAllowPassCulling: 1
+      isAllowRendererCulling: 1
+      cullingMask:
+        serializedVersion: 2
+        m_Bits: 4294967295
   m_RenderStateNodesMap:
-    m_KeyData: []
-    m_ValueData: []
+    m_KeyData:
+    - 7695cc14-5ad3-43a7-83d2-58e4ab5933de
+    m_ValueData:
+    - guid: 7695cc14-5ad3-43a7-83d2-58e4ab5933de
+      name: FRPRenderStateNode
+      type: 13
+      rasterState:
+        cullingMode: 0
+        offsetUnits: 0
+        offsetFactor: 0
+        depthClip: 0
+      depthState:
+        writeEnabled: 0
+        compareFunction: 0
+      stencilState:
+        enabled: 0
+        readMask: 0
+        writeMask: 0
+        compareFunctionFront: 0
+        passOperationFront: 0
+        failOperationFront: 0
+        zFailOperationFront: 0
+        compareFunctionBack: 0
+        passOperationBack: 0
+        failOperationBack: 0
+        zFailOperationBack: 0
+      blendStates: []
   m_MaterialNodesMap:
-    m_KeyData: []
-    m_ValueData: []
+    m_KeyData:
+    - 294472d9-4d26-41af-9e9b-1b823d8d0b16
+    - 7918c6e3-5df9-49d9-a726-28b3af1fa191
+    m_ValueData:
+    - guid: 294472d9-4d26-41af-9e9b-1b823d8d0b16
+      name: FRPRenderMaterialNode
+      type: 11
+      shaderTagList:
+      - SRPDefaultUnlit
+      - FRPForward
+      - FRPForwardOnly
+      shaderPath: 
+      overrideMaterial: {fileID: 0}
+    - guid: 7918c6e3-5df9-49d9-a726-28b3af1fa191
+      name: FRPRenderMaterialNode
+      type: 11
+      shaderTagList:
+      - SRPDefaultUnlit
+      - FRPForward
+      - FRPForwardOnly
+      shaderPath: 
+      overrideMaterial: {fileID: 0}
   m_CameraNodesMap:
-    m_KeyData: []
-    m_ValueData: []
+    m_KeyData:
+    - dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
+    m_ValueData:
+    - guid: dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
+      name: FRPCameraParameterNode
+      type: 9
+      fov: 60
+      offset: {x: 0, y: 0, z: 0}
   m_RenderRequestNodesMap:
     m_KeyData:
     - f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
@@ -35,9 +95,9 @@ MonoBehaviour:
       name: FRPRenderRequestNode
       type: 12
       isEnabled: 1
-      culling: 
+      culling: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
       state: 
-      material: 
+      material: 294472d9-4d26-41af-9e9b-1b823d8d0b16
       camera: 
       inputList: []
       outputList: []
@@ -45,29 +105,29 @@ MonoBehaviour:
       name: aaa
       type: 12
       isEnabled: 1
-      culling: 
+      culling: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
       state: 
-      material: 
-      camera: 
+      material: 7918c6e3-5df9-49d9-a726-28b3af1fa191
+      camera: dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
       inputList: []
       outputList: []
     - guid: e38ad947-bfa7-4ae1-87e5-dc19a9a47968
       name: FRPRenderRequestNode
       type: 12
       isEnabled: 1
-      culling: 
+      culling: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
       state: 
-      material: 
-      camera: 
+      material: 294472d9-4d26-41af-9e9b-1b823d8d0b16
+      camera: dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
       inputList: []
       outputList: []
     - guid: 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
       name: FRPRenderRequestNode
       type: 12
       isEnabled: 1
-      culling: 
+      culling: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
       state: 
-      material: 
+      material: 294472d9-4d26-41af-9e9b-1b823d8d0b16
       camera: 
       inputList: []
       outputList: []
