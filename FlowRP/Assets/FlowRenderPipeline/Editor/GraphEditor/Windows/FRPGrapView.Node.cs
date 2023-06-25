@@ -53,7 +53,11 @@ namespace UnityEditor.Rendering.FlowPipeline
                     nodeTypeName = nodeType.ToString();
                     break;
             }
+            
             Type nodeClass = Type.GetType($"UnityEditor.Rendering.FlowPipeline.{nodeTypeName}");
+            
+            Debug.Assert(nodeClass != null, $"Node class type is null : {nodeTypeName}");
+            
             FRPNodeBase node = (FRPNodeBase)Activator.CreateInstance(nodeClass);
             
             node.Initialize(name == "" ? nodeType.ToString() : name, this, position, nodeType, guid);

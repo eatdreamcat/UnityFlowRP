@@ -13,87 +13,118 @@ MonoBehaviour:
   m_Name: DefaultRenderer
   m_EditorClassIdentifier: 
   m_CullingNodesMap:
-    m_KeyData:
-    - 724f1dd0-f6b2-430b-b3e8-16aa049c62f6
-    m_ValueData:
-    - guid: 724f1dd0-f6b2-430b-b3e8-16aa049c62f6
-      name: FRPCullingParameterNode
-      type: 8
-      isAllowPassCulling: 1
-      isAllowRendererCulling: 1
-      cullingMask:
-        serializedVersion: 2
-        m_Bits: 4294967295
+    m_KeyData: []
+    m_ValueData: []
   m_RenderStateNodesMap:
-    m_KeyData:
-    - 4e12de6c-d47d-47a3-8da3-3cdebe6af4f1
-    m_ValueData:
-    - guid: 4e12de6c-d47d-47a3-8da3-3cdebe6af4f1
-      name: FRPRenderStateNode
-      type: 11
-      rasterState:
-        cullingMode: 0
-        offsetUnits: 0
-        offsetFactor: 0
-        depthClip: 0
-      depthState:
-        writeEnabled: 0
-        compareFunction: 0
-      stencilState:
-        enabled: 0
-        readMask: 0
-        writeMask: 0
-        compareFunctionFront: 0
-        passOperationFront: 0
-        failOperationFront: 0
-        zFailOperationFront: 0
-        compareFunctionBack: 0
-        passOperationBack: 0
-        failOperationBack: 0
-        zFailOperationBack: 0
-      blendStates: []
+    m_KeyData: []
+    m_ValueData: []
   m_MaterialNodesMap:
-    m_KeyData:
-    - 57988190-9533-40e6-9a75-4f049c16603c
-    m_ValueData:
-    - guid: 57988190-9533-40e6-9a75-4f049c16603c
-      name: FRPRenderMaterialNode
-      type: 9
-      shaderTagList:
-      - SRPDefaultUnlit
-      - FRPForward
-      - FRPForwardOnly
-      shaderPath: 
-      overrideMaterial: {fileID: 0}
+    m_KeyData: []
+    m_ValueData: []
   m_CameraNodesMap:
-    m_KeyData:
-    - 6a532614-fc59-4ab6-9c56-df50e14a7417
-    m_ValueData:
-    - guid: 6a532614-fc59-4ab6-9c56-df50e14a7417
-      name: FRPCameraParameterNode
-      type: 7
-      fov: 60
-      offset: {x: 0, y: 0, z: 0}
+    m_KeyData: []
+    m_ValueData: []
   m_RenderRequestNodesMap:
     m_KeyData:
-    - f5775b8c-903c-4f50-a8ab-4b383523bcd4
+    - f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
+    - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
+    - e38ad947-bfa7-4ae1-87e5-dc19a9a47968
+    - 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
     m_ValueData:
-    - guid: f5775b8c-903c-4f50-a8ab-4b383523bcd4
+    - guid: f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
       name: FRPRenderRequestNode
-      type: 10
+      type: 12
       isEnabled: 1
-      flowIn:
-      - 5f5bf63c-4221-415e-840d-84d59eeddf2e
-      flowOut: []
       culling: 
       state: 
       material: 
       camera: 
       inputList: []
       outputList: []
+    - guid: 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
+      name: aaa
+      type: 12
+      isEnabled: 1
+      culling: 
+      state: 
+      material: 
+      camera: 
+      inputList: []
+      outputList: []
+    - guid: e38ad947-bfa7-4ae1-87e5-dc19a9a47968
+      name: FRPRenderRequestNode
+      type: 12
+      isEnabled: 1
+      culling: 
+      state: 
+      material: 
+      camera: 
+      inputList: []
+      outputList: []
+    - guid: 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+      name: FRPRenderRequestNode
+      type: 12
+      isEnabled: 1
+      culling: 
+      state: 
+      material: 
+      camera: 
+      inputList: []
+      outputList: []
+  m_FlowNodesMap:
+    m_KeyData:
+    - c3797174-fb62-4959-8956-0b695db792ee
+    - f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
+    - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
+    - e38ad947-bfa7-4ae1-87e5-dc19a9a47968
+    - 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+    m_ValueData:
+    - guid: c3797174-fb62-4959-8956-0b695db792ee
+      name: DefaultRenderer
+      type: 1
+      dataID: c3797174-fb62-4959-8956-0b695db792ee
+      dataType: 2
+      flowIn: []
+      flowOut:
+      - 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+    - guid: f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
+      name: DefaultRenderer
+      type: 1
+      dataID: f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
+      dataType: 12
+      flowIn:
+      - 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+      flowOut:
+      - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
+    - guid: 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
+      name: DefaultRenderer
+      type: 1
+      dataID: 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
+      dataType: 12
+      flowIn:
+      - f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
+      flowOut:
+      - e38ad947-bfa7-4ae1-87e5-dc19a9a47968
+    - guid: e38ad947-bfa7-4ae1-87e5-dc19a9a47968
+      name: DefaultRenderer
+      type: 1
+      dataID: e38ad947-bfa7-4ae1-87e5-dc19a9a47968
+      dataType: 12
+      flowIn:
+      - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
+      flowOut: []
+    - guid: 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+      name: DefaultRenderer
+      type: 1
+      dataID: 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+      dataType: 12
+      flowIn:
+      - c3797174-fb62-4959-8956-0b695db792ee
+      flowOut:
+      - f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
   m_EntryNode:
-    guid: 5f5bf63c-4221-415e-840d-84d59eeddf2e
+    guid: c3797174-fb62-4959-8956-0b695db792ee
     name: Entry
-    type: 0
-    firstNode: 3bc5caa0-7407-45b4-b784-b597199fb7a1
+    type: 2
+    startPoint: f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
   GraphGuid: 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1

@@ -175,7 +175,14 @@ namespace UnityEngine.Rendering.FlowPipeline
             
             if (m_FlowNodesMap.TryGetValue(flowInID, out var inNode))
             {
-                inNode.flowIn.Add(flowOutID);
+                if (inNode.flowIn.Count <= 0)
+                {
+                    inNode.flowIn.Add(flowOutID);
+                }
+                else
+                {
+                    inNode.flowIn[0] = flowOutID;
+                }
             }
             else
             {
@@ -184,7 +191,22 @@ namespace UnityEngine.Rendering.FlowPipeline
 
             if (m_FlowNodesMap.TryGetValue(flowOutID, out var outNode))
             {
-                outNode.flowOut.Add(flowInID);
+                if (outNode.dataType == FRPNodeType.FRPBranchNode)
+                {
+                    // branch node can have multiple flow outputs
+                    outNode.flowOut.Add(flowInID);
+                }
+                else
+                {
+                    if (outNode.flowOut.Count <= 0)
+                    {
+                        outNode.flowOut.Add(flowInID);
+                    }
+                    else
+                    {
+                        outNode.flowOut[0] = flowInID;
+                    }
+                }
             }
             else
             {

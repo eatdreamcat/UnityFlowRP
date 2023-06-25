@@ -211,6 +211,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                     break;
 
                 case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+                case FlowRenderGraphData.FRPNodeType.Entry:
                 {
                     m_CurrentRenderGraphData.DeleteFlowInOut(outNode.ID, inNode.ID);
                 }

@@ -27,9 +27,20 @@ MonoBehaviour:
   m_RenderRequestNodesMap:
     m_KeyData: []
     m_ValueData: []
-  GraphGuid: c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
+  m_FlowNodesMap:
+    m_KeyData:
+    - a2af5c8d-cc8c-4454-bd9f-1611743ab869
+    m_ValueData:
+    - guid: a2af5c8d-cc8c-4454-bd9f-1611743ab869
+      name: ForwardBaseRenderer
+      type: 1
+      dataID: a2af5c8d-cc8c-4454-bd9f-1611743ab869
+      dataType: 2
+      flowIn: []
+      flowOut: []
   m_EntryNode:
-    guid: a6e3c37f-a755-4d81-b32f-5a2a1686763f
+    guid: a2af5c8d-cc8c-4454-bd9f-1611743ab869
     name: Entry
-    type: 0
-    firstNode: 
+    type: 2
+    startPoint: 
+  GraphGuid: c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba

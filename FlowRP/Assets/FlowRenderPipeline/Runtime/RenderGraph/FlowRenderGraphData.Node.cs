@@ -33,7 +33,10 @@ namespace UnityEngine.Rendering.FlowPipeline
                 name = name,
                 guid = guid,
                 dataType = dataType,
-                dataID = dataID
+                dataID = dataID,
+                type = FRPNodeType.Flow,
+                flowIn = new List<string>(),
+                flowOut = new List<string>()
             };
         }
 

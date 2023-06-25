@@ -86,42 +86,100 @@ namespace UnityEditor.Rendering.FlowPipeline
                     AddEdgeManually(parameterNode.FlowOut.ConnectTo(renderRequestNode.GetBlockPort(kBlockName)));
                 }
             }
-            
-            for (int i = 0; i < nodeList.Count; ++i)
+
+            var flowNode = m_CurrentRenderGraphData.TryFlowNode(entryID);
+            Debug.Assert(flowNode.dataType == FlowRenderGraphData.FRPNodeType.Entry, "Entry Flow not binding to Entry Node.");
+          
+            if (flowNode.flowOut.Count > 0)
             {
-                
-                var graphNodeData = nodeList[i];
-                if (m_FrpNodeMap.TryGetValue(graphNodeData.guid, out var graphNode))
+                // Caution: this is not a safe coding 
+                bool canBreakLoop = false;
+                while (flowNode != null && canBreakLoop == false)
                 {
-                    FRPRenderRequestNode renderRequestNode = (FRPRenderRequestNode)graphNode;
-                    // 1. draw node flow connections
-                    
-                    // for branch node, may exist multiple flow-outs
-                    for (int j = 0; j < graphNodeData.flowOut.Count; ++j)
+                    if (!string.IsNullOrEmpty(flowNode.dataID) && m_FrpNodeMap.TryGetValue(flowNode.dataID, out var graphNode))
                     {
-                        var targetNodeID = graphNodeData.flowOut[j];
-                        var targetNode = m_FrpNodeMap[targetNodeID];
-                        if (targetNode == null)
+                        switch (flowNode.dataType)
                         {
-                            Debug.LogError($"[GraphView.Draw] Node {graphNodeData.guid} flow out connection target {targetNodeID} is null ");
-                            continue;
+                            case FlowRenderGraphData.FRPNodeType.Entry:
+                            {
+                                var targetNodeID = flowNode.flowOut[0];
+                                var targetNode = m_FrpNodeMap[targetNodeID];
+                                Debug.Assert(targetNode != null, $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
+                                // add edge
+                                AddEdgeManually(graphNode.FlowOut.ConnectTo(targetNode.FlowIn));
+                                
+                                if (flowNode.flowOut.Count > 0)
+                                {
+                                    // pass node only has one flow output.
+                                    flowNode = m_CurrentRenderGraphData.TryFlowNode(flowNode.flowOut[0]);
+                                }
+                                else
+                                {
+                                    canBreakLoop = true;
+                                }
+                            }
+                                break;
+                            case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+                            {
+                                var graphNodeData = m_CurrentRenderGraphData.TryGetRenderPassNode(flowNode.dataID);
+                            
+                                FRPRenderRequestNode renderRequestNode = (FRPRenderRequestNode)graphNode;
+
+                                #region Draw Assignment
+
+                                // 1. culling assignment
+                                DrawAssignment(graphNodeData.culling, FRPRenderRequestNode.kCullingFoldoutName, renderRequestNode);
+                
+                                // 2. state assignment
+                                DrawAssignment(graphNodeData.state, FRPRenderRequestNode.kStateFoldoutName, renderRequestNode);
+                
+                                // 3. material assignment
+                                DrawAssignment(graphNodeData.material, FRPRenderRequestNode.kMaterialFoldoutName, renderRequestNode);
+                
+                                // 4. camera assignment
+                                DrawAssignment(graphNodeData.camera, FRPRenderRequestNode.kCameraFoldoutName, renderRequestNode);
+
+                                #endregion
+                                
+                                // draw flow edge
+                                if (flowNode.flowOut.Count > 0)
+                                {
+                                    var targetNodeID = flowNode.flowOut[0];
+                                    var targetNode = m_FrpNodeMap[targetNodeID];
+                                    Debug.Assert(targetNode != null, $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
+                                    // add edge
+                                    AddEdgeManually(renderRequestNode.FlowOut.ConnectTo(targetNode.FlowIn));
+                                    
+                                    // pass node only has one flow output.
+                                    flowNode = m_CurrentRenderGraphData.TryFlowNode(flowNode.flowOut[0]);
+                                }
+                                else
+                                {
+                                    canBreakLoop = true;
+                                }
+                            }
+                                break;
+                            case FlowRenderGraphData.FRPNodeType.FRPBranchNode:
+                            {
+                                // TODO:
+                                canBreakLoop = true;
+                            }
+                                break;
+                            case FlowRenderGraphData.FRPNodeType.FRPLoopNode:
+                            {
+                                // TODO: 
+                                canBreakLoop = true;
+                            }
+                                break;
                         }
-            
-                        // add edge
-                        AddEdgeManually(renderRequestNode.FlowOut.ConnectTo(targetNode.FlowIn));
                     }
-                    
-                    // 2. draw node culling assignment
-                    DrawAssignment(graphNodeData.culling, FRPRenderRequestNode.kCullingFoldoutName, renderRequestNode);
-                    
-                    // 3. draw node state assignment
-                    DrawAssignment(graphNodeData.state, FRPRenderRequestNode.kStateFoldoutName, renderRequestNode);
-                    
-                    // 4. draw node material assignment
-                    DrawAssignment(graphNodeData.material, FRPRenderRequestNode.kMaterialFoldoutName, renderRequestNode);
-                    
-                    // 5. draw node camera assignment
-                    DrawAssignment(graphNodeData.camera, FRPRenderRequestNode.kCameraFoldoutName, renderRequestNode);
+                    else
+                    {
+                        Debug.LogError($"Flow node dataID is null or Node bound by dataID not exist : {flowNode.dataID}");
+                        break;
+                    }
+
+                   
                 }
             }
         }

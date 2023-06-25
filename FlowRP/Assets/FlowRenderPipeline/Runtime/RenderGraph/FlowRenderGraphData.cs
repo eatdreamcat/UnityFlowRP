@@ -12,6 +12,8 @@ namespace UnityEngine.Rendering.FlowPipeline
         public enum FRPNodeType
         {
             Unknow,
+            Flow,
+            
             Entry,
             
             // buffer
@@ -104,12 +106,24 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
         }
         
+        public CullingParameterNode TryGetCullingParameterNode(string nodeID)
+        {
+            Debug.Assert(m_CullingNodesMap.ContainsKey(nodeID), $"Culling Parameter Node {nodeID} not exist.");
+            return m_CullingNodesMap[nodeID];
+        }
+        
         public List<RenderStateNode> RenderStateNodeList
         {
             get
             {
                 return m_RenderStateNodesMap.Values.ToList();
             }
+        }
+        
+        public RenderStateNode TryGetRenderStateNode(string nodeID)
+        {
+            Debug.Assert(m_RenderStateNodesMap.ContainsKey(nodeID), $"Render State Node {nodeID} not exist.");
+            return m_RenderStateNodesMap[nodeID];
         }
         
         public List<MaterialParameterNode> MaterialNodeList
@@ -120,6 +134,11 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
         }
         
+        public MaterialParameterNode TryGetMaterialParameterNode(string nodeID)
+        {
+            Debug.Assert(m_MaterialNodesMap.ContainsKey(nodeID), $"Material Parameter Node {nodeID} not exist.");
+            return m_MaterialNodesMap[nodeID];
+        }
         
         public List<CameraParameterNode> CameraNodeList
         {
@@ -129,6 +148,12 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
         }
         
+        public CameraParameterNode TryGetCameraParameterNode(string nodeID)
+        {
+            Debug.Assert(m_CameraNodesMap.ContainsKey(nodeID), $"Camera Parameter Node {nodeID} not exist.");
+            return m_CameraNodesMap[nodeID];
+        }
+        
         public List<RenderRequestNode> PassNodeList
         {
             get
@@ -136,11 +161,17 @@ namespace UnityEngine.Rendering.FlowPipeline
                 return m_RenderRequestNodesMap.Values.ToList();
             }
         }
-
+        
         public RenderRequestNode TryGetRenderPassNode(string nodeID)
         {
             Debug.Assert(m_RenderRequestNodesMap.ContainsKey(nodeID), $"Pass Node {nodeID} not exist.");
             return m_RenderRequestNodesMap[nodeID];
+        }
+        
+        public FlowNode TryFlowNode(string nodeID)
+        {
+            Debug.Assert(m_FlowNodesMap.ContainsKey(nodeID), $"Flow Node {nodeID} not exist.");
+            return m_FlowNodesMap[nodeID];
         }
         
         #endregion
