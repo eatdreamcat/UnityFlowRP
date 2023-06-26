@@ -72,8 +72,9 @@ namespace UnityEngine.Rendering.FlowPipeline
             };
         }
 
-        public void AddNode(string nodeName, string guid, FRPNodeType nodeType)
+        public BaseNode AddNode(string nodeName, string guid, FRPNodeType nodeType)
         {
+            BaseNode result = default;
             switch (nodeType)
             {
                 // render request
@@ -87,35 +88,53 @@ namespace UnityEngine.Rendering.FlowPipeline
 
                     var renderRequestNode = CreateRenderRequestNode(nodeName, guid);
                     m_RenderRequestNodesMap.Add(guid, renderRequestNode);
-                    m_FlowNodesMap.Add(guid, CreateFlowNode(renderRequestNode.name, renderRequestNode.guid, renderRequestNode.guid, FRPNodeType.FRPRenderRequestNode));
-                }
+                    m_FlowNodesMap.Add(guid,
+                        CreateFlowNode(renderRequestNode.name, renderRequestNode.guid, renderRequestNode.guid,
+                            FRPNodeType.FRPRenderRequestNode));
+
+                    result =  renderRequestNode;
+                    
                     break;
+                }
 
                 case FRPNodeType.FRPCullingParameterNode:
                 {
-                    m_CullingNodesMap.Add(guid, CreateCullingParameterNode(nodeName, guid));
-                }
+                    var cullingNode = CreateCullingParameterNode(nodeName, guid);
+                    m_CullingNodesMap.Add(guid, cullingNode);
+                    result = cullingNode;
+                    
                     break;
+                }
+                    
 
                 case FRPNodeType.FRPRenderStateNode:
                 {
-                    m_RenderStateNodesMap.Add(guid, CreateRenderStateNode(nodeName, guid));
-                }
+                    var renderState = CreateRenderStateNode(nodeName, guid);
+                    m_RenderStateNodesMap.Add(guid, renderState);
+                    result = renderState;
+                    
                     break;
+                }
 
                 case FRPNodeType.FRPCameraParameterNode:
                 {
-                    m_CameraNodesMap.Add(guid, CreateCameraParameterNode(nodeName, guid));
-                }
+                    var cameraParameter = CreateCameraParameterNode(nodeName, guid);
+                    m_CameraNodesMap.Add(guid, cameraParameter);
+                    result = cameraParameter;
+                    
                     break;
+                }
+                  
 
                 case FRPNodeType.FRPRenderMaterialNode:
                 {
-                    m_MaterialNodesMap.Add(guid, CreateMaterialParameterNode(nodeName, guid));
-                }
+                    var materialNode = CreateMaterialParameterNode(nodeName, guid);
+                    m_MaterialNodesMap.Add(guid, materialNode);
+                    result =  materialNode;
+                    
                     break;
-                
-                
+                }
+                 
                 // flow control
                 case FRPNodeType.FRPLoopNode:
                 {
@@ -135,6 +154,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
 
             FlowUtility.SaveAsset(this);
+            return result;
         }
 
         public void UpdateNodeName(string guid, string newName)

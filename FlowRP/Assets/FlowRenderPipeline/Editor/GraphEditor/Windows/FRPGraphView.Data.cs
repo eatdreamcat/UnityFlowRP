@@ -13,6 +13,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         private FRPGraphViewSavedData m_GraphViewSavedData;
         private FlowRenderGraphData m_CurrentRenderGraphData;
 
+        public FlowRenderGraphData GraphData => m_CurrentRenderGraphData; 
         private void RemoveData()
         {
             m_GraphViewSavedData = null;
@@ -108,17 +109,17 @@ namespace UnityEditor.Rendering.FlowPipeline
             }
         }
         
-        public void AddNewNodeToData(FRPNodeBase node, Vector2 position)
+        public FlowRenderGraphData.BaseNode AddNewNodeToData(string ID, string name, FlowRenderGraphData.FRPNodeType type, Vector2 position)
         {
             
-            m_GraphViewSavedData.AddNewNode(node.ID, new FRPGraphViewSavedData.NodeData()
+            m_GraphViewSavedData.AddNewNode(ID, new FRPGraphViewSavedData.NodeData()
             {
-                name = node.Name,
+                name = name,
                 groupGuid = "",
                 position = position
             });
 
-            m_CurrentRenderGraphData.AddNode(node.Name, node.ID, node.Type);
+            return m_CurrentRenderGraphData.AddNode(name, ID, type);
         }
 
         public void UpdateNodeTitle(string newTitle, FRPNodeBase node)

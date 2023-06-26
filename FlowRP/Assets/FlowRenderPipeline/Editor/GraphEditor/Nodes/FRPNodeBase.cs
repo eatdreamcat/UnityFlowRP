@@ -7,18 +7,19 @@ using UnityEngine.UIElements;
 namespace UnityEditor.Rendering.FlowPipeline
 {
   
-    public class FRPNodeBase : Node
+    public class FRPNodeBase : Node 
     {
 
         #region Private
 
-        private FRPGraphView m_View;
+        protected FRPGraphView m_View;
 
+        protected FlowRenderGraphData.BaseNode m_GraphNodeData;
 
         private void DrawTitle()
         {
 
-            TextField dialogueNameTextField = FRPElementUtilities.CreateTextField(Name, null, callback =>
+            TextField dialogueNameTextField = FRPElementUtilities.CreateTextField(m_GraphNodeData.name, null, callback =>
             {
                 TextField target = (TextField) callback.target;
 
@@ -30,13 +31,13 @@ namespace UnityEditor.Rendering.FlowPipeline
                     return;
                 }
 
-                if (target.value == Name)
+                if (target.value == m_GraphNodeData.name)
                 {
                     return;
                 }
                
-                Name = target.value;
-                m_View.UpdateNodeTitle(Name, this);
+                m_GraphNodeData.name = target.value;
+                m_View.UpdateNodeTitle(m_GraphNodeData.name, this);
                 
             }, EntryPoint);
 
@@ -145,9 +146,9 @@ namespace UnityEditor.Rendering.FlowPipeline
 
 
         #region Public
-        
-        public string Name { get; set; }
-        public string ID { get; set; }
+
+        public string Name => m_GraphNodeData.name;
+        public string ID => m_GraphNodeData.guid;
 
         public Port FlowIn { get; set; }
         public Port FlowOut { get; set; }
@@ -162,23 +163,16 @@ namespace UnityEditor.Rendering.FlowPipeline
             }
         }
 
-        public FlowRenderGraphData.FRPNodeType Type { get; set; }
+        public FlowRenderGraphData.FRPNodeType Type => m_GraphNodeData.type;
 
-        public virtual void Initialize(string name, FRPGraphView view, Vector2 position, FlowRenderGraphData.FRPNodeType type, string guid)
+        public virtual void Initialize(FRPGraphView view, Vector2 position, FlowRenderGraphData.BaseNode nodeData)
         {
-            ID = guid != "" ? guid : Guid.NewGuid().ToString();
-
             m_View = view;
-
-            Type = type;
-            
-            Name = name;
-            
+            SetPosition(new Rect(position, new Vector2(100, 150)));
             mainContainer.AddToClassList("ds-node__main-container");
             extensionContainer.AddToClassList("ds-node__extension-container");
+            m_GraphNodeData = nodeData;
             
-            SetPosition(new Rect(position, new Vector2(100, 150)));
-
             layer = 0;
 
         }

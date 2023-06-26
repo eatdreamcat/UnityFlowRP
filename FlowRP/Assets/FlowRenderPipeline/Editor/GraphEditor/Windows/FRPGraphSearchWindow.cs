@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -117,7 +118,15 @@ namespace UnityEditor.Rendering.FlowPipeline
                case FlowRenderGraphData.FRPNodeType.FRPBranchNode:
                case FlowRenderGraphData.FRPNodeType.FRPLoopNode:
                {
-                   m_View.AddElement(m_View.CreateNode((FlowRenderGraphData.FRPNodeType)SearchTreeEntry.userData, localMousePosition));
+                   m_View.AddElement(m_View.CreateNode(
+                           localMousePosition, 
+                           m_View.AddNewNodeToData(
+                               Guid.NewGuid().ToString(), 
+                               SearchTreeEntry.userData.ToString(), 
+                               (FlowRenderGraphData.FRPNodeType)SearchTreeEntry.userData, 
+                               localMousePosition
+                               ))
+                       );
                }
                    
                    return true;

@@ -119,11 +119,11 @@ namespace UnityEditor.Rendering.FlowPipeline
         // };
 
         private static readonly float Indent = 10;
+        public FlowRenderGraphData.RenderRequestNode RenderRequest => (FlowRenderGraphData.RenderRequestNode)m_GraphNodeData;
       
-        public override void Initialize(string name, FRPGraphView view, Vector2 position,
-            FlowRenderGraphData.FRPNodeType type, string guid)
+        public override void Initialize(FRPGraphView view, Vector2 position, FlowRenderGraphData.BaseNode nodeData)
         {
-            base.Initialize(name, view, position, type, guid);
+            base.Initialize(view, position, nodeData);
 
             // initialize blocks
             
@@ -189,17 +189,27 @@ namespace UnityEditor.Rendering.FlowPipeline
         #region Culling
         private void DrawCullingBlock(ChangeEvent<bool> evt)
         {
-            // var isExpended = evt.newValue;
-            // var foldoutBlock = m_FoldoutBlocks[kCullingFoldoutName];
-            // var cullingContentRoot = foldoutBlock.block;
-            // cullingContentRoot.Clear();
-            // if (isExpended)
-            // {
-            //     if (foldoutBlock.assignIn != null)
-            //     {
-            //         cullingContentRoot.Add(foldoutBlock.assignIn);
-            //     }
-            // }
+            var isExpended = evt.newValue;
+            var foldoutBlock = m_FoldoutBlocks[kCullingFoldoutName];
+            var cullingContentRoot = foldoutBlock.block;
+            cullingContentRoot.Clear();
+            if (isExpended)
+            {
+                if (foldoutBlock.assignIn != null)
+                {
+                    var cullingParameter = m_View.GraphData.TryGetCullingParameterNode(RenderRequest.culling);
+                    
+                    Debug.Assert(cullingParameter != null, $"Culling Parameter is null: {RenderRequest.culling}");
+                    
+                    var previewElement = FRPElementUtilities.CreateCullingParameter(
+                        cullingParameter.isAllowPassCulling, null,
+                        cullingParameter.isAllowRendererCulling, null,
+                        cullingParameter.cullingMask, null,
+                        true);
+                    previewElement.style.left = Indent * 2;
+                    cullingContentRoot.Add(previewElement);
+                }
+            }
         }
 
 

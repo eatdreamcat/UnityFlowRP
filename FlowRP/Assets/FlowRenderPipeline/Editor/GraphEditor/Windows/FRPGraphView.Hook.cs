@@ -79,7 +79,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             if (element is FRPNodeBase)
             {
-                AddNewNodeToData((FRPNodeBase) element, position);
+                // do nothing
                 
             } else if (element is FRPGroup)
             {

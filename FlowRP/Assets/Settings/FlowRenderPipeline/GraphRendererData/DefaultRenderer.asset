@@ -23,7 +23,7 @@ MonoBehaviour:
       isAllowRendererCulling: 1
       cullingMask:
         serializedVersion: 2
-        m_Bits: 4294967295
+        m_Bits: 1
   m_RenderStateNodesMap:
     m_KeyData:
     - 7695cc14-5ad3-43a7-83d2-58e4ab5933de
@@ -90,23 +90,24 @@ MonoBehaviour:
     - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
     - e38ad947-bfa7-4ae1-87e5-dc19a9a47968
     - 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+    - 925c22fb-c702-4871-a86e-1b577cf7562f
     m_ValueData:
     - guid: f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
       name: FRPRenderRequestNode
       type: 12
       isEnabled: 1
       culling: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
-      state: 
+      state: 7695cc14-5ad3-43a7-83d2-58e4ab5933de
       material: 294472d9-4d26-41af-9e9b-1b823d8d0b16
       camera: 
       inputList: []
       outputList: []
     - guid: 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
-      name: aaa
+      name: sssssdfaa
       type: 12
       isEnabled: 1
       culling: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
-      state: 
+      state: 7695cc14-5ad3-43a7-83d2-58e4ab5933de
       material: 7918c6e3-5df9-49d9-a726-28b3af1fa191
       camera: dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
       inputList: []
@@ -116,7 +117,7 @@ MonoBehaviour:
       type: 12
       isEnabled: 1
       culling: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
-      state: 
+      state: 7695cc14-5ad3-43a7-83d2-58e4ab5933de
       material: 294472d9-4d26-41af-9e9b-1b823d8d0b16
       camera: dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
       inputList: []
@@ -126,9 +127,19 @@ MonoBehaviour:
       type: 12
       isEnabled: 1
       culling: 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
-      state: 
+      state: 7695cc14-5ad3-43a7-83d2-58e4ab5933de
       material: 294472d9-4d26-41af-9e9b-1b823d8d0b16
       camera: 
+      inputList: []
+      outputList: []
+    - guid: 925c22fb-c702-4871-a86e-1b577cf7562f
+      name: ceaddadsaRPRenderRequestNode
+      type: 12
+      isEnabled: 1
+      culling: 
+      state: 
+      material: 
+      camera: dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
       inputList: []
       outputList: []
   m_FlowNodesMap:
@@ -138,6 +149,7 @@ MonoBehaviour:
     - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
     - e38ad947-bfa7-4ae1-87e5-dc19a9a47968
     - 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
+    - 925c22fb-c702-4871-a86e-1b577cf7562f
     m_ValueData:
     - guid: c3797174-fb62-4959-8956-0b695db792ee
       name: DefaultRenderer
@@ -172,7 +184,8 @@ MonoBehaviour:
       dataType: 12
       flowIn:
       - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
-      flowOut: []
+      flowOut:
+      - 925c22fb-c702-4871-a86e-1b577cf7562f
     - guid: 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
       name: DefaultRenderer
       type: 1
@@ -182,6 +195,14 @@ MonoBehaviour:
       - c3797174-fb62-4959-8956-0b695db792ee
       flowOut:
       - f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
+    - guid: 925c22fb-c702-4871-a86e-1b577cf7562f
+      name: DefaultRenderer
+      type: 1
+      dataID: 925c22fb-c702-4871-a86e-1b577cf7562f
+      dataType: 12
+      flowIn:
+      - e38ad947-bfa7-4ae1-87e5-dc19a9a47968
+      flowOut: []
   m_EntryNode:
     guid: c3797174-fb62-4959-8956-0b695db792ee
     name: Entry

@@ -29,10 +29,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             var nodeViewData = m_GraphViewSavedData.TryGetNodeData(baseNode.guid);
             var graphNode = CreateNode(
-                baseNode.type,
-                nodeViewData.position,
-                baseNode.guid, 
-                nodeViewData.name, 
+                nodeViewData.position, baseNode, 
                 false);
             
             //NOTE: we need to draw first , because in draw method, we will create actual element like ports which we need later when making connections.
@@ -79,9 +76,12 @@ namespace UnityEditor.Rendering.FlowPipeline
                 
                 if (isMainFlow)
                 {
-                    edge.edgeControl.inputColor = new Color(199,299,333,255);
+                    edge.edgeControl.drawFromCap = true;
+                    edge.edgeControl.inputColor = new Color(255,0,0,255);
+                    edge.edgeControl.fromCapColor = new Color(255,0,0,255);
                     edge.edgeControl.edgeWidth = 100;
-                    edge.MarkDirtyRepaint();
+                    edge.edgeControl.MarkDirtyRepaint();
+                    Debug.Assert( edge.UpdateEdgeControl(), "edge.UpdateEdgeControl()");
                 }
             };
 
