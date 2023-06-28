@@ -17,9 +17,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             Entry,
             
             // buffer
-            BackBuffer,
-            FrontBuffer,
-            CameraTarget,
+            ComputerBuffer,
             RenderBuffer,
             
             // logic

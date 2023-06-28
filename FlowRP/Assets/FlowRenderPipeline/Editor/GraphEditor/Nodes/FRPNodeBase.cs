@@ -178,8 +178,6 @@ namespace UnityEditor.Rendering.FlowPipeline
           
         }
 
-        
-
         public virtual void Draw(bool refresh = true)
         {
             

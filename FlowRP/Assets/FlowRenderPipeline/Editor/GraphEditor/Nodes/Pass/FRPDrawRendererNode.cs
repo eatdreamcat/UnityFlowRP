@@ -235,16 +235,26 @@ namespace UnityEditor.Rendering.FlowPipeline
         #region Material
         private void DrawMaterialBlock(ChangeEvent<bool> evt)
         {
-            // var isExpended = evt.newValue;
-            // var foldoutBlock = m_FoldoutBlocks[kMaterialFoldoutName];    
-            // foldoutBlock.block.Clear();
-            // if (isExpended)
-            // {
-            //     if (foldoutBlock.assignIn != null)
-            //     {
-            //         foldoutBlock.block.Add(foldoutBlock.assignIn);
-            //     }
-            // }
+            var isExpended = evt.newValue;
+            var foldoutBlock = m_FoldoutBlocks[kMaterialFoldoutName];    
+            foldoutBlock.block.Clear();
+            if (isExpended)
+            {
+                if (foldoutBlock.assignIn != null && !string.IsNullOrEmpty(RenderRequest.material))
+                {
+                    var materialParameter = m_View.GraphData.TryGetMaterialParameterNode(RenderRequest.material);
+                    
+                    Debug.Assert(materialParameter != null, $"Material Parameter is null: {RenderRequest.material}");
+                    
+                    var previewElement = FRPElementUtilities.CreateMaterialParameter(
+                        materialParameter.renderQueueRange.start, null,
+                        materialParameter.renderQueueRange.end, null,
+                        materialParameter.shaderTagList,
+                        true);
+                    previewElement.style.left = Indent * 2;
+                    foldoutBlock.block.Add(previewElement);
+                }
+            }
         }
 
         #endregion

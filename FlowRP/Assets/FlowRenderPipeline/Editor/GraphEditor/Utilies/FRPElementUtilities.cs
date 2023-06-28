@@ -1,21 +1,15 @@
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Rendering.FlowPipeline;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
-    public enum MyEnum
-    {
-        A,
-        B
-    }
     public static class FRPElementUtilities
     {
         public static Button CreateButton(string text, Action onClick = null)
@@ -140,6 +134,24 @@ namespace UnityEditor.Rendering.FlowPipeline
             return layerMaskField;
         }
 
+        public static EnumField CreateEnumField(Enum value, string label, EventCallback<ChangeEvent<Enum>> onValueChanged = null, bool isReadonly = false)
+        {
+            EnumField enumField = new EnumField();
+
+            enumField.label = label;
+            enumField.value = value;
+            enumField.Init(value);
+
+            if (onValueChanged != null)
+            {
+                enumField.RegisterValueChangedCallback(onValueChanged);
+            }
+            
+            enumField.SetEnabled(!isReadonly);
+            
+            return enumField;
+        }
+
         public static ObjectField CreateObjectField<T>(T value, string label, EventCallback<ChangeEvent<Object>> onValueChanged = null, bool isReadonly = false) where T : UnityEngine.Object
         {
             ObjectField objectField = new ObjectField();
@@ -171,6 +183,32 @@ namespace UnityEditor.Rendering.FlowPipeline
             toggle.SetEnabled(!isReadonly);
 
             return toggle;
+        }
+
+        public static ListView CreateListView<T>(
+            List<T> data, string title, Func<VisualElement> makeItem, Action<VisualElement, int> bindItem,
+            float itemHeight = 5, SelectionType selectionType = SelectionType.Single, bool reorderable = true,
+            ListViewReorderMode reorderMode = ListViewReorderMode.Animated, bool showFoldoutHeader = true, bool showAddRemoveFooter = true)
+        {
+            ListView listView = new ListView();
+            listView.reorderMode = reorderMode;
+            listView.headerTitle = title;
+            listView.itemsSource = data;
+            
+            listView.showFoldoutHeader = showFoldoutHeader;
+            listView.showAddRemoveFooter = showAddRemoveFooter;
+            
+            listView.makeItem = makeItem;
+            listView.bindItem = bindItem;
+            listView.selectionType = selectionType;
+            
+            listView.fixedItemHeight = itemHeight;
+            listView.reorderable = reorderable;
+
+            
+            
+
+            return listView;
         }
         
         public static bool CanAcceptConnector(Port startPort, Port endPort)
@@ -333,6 +371,76 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             cameraRoot.SetEnabled(!isReadonly);    
             return cameraRoot;
+        }
+
+        public static VisualElement CreateMaterialParameter(
+            FlowRenderGraphData.Queue start, EventCallback<ChangeEvent<Enum>> onQueueStartChanged, 
+            FlowRenderGraphData.Queue end, EventCallback<ChangeEvent<Enum>> onQueueEndChanged, 
+            List<string> shaderTags,
+            bool isReadonly = false)
+        {
+            VisualElement materialRoot = new VisualElement();
+
+            // render queue range
+            var queueStartField = CreateEnumField(start, "Queue Start", onQueueStartChanged, isReadonly);
+            materialRoot.Add(queueStartField);
+            
+            var queueEndField = CreateEnumField(end, "Queue End", onQueueEndChanged, isReadonly);
+            materialRoot.Add(queueEndField);
+            
+            
+            // shader tags 
+            var shaderTagsField = CreateListView(shaderTags, "ShaderTags", () =>
+            {
+                return CreateTextField("New-Textfield", null, null);
+                
+            }, (element, i) =>
+            {
+                var textField = element as TextField;
+                textField.value = shaderTags[i];
+                textField.RegisterValueChangedCallback(evt =>
+                {
+                    
+                });
+                
+                // Debug.Log($"Bind item:{i}");
+                
+            }, 20);
+         
+            shaderTagsField.RegisterCallback<MouseDownEvent>(evt =>
+            {
+                evt.StopImmediatePropagation();
+            });
+            
+            shaderTagsField.RegisterCallback<DragEnterEvent>(evt =>
+            {
+                evt.StopImmediatePropagation();
+            });
+
+            shaderTagsField.onSelectedIndicesChange += ints =>
+            {
+                foreach (var i in ints)
+                {
+                    Debug.Log($"onSelectedIndicesChange:{i}");
+                }
+            };
+
+            shaderTagsField.onSelectionChange += objects =>
+            {
+                Debug.Log($"onSelectionChange:{objects}");
+            };
+
+            shaderTagsField.onItemsChosen += objects =>
+            {
+                Debug.Log($"onItemsChosen:{objects}");
+            };
+            
+            
+            materialRoot.Add(shaderTagsField);
+
+            materialRoot.SetEnabled(!isReadonly);
+            materialRoot.style.left = 5;
+            return materialRoot;
         }
 
         #endregion
