@@ -43,11 +43,6 @@ namespace UnityEngine.Rendering.FlowPipeline
             GraphGuid = Guid.NewGuid().ToString();
         }
 
-        public bool IsEmpty()
-        {
-            return m_RenderRequestNodesMap.Count <= 0;
-        }
-
         public bool HasEntry()
         {
             return m_EntryNode != null && !string.IsNullOrEmpty(m_EntryNode.guid);
@@ -61,7 +56,8 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
 
             m_EntryNode = CreateEntryNode("Entry", Guid.NewGuid().ToString());
-            m_FlowNodesMap.Add(EntryID, CreateFlowNode("Entry", EntryID, EntryID, FRPNodeType.Entry));
+            var entryFlow = CreateFlowNode("Entry", EntryID, FRPNodeType.Entry);
+            m_FlowNodesMap.Add(entryFlow.guid, entryFlow);
             
             FlowUtility.SaveAsset(this);
 
@@ -78,7 +74,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             switch (nodeType)
             {
                 // render request
-                case FRPNodeType.FRPRenderRequestNode:
+                case FRPNodeType.FRPDrawRendererNode:
                 {
                     // check and set the first render request
                     if (string.IsNullOrEmpty(m_EntryNode.startPoint))
@@ -87,12 +83,31 @@ namespace UnityEngine.Rendering.FlowPipeline
                     }
 
                     var renderRequestNode = CreateRenderRequestNode(nodeName, guid);
-                    m_RenderRequestNodesMap.Add(guid, renderRequestNode);
-                    m_FlowNodesMap.Add(guid,
-                        CreateFlowNode(renderRequestNode.name, renderRequestNode.guid, renderRequestNode.guid,
-                            FRPNodeType.FRPRenderRequestNode));
+                    m_DrawRendererNodesMap.Add(guid, renderRequestNode);
+                    var flowNode = CreateFlowNode(renderRequestNode.name, renderRequestNode.guid,
+                        FRPNodeType.FRPDrawRendererNode);
+                    m_FlowNodesMap.Add(flowNode.guid, flowNode);
 
                     result =  renderRequestNode;
+                    
+                    break;
+                }
+
+                case FRPNodeType.FRPDrawFullScreenNode:
+                {
+                    // check and set the first render request
+                    if (string.IsNullOrEmpty(m_EntryNode.startPoint))
+                    {
+                        m_EntryNode.startPoint = guid;
+                    }
+
+                    var drawFullScreenNode = CreateDrawFullScreenNode(nodeName, guid);
+                    m_DrawFullScreenNodesMap.Add(guid, drawFullScreenNode);
+                    var flowNode = CreateFlowNode(drawFullScreenNode.name, drawFullScreenNode.guid,
+                        FRPNodeType.FRPDrawFullScreenNode);
+                    m_FlowNodesMap.Add(flowNode.guid, flowNode);
+                    
+                    result = drawFullScreenNode;
                     
                     break;
                 }
@@ -157,28 +172,64 @@ namespace UnityEngine.Rendering.FlowPipeline
             return result;
         }
 
-        public void UpdateNodeName(string guid, string newName)
+        public void UpdateNodeName(string guid, string newName, FRPNodeType nodeType)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(guid, out var node))
+            switch (nodeType)
             {
-                node.name = newName;
-                FlowUtility.SaveAsset(this);
+                case FRPNodeType.FRPDrawRendererNode:
+                {
+                    if (m_DrawRendererNodesMap.TryGetValue(guid, out var node))
+                    {
+                        node.name = newName;
+                        FlowUtility.SaveAsset(this);
+                        return;
+                    }
+                }
+                    break;
+                case FRPNodeType.FRPDrawFullScreenNode:
+                {
+                    if (m_DrawFullScreenNodesMap.TryGetValue(guid, out var node))
+                    {
+                        node.name = newName;
+                        FlowUtility.SaveAsset(this);
+                        return;
+                    }
+                }
+                    break;
             }
-            else
-            {
-                Debug.LogError($"[GraphData.UpdateNodeName] Node {guid} not exist.");
-            }
+            
+            Debug.LogError($"[GraphData.UpdateNodeName] Node {guid} not exist.");
         }
 
         public void DeleteNode(string guid, FRPNodeType nodeType)
         {
-            if (m_RenderRequestNodesMap.ContainsKey(guid))
+            switch (nodeType)
             {
-                m_RenderRequestNodesMap.Remove(guid);
+                case FRPNodeType.FRPDrawRendererNode:
+                {
+                    if (m_DrawRendererNodesMap.ContainsKey(guid))
+                    {
+                        m_DrawRendererNodesMap.Remove(guid);
 
-                FlowUtility.SaveAsset(this);
+                        FlowUtility.SaveAsset(this);
 
-                return;
+                        return;
+                    }
+                }
+                    break;
+                
+                case FRPNodeType.FRPDrawFullScreenNode:
+                {
+                    if (m_DrawFullScreenNodesMap.ContainsKey(guid))
+                    {
+                        m_DrawFullScreenNodesMap.Remove(guid);
+
+                        FlowUtility.SaveAsset(this);
+
+                        return;
+                    }
+                }
+                    break;
             }
 
             Debug.LogError($"[GraphData.DeleteNode] Node {guid} not exist.");
@@ -266,7 +317,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         
         public void AddCullingAssignment(string assignIn, string targetNodeID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
             {
                 inNode.culling = assignIn;
             }
@@ -278,7 +329,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         public void DeleteCullingAssignment(string assignIn, string targetNodeID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
             {
                 Debug.Assert(inNode.culling == assignIn, "Current assignment is not equal to the to-disconnected one .");
                 inNode.culling = "";
@@ -291,7 +342,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         public void AddRenderStateAssignment(string assignIn, string targetNodeID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
             {
                 inNode.state = assignIn;
             }
@@ -303,7 +354,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         public void DeleteRenderStateAssignment(string assignIn, string targetNodeID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
             {
                 Debug.Assert(inNode.state == assignIn, "Current assignment is not equal to the to-disconnected one .");
                 inNode.state = "";
@@ -316,7 +367,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         public void AddMaterialAssignment(string assignIn, string targetNodeID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
             {
                 inNode.material = assignIn;
             }
@@ -328,7 +379,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         public void DeleteMaterialAssignment(string assignIn, string targetNodeID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
             {
                 Debug.Assert(inNode.material == assignIn, "Current assignment is not equal to the to-disconnected one .");
                 inNode.material = "";
@@ -341,7 +392,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         public void AddCameraAssignment(string assignIn, string targetNodeID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
             {
                 inNode.camera = assignIn;
             }
@@ -353,7 +404,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         public void DeleteCameraAssignment(string assignIn, string targetNodeID)
         {
-            if (m_RenderRequestNodesMap.TryGetValue(targetNodeID, out var inNode))
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
             {
                 Debug.Assert(inNode.camera == assignIn, "Current assignment is not equal to the to-disconnected one .");
                 inNode.camera = "";

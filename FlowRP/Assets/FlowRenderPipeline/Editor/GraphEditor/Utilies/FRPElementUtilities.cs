@@ -7,6 +7,7 @@ using UnityEditor.UIElements;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace UnityEditor.Rendering.FlowPipeline
 {
@@ -31,8 +32,6 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             return button;
         }
-
-        
         
         public static TextField CreateTextField(string value = null, string label = null, EventCallback<ChangeEvent<string>> onValueChanged = null, bool isReadonly = false)
         {
@@ -53,7 +52,127 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             return textField;
         }
+        
+        public static FloatField CreateFloatField(float value = 0f, string label = null, EventCallback<ChangeEvent<float>> onValueChanged = null, bool isReadonly = false)
+        {
+            FloatField floatField = new FloatField()
+            {
+                value = value,
+                label = label,
+                isReadOnly = isReadonly,
+                pickingMode = isReadonly ? PickingMode.Ignore : PickingMode.Position,
+            };
 
+            floatField.SetEnabled(!isReadonly);
+            
+            if (onValueChanged != null)
+            {
+                floatField.RegisterValueChangedCallback(onValueChanged);
+            }
+
+            return floatField;
+        }
+        
+        public static Vector2Field CreateVector2Field(Vector2 value, string label = null, EventCallback<ChangeEvent<Vector2>> onValueChanged = null, bool isReadonly = false)
+        {
+            var vector2 = new Vector2Field()
+            {
+                value = value,
+                label = label,
+                pickingMode = isReadonly ? PickingMode.Ignore : PickingMode.Position,
+            };
+            vector2.SetEnabled(!isReadonly);
+            if (onValueChanged != null)
+            {
+                vector2.RegisterValueChangedCallback(onValueChanged);
+            }
+                    
+            return vector2;
+        }
+        
+        public static Vector3Field CreateVector3Field(Vector3 value, string label = null, EventCallback<ChangeEvent<Vector3>> onValueChanged = null, bool isReadonly = false)
+        {
+            var vector3 = new Vector3Field()
+            {
+                value = value,
+                label = label,
+                pickingMode = isReadonly ? PickingMode.Ignore : PickingMode.Position,
+                
+            };
+            vector3.SetEnabled(!isReadonly);
+            if (onValueChanged != null)
+            {
+                vector3.RegisterValueChangedCallback(onValueChanged);
+            }
+                    
+            return vector3;
+        }
+        
+        public static Vector4Field CreateVector4Field(Vector4 value, string label = null, EventCallback<ChangeEvent<Vector4>> onValueChanged = null, bool isReadonly = false)
+        {
+            var vector4 = new Vector4Field()
+            {
+                value = value,
+                label = label,
+                pickingMode = isReadonly ? PickingMode.Ignore : PickingMode.Position,
+            };
+            vector4.SetEnabled(!isReadonly);
+            if (onValueChanged != null)
+            {
+                vector4.RegisterValueChangedCallback(onValueChanged);
+            }
+                    
+            return vector4;
+        }
+
+        public static MaskField CreateMaskField(int value, string label, List<string> choices,
+            EventCallback<ChangeEvent<int>> onValueChanged = null, bool isReadonly = false)
+        {
+            MaskField layerMaskField = new MaskField(choices, value);
+            layerMaskField.label = label;
+
+            if (onValueChanged != null)
+            {
+                layerMaskField.RegisterValueChangedCallback(onValueChanged);
+            }
+            
+            layerMaskField.SetEnabled(!isReadonly);
+            return layerMaskField;
+        }
+
+        public static ObjectField CreateObjectField<T>(T value, string label, EventCallback<ChangeEvent<Object>> onValueChanged = null, bool isReadonly = false) where T : UnityEngine.Object
+        {
+            ObjectField objectField = new ObjectField();
+            objectField.objectType = typeof(T);
+            objectField.value = value;
+            objectField.label = label;
+            if (onValueChanged != null)
+            {
+                objectField.RegisterValueChangedCallback(onValueChanged);
+            }
+
+            return objectField;
+        }
+
+        public static Toggle CreateToggle(bool value, string label, EventCallback<ChangeEvent<bool>> onValueChanged,
+            bool isReadonly = false)
+        {
+            Toggle toggle = new Toggle()
+            {
+                value = value,
+                label = label
+            };
+
+            if (onValueChanged != null)
+            {
+                toggle.RegisterValueChangedCallback(onValueChanged);
+            }
+            
+            toggle.SetEnabled(!isReadonly);
+
+            return toggle;
+        }
+        
         public static bool CanAcceptConnector(Port startPort, Port endPort)
         {
             if (endPort.node != null && startPort.portType == endPort.portType)
@@ -84,6 +203,9 @@ namespace UnityEditor.Rendering.FlowPipeline
             return port;
         }
 
+
+        #region Node Parameters
+
         public static VisualElement CreateCullingParameter(
             bool isAllowPassCulling,
             EventCallback<ChangeEvent<bool>> isAllowPassCullingChanged, 
@@ -95,22 +217,11 @@ namespace UnityEditor.Rendering.FlowPipeline
             VisualElement cullingRoot = new VisualElement();
 
             // pass culling toggle
-            Toggle passCulling = new Toggle()
-            {
-                label = "AllowPassCulling",
-                
-            };
-            passCulling.value = isAllowPassCulling;
+            Toggle passCulling = CreateToggle(isAllowPassCulling, "PassCulling", isAllowPassCullingChanged, isReadonly);
             cullingRoot.Add(passCulling);
 
             // renderer culling toggle
-            Toggle rendererCulling = new Toggle()
-            {
-                label = "AllowRendererCulling",
-                
-            };
-            rendererCulling.value = isAllowRendererCulling;
-           
+            Toggle rendererCulling = CreateToggle(isAllowRendererCulling, "AllowRendererCulling", isAllowRendererCullingChanged, isReadonly);
             cullingRoot.Add(rendererCulling);
             
             // layer mask
@@ -185,19 +296,17 @@ namespace UnityEditor.Rendering.FlowPipeline
                 }
                 return maskFieldLayerValue;
             }
-            
-            MaskField layerMaskField = new MaskField(layerNames, LayerValueToMaskFieldValue(layerMask.value));
-            layerMaskField.label = "LayerMask";
 
-            if (!isReadonly)
-            {
-                layerMaskField.RegisterValueChangedCallback(evt =>
+            MaskField layerMaskField = CreateMaskField(LayerValueToMaskFieldValue(layerMask.value), "LayerMask",
+                layerNames,
+                evt =>
                 {
-                    cullingMaskChanged(MaskFieldValueToLayerValue(evt.newValue));
-                });
-                passCulling.RegisterValueChangedCallback(isAllowPassCullingChanged);
-                rendererCulling.RegisterValueChangedCallback(isAllowRendererCullingChanged);
-            }
+                    if (!isReadonly)
+                    {
+                        cullingMaskChanged(MaskFieldValueToLayerValue(evt.newValue));
+                    }
+                    
+                }, isReadonly);
             
             cullingRoot.Add(layerMaskField);
             cullingRoot.SetEnabled(!isReadonly);
@@ -205,6 +314,28 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             return cullingRoot;
         }
+
+        public static VisualElement CreateCameraParameter(
+            float fov, EventCallback<ChangeEvent<float>> fovChanged,
+            Vector3 offset, EventCallback<ChangeEvent<Vector3>> offsetChanged,
+            bool isReadonly = false)
+        {
+            VisualElement cameraRoot = new VisualElement();
+            cameraRoot.style.overflow = Overflow.Visible;
+
+            // fov
+            var fovField = CreateFloatField(fov, "Fov", fovChanged, isReadonly);
+            cameraRoot.Add(fovField);
+            
+            // offset
+            var offsetField = CreateVector3Field(offset, "Offset", offsetChanged, isReadonly);
+            cameraRoot.Add(offsetField);
+
+            cameraRoot.SetEnabled(!isReadonly);    
+            return cameraRoot;
+        }
+
+        #endregion
     }
 
 }

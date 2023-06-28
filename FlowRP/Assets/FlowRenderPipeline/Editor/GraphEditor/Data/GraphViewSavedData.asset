@@ -14,78 +14,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ViewTransformDatas:
     m_KeyData:
-    - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
     - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
+    - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
     m_ValueData:
-    - position: {x: -168, y: -61, z: 0}
-      scale: {x: 1.3225, y: 1.3225, z: 1}
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
+    - position: {x: 98, y: -206, z: 0}
+      scale: {x: 1.520875, y: 1.520875, z: 1}
   m_Datas:
     m_KeyData:
-    - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
     - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
+    - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
     m_ValueData:
     - m_NodeMap:
         m_KeyData:
-        - c3797174-fb62-4959-8956-0b695db792ee
-        - f7a29fbd-d8cf-46bb-b47a-1502b2a85f0f
-        - 3d5c5b7a-042f-4dd5-8269-2d9f18895f71
-        - e38ad947-bfa7-4ae1-87e5-dc19a9a47968
-        - 53faa1b1-8cce-40ad-9f27-80fb9f0142d8
-        - 8f17f34a-7a8e-4cb1-93d8-68b4666e3043
-        - 294472d9-4d26-41af-9e9b-1b823d8d0b16
-        - 7918c6e3-5df9-49d9-a726-28b3af1fa191
-        - dc2c0d66-86d0-4a4f-8c41-3fc971bafd1e
-        - 7695cc14-5ad3-43a7-83d2-58e4ab5933de
-        - 925c22fb-c702-4871-a86e-1b577cf7562f
-        m_ValueData:
-        - name: Entry
-          position: {x: 164, y: 283}
-          groupGuid: 
-        - name: FRPRenderRequestNode
-          position: {x: 820, y: 329}
-          groupGuid: 2e6748f5-57e6-439f-a078-7f8c1f48c8e0
-        - name: sssssdfaa
-          position: {x: 1202, y: 235}
-          groupGuid: 
-        - name: FRPRenderRequestNode
-          position: {x: 1552, y: 110}
-          groupGuid: 
-        - name: FRPRenderRequestNode
-          position: {x: 418, y: 304}
-          groupGuid: 2e6748f5-57e6-439f-a078-7f8c1f48c8e0
-        - name: FRPCullingParameterNode
-          position: {x: 304, y: 96}
-          groupGuid: 
-        - name: FRPRenderMaterialNode
-          position: {x: 251, y: 710}
-          groupGuid: 
-        - name: FRPRenderMaterialNode
-          position: {x: 711, y: 749}
-          groupGuid: 
-        - name: FRPCameraParameterNode
-          position: {x: 1051, y: 690}
-          groupGuid: 
-        - name: FRPRenderStateNode
-          position: {x: 772, y: 33}
-          groupGuid: 
-        - name: ceaddadsaRPRenderRequestNode
-          position: {x: 1992.118, y: 328.81317}
-          groupGuid: 
-      m_GroupMap:
-        m_KeyData:
-        - 2e6748f5-57e6-439f-a078-7f8c1f48c8e0
-        m_ValueData:
-        - position: {x: 947.5051, y: 413.67798}
-          title: NewGroup
-          guid: 2e6748f5-57e6-439f-a078-7f8c1f48c8e0
-    - m_NodeMap:
-        m_KeyData:
-        - a2af5c8d-cc8c-4454-bd9f-1611743ab869
+        - 3c4d08eb-b1ac-43ec-a700-cd180918d094
         m_ValueData:
         - name: Entry
           position: {x: 100, y: 200}
+          groupGuid: 
+      m_GroupMap:
+        m_KeyData: []
+        m_ValueData: []
+    - m_NodeMap:
+        m_KeyData:
+        - 183b4fd4-050a-4596-97d1-d3898c38fe20
+        - b77e4129-0381-4da9-aae8-92e6ba4b95bc
+        - d08fb839-d4e5-44ff-acd9-e551546fc027
+        - 18ee2409-5dc8-48be-9e21-5e5aa28b7ff4
+        - 5fcda963-9527-4c2b-94f2-d73959ba514e
+        m_ValueData:
+        - name: Entry
+          position: {x: 100, y: 200}
+          groupGuid: 
+        - name: 1
+          position: {x: 429, y: 252}
+          groupGuid: 
+        - name: 2
+          position: {x: 761, y: 252}
+          groupGuid: 
+        - name: FRPDrawRendererNode
+          position: {x: 336, y: 360}
+          groupGuid: 
+        - name: FRPRenderMaterialNode
+          position: {x: -16, y: 397}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

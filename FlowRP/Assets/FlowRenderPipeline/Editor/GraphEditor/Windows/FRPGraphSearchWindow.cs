@@ -35,12 +35,16 @@ namespace UnityEditor.Rendering.FlowPipeline
 
                 /// level 2
                 new SearchTreeGroupEntry(new GUIContent("Pass Node"), 2),
-                new SearchTreeEntry(new GUIContent("RenderPass", m_EmptyTexture))
+                new SearchTreeEntry(new GUIContent("DrawRenderer", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode
+                    userData = FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode
                 },
-                
+                new SearchTreeEntry(new GUIContent("DrawFullScreen", m_EmptyTexture))
+                {
+                    level = 3,
+                    userData = FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode
+                },
                 new SearchTreeEntry(new GUIContent("Culling Options", m_EmptyTexture))
                 {
                     level = 3,
@@ -108,7 +112,8 @@ namespace UnityEditor.Rendering.FlowPipeline
              
                
                // render pass
-               case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+               case FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode:
+               case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
                case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
                case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
                case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:

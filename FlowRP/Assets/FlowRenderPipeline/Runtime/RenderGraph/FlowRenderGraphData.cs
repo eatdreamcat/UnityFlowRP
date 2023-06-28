@@ -26,12 +26,16 @@ namespace UnityEngine.Rendering.FlowPipeline
             FRPBranchNode,
             FRPLoopNode,
             
-            // pass
+            // parameter
             FRPCameraParameterNode,
             FRPCullingParameterNode,
             FRPRenderMaterialNode,
-            FRPRenderRequestNode,
             FRPRenderStateNode,
+            
+            // pass
+            FRPDrawRendererNode,
+            FRPDrawFullScreenNode,
+            FRPComputeNode,
             
             // variables
             
@@ -76,7 +80,9 @@ namespace UnityEngine.Rendering.FlowPipeline
         [Serializable]
         internal sealed class CameraNodeDictionary : FRPSerializedDictionary<string, CameraParameterNode> { }
         [Serializable]
-        internal sealed class RenderRequestNodeDictionary : FRPSerializedDictionary<string, RenderRequestNode> { }
+        internal sealed class DrawRendererNodeDictionary : FRPSerializedDictionary<string, DrawRendererNode> { }
+        [Serializable]
+        internal sealed class DrawFullScreenNodeDictionary : FRPSerializedDictionary<string, DrawFullScreenNode> { }
         [Serializable]
         internal sealed class FlowNodeDictionary : FRPSerializedDictionary<string, FlowNode> { }
         
@@ -89,7 +95,9 @@ namespace UnityEngine.Rendering.FlowPipeline
         [SerializeField]
         private CameraNodeDictionary m_CameraNodesMap = new  CameraNodeDictionary();
         [SerializeField]
-        private RenderRequestNodeDictionary m_RenderRequestNodesMap = new  RenderRequestNodeDictionary();
+        private DrawRendererNodeDictionary m_DrawRendererNodesMap = new  DrawRendererNodeDictionary();
+        [SerializeField]
+        private DrawFullScreenNodeDictionary m_DrawFullScreenNodesMap = new DrawFullScreenNodeDictionary();
         [SerializeField]
         private FlowNodeDictionary m_FlowNodesMap = new  FlowNodeDictionary();
         
@@ -98,74 +106,51 @@ namespace UnityEngine.Rendering.FlowPipeline
        
         #region NodeList Interface
 
-        public List<CullingParameterNode> CullingNodeList
-        {
-            get
-            {
-                return m_CullingNodesMap.Values.ToList();
-            }
-        }
+        public List<CullingParameterNode> CullingNodeList => m_CullingNodesMap.Values.ToList();
         
         public CullingParameterNode TryGetCullingParameterNode(string nodeID)
         {
             Debug.Assert(m_CullingNodesMap.ContainsKey(nodeID), $"Culling Parameter Node {nodeID} not exist.");
             return m_CullingNodesMap[nodeID];
         }
-        
-        public List<RenderStateNode> RenderStateNodeList
-        {
-            get
-            {
-                return m_RenderStateNodesMap.Values.ToList();
-            }
-        }
+
+        public List<RenderStateNode> RenderStateNodeList => m_RenderStateNodesMap.Values.ToList();
         
         public RenderStateNode TryGetRenderStateNode(string nodeID)
         {
             Debug.Assert(m_RenderStateNodesMap.ContainsKey(nodeID), $"Render State Node {nodeID} not exist.");
             return m_RenderStateNodesMap[nodeID];
         }
-        
-        public List<MaterialParameterNode> MaterialNodeList
-        {
-            get
-            {
-                return m_MaterialNodesMap.Values.ToList();
-            }
-        }
-        
+
+        public List<MaterialParameterNode> MaterialNodeList => m_MaterialNodesMap.Values.ToList();
+
         public MaterialParameterNode TryGetMaterialParameterNode(string nodeID)
         {
             Debug.Assert(m_MaterialNodesMap.ContainsKey(nodeID), $"Material Parameter Node {nodeID} not exist.");
             return m_MaterialNodesMap[nodeID];
         }
-        
-        public List<CameraParameterNode> CameraNodeList
-        {
-            get
-            {
-                return m_CameraNodesMap.Values.ToList();
-            }
-        }
-        
+
+        public List<CameraParameterNode> CameraNodeList => m_CameraNodesMap.Values.ToList();
+
         public CameraParameterNode TryGetCameraParameterNode(string nodeID)
         {
             Debug.Assert(m_CameraNodesMap.ContainsKey(nodeID), $"Camera Parameter Node {nodeID} not exist.");
             return m_CameraNodesMap[nodeID];
         }
-        
-        public List<RenderRequestNode> PassNodeList
+
+        public List<DrawRendererNode> DrawRendererNodeList => m_DrawRendererNodesMap.Values.ToList();
+        public DrawRendererNode TryGetRenderPassNode(string nodeID)
         {
-            get
-            {
-                return m_RenderRequestNodesMap.Values.ToList();
-            }
+            Debug.Assert(m_DrawRendererNodesMap.ContainsKey(nodeID), $"Draw Renderer Node {nodeID} not exist.");
+            return m_DrawRendererNodesMap[nodeID];
         }
+
+        public List<DrawFullScreenNode> DrawFullScreenNodeList => m_DrawFullScreenNodesMap.Values.ToList();
         
-        public RenderRequestNode TryGetRenderPassNode(string nodeID)
+        public DrawFullScreenNode TryGetDrawFullScreenNode(string nodeID)
         {
-            Debug.Assert(m_RenderRequestNodesMap.ContainsKey(nodeID), $"Pass Node {nodeID} not exist.");
-            return m_RenderRequestNodesMap[nodeID];
+            Debug.Assert(m_DrawFullScreenNodesMap.ContainsKey(nodeID), $"Draw Full Screen Node {nodeID} not exist.");
+            return m_DrawFullScreenNodesMap[nodeID];
         }
         
         public FlowNode TryFlowNode(string nodeID)

@@ -91,7 +91,8 @@ namespace UnityEditor.Rendering.FlowPipeline
                     }
                         break;
                     
-                    case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+                    case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
+                    case FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode:   
                     {
                         /* INPUT CONTAINER */
                         FlowIn = this.CreatePort("Flow-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Single);
@@ -168,13 +169,13 @@ namespace UnityEditor.Rendering.FlowPipeline
         public virtual void Initialize(FRPGraphView view, Vector2 position, FlowRenderGraphData.BaseNode nodeData)
         {
             m_View = view;
-            SetPosition(new Rect(position, new Vector2(100, 150)));
+            SetPosition(new Rect(position, new Vector2(0, 0 )));
             mainContainer.AddToClassList("ds-node__main-container");
             extensionContainer.AddToClassList("ds-node__extension-container");
             m_GraphNodeData = nodeData;
             
             layer = 0;
-
+          
         }
 
         

@@ -25,13 +25,12 @@ namespace UnityEngine.Rendering.FlowPipeline
             public List<string> flowOut;
         }
 
-        public FlowNode CreateFlowNode(string nodeName, string guid, string dataID = "",
-            FRPNodeType dataType = FRPNodeType.Unknow)
+        public FlowNode CreateFlowNode(string nodeName, string dataID, FRPNodeType dataType)
         {
             return new FlowNode()
             {
-                name = name,
-                guid = guid,
+                name = nodeName,
+                guid = dataID,
                 dataType = dataType,
                 dataID = dataID,
                 type = FRPNodeType.Flow,
@@ -71,7 +70,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         
         
         [Serializable]
-        public class RenderRequestNode : BaseNode
+        public class DrawRendererNode : BaseNode
         {
             public bool isEnabled;
             public string culling;
@@ -83,17 +82,45 @@ namespace UnityEngine.Rendering.FlowPipeline
             public List<string> outputList;
         }
         
-        public static RenderRequestNode CreateRenderRequestNode(string name, string guid)
+        public static DrawRendererNode CreateRenderRequestNode(string name, string guid)
         {
-            return new RenderRequestNode()
+            return new DrawRendererNode()
             {
                 name = name,
                 guid = guid,
-                type = FRPNodeType.FRPRenderRequestNode,
+                type = FRPNodeType.FRPDrawRendererNode,
                 isEnabled = true,
+                
+                inputList = new List<string>(),
+                outputList = new List<string>()
             };
         }
 
+        [Serializable]
+        public class DrawFullScreenNode : BaseNode
+        {
+            public bool isEnabled;
+            public string state;
+            public Shader shader;
+            public List<string> shaderTagList;
+            
+            public List<string> inputList;
+            public List<string> outputList;
+        }
+
+        public static DrawFullScreenNode CreateDrawFullScreenNode(string name, string guid)
+        {
+            return new DrawFullScreenNode()
+            {
+                name = name,
+                guid = guid,
+                type = FRPNodeType.FRPDrawFullScreenNode,
+                isEnabled = true,
+                
+                inputList = new List<string>(),
+                outputList = new List<string>()
+            };
+        }
 
         [Serializable]
         public class CullingParameterNode : BaseNode
@@ -190,12 +217,48 @@ namespace UnityEngine.Rendering.FlowPipeline
             };
         }
 
+        public enum Queue {
+            Start = 0,
+            /// <summary>
+            ///   <para>This render queue is rendered before any others.</para>
+            /// </summary>
+            Background = 1000, // 0x000003E8
+            /// <summary>
+            ///   <para>Opaque geometry uses this queue.</para>
+            /// </summary>
+            Geometry = 2000, // 0x000007D0
+            /// <summary>
+            ///   <para>Alpha tested geometry uses this queue.</para>
+            /// </summary>
+            AlphaTest = 2450, // 0x00000992
+            /// <summary>
+            ///   <para>Last render queue that is considered "opaque".</para>
+            /// </summary>
+            GeometryLast = 2500, // 0x000009C4
+            /// <summary>
+            ///   <para>This render queue is rendered after Geometry and AlphaTest, in back-to-front order.</para>
+            /// </summary>
+            Transparent = 3000, // 0x00000BB8
+            /// <summary>
+            ///   <para>This render queue is meant for overlay effects.</para>
+            /// </summary>
+            Overlay = 4000, // 0x00000FA0
+            End = 5000
+        }
+        
+        
+        [Serializable]
+        public struct QueueRange
+        {
+            public Queue start;
+            public Queue end;
+        }
+        
         [Serializable]
         public class MaterialParameterNode : BaseNode
         {
-            public RenderQueueRange renderQueueRange;
+            public QueueRange renderQueueRange;
             public List<string> shaderTagList;
-            public string shaderPath;
             public Material overrideMaterial;
         }
 
@@ -205,14 +268,17 @@ namespace UnityEngine.Rendering.FlowPipeline
             {
                 name = name,
                 guid = guid,
-                renderQueueRange = RenderQueueRange.all,
+                renderQueueRange =
+                {
+                    start = Queue.Start,
+                    end = Queue.End
+                },
                 shaderTagList = new List<string>()
                 {
                     "SRPDefaultUnlit",
                     "FRPForward",
                     "FRPForwardOnly"
                 },
-                shaderPath = "",
                 overrideMaterial = null,
                 type = FRPNodeType.FRPRenderMaterialNode
             };

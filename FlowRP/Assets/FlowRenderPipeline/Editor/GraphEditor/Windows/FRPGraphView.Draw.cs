@@ -25,7 +25,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             }
         }
         
-        private void DrawNode(FlowRenderGraphData.BaseNode baseNode)
+        private FRPNodeBase DrawNode(FlowRenderGraphData.BaseNode baseNode)
         {
             var nodeViewData = m_GraphViewSavedData.TryGetNodeData(baseNode.guid);
             var graphNode = CreateNode(
@@ -57,9 +57,37 @@ namespace UnityEditor.Rendering.FlowPipeline
                 groupElement.AddElement(graphNode);
                 
             }
+
+            return graphNode;
         }
 
-        private void DrawPassNodeList(List<FlowRenderGraphData.RenderRequestNode> nodeList)
+        private void DrawRendererNodeList(List<FlowRenderGraphData.DrawRendererNode> nodeList)
+        {
+            for (int i = 0; i < nodeList.Count; ++i)
+            {
+                FRPDrawRendererNode renderRequestNode = (FRPDrawRendererNode)DrawNode(nodeList[i]);
+                
+                #region Draw Assignment
+
+                var graphNodeData = m_CurrentRenderGraphData.TryGetRenderPassNode(nodeList[i].guid);
+                
+                // 1. culling assignment
+                DrawAssignment(graphNodeData.culling, FRPDrawRendererNode.kCullingFoldoutName, renderRequestNode);
+                
+                // 2. state assignment
+                DrawAssignment(graphNodeData.state, FRPDrawRendererNode.kStateFoldoutName, renderRequestNode);
+                
+                // 3. material assignment
+                DrawAssignment(graphNodeData.material, FRPDrawRendererNode.kMaterialFoldoutName, renderRequestNode);
+                
+                // 4. camera assignment
+                DrawAssignment(graphNodeData.camera, FRPDrawRendererNode.kCameraFoldoutName, renderRequestNode);
+
+                #endregion
+            }
+        }
+
+        private void DrawFullScreenNodeList(List<FlowRenderGraphData.DrawFullScreenNode> nodeList)
         {
             for (int i = 0; i < nodeList.Count; ++i)
             {
@@ -67,42 +95,45 @@ namespace UnityEditor.Rendering.FlowPipeline
             }
         }
 
+        void AddEdgeManually(Edge edge, bool isMainFlow = false)
+        {
+            edge.userData = true;
+            AddElement(edge);
+                
+            if (isMainFlow)
+            {
+                edge.edgeControl.drawFromCap = true;
+                edge.edgeControl.inputColor = new Color(255,0,0,255);
+                edge.edgeControl.fromCapColor = new Color(255,0,0,255);
+                edge.edgeControl.edgeWidth = 100;
+                edge.edgeControl.MarkDirtyRepaint();
+                Debug.Assert( edge.UpdateEdgeControl(), "edge.UpdateEdgeControl()");
+            }
+        }
+
+        void DrawAssignment(string assignID, string kBlockName, FRPDrawRendererNode renderRequestNode)
+        {
+            if (!string.IsNullOrEmpty(assignID))
+            {
+                var parameterNode = m_FrpNodeMap[assignID];
+                Debug.Assert(parameterNode != null, $"parameterNode {assignID} is null.");
+                AddEdgeManually(parameterNode.FlowOut.ConnectTo(renderRequestNode.GetBlockPort(kBlockName)));
+            }
+        }
+        
         private void DrawNodeConnections(string entryID)
         {
-            void AddEdgeManually(Edge edge, bool isMainFlow = false)
-            {
-                edge.userData = true;
-                AddElement(edge);
-                
-                if (isMainFlow)
-                {
-                    edge.edgeControl.drawFromCap = true;
-                    edge.edgeControl.inputColor = new Color(255,0,0,255);
-                    edge.edgeControl.fromCapColor = new Color(255,0,0,255);
-                    edge.edgeControl.edgeWidth = 100;
-                    edge.edgeControl.MarkDirtyRepaint();
-                    Debug.Assert( edge.UpdateEdgeControl(), "edge.UpdateEdgeControl()");
-                }
-            };
-
-            void DrawAssignment(string assignID, string kBlockName, FRPRenderRequestNode renderRequestNode)
-            {
-                if (!string.IsNullOrEmpty(assignID))
-                {
-                    var parameterNode = m_FrpNodeMap[assignID];
-                    Debug.Assert(parameterNode != null, $"parameterNode {assignID} is null.");
-                    AddEdgeManually(parameterNode.FlowOut.ConnectTo(renderRequestNode.GetBlockPort(kBlockName)));
-                }
-            }
-
             var flowNode = m_CurrentRenderGraphData.TryFlowNode(entryID);
             Debug.Assert(flowNode.dataType == FlowRenderGraphData.FRPNodeType.Entry, "Entry Flow not binding to Entry Node.");
           
+            // entry node flow...
             if (flowNode.flowOut.Count > 0)
             {
                 // Caution: this is not a safe coding 
                 bool canBreakLoop = false;
-                while (flowNode != null && canBreakLoop == false)
+                int loopCount = 0;
+                const int MaxLoopCount = 1000;
+                while (flowNode != null && canBreakLoop == false && ++loopCount <= MaxLoopCount)
                 {
                     if (!string.IsNullOrEmpty(flowNode.dataID) && m_FrpNodeMap.TryGetValue(flowNode.dataID, out var graphNode))
                     {
@@ -127,28 +158,10 @@ namespace UnityEditor.Rendering.FlowPipeline
                                 }
                             }
                                 break;
-                            case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
-                            {
-                                var graphNodeData = m_CurrentRenderGraphData.TryGetRenderPassNode(flowNode.dataID);
                             
-                                FRPRenderRequestNode renderRequestNode = (FRPRenderRequestNode)graphNode;
-
-                                #region Draw Assignment
-
-                                // 1. culling assignment
-                                DrawAssignment(graphNodeData.culling, FRPRenderRequestNode.kCullingFoldoutName, renderRequestNode);
-                
-                                // 2. state assignment
-                                DrawAssignment(graphNodeData.state, FRPRenderRequestNode.kStateFoldoutName, renderRequestNode);
-                
-                                // 3. material assignment
-                                DrawAssignment(graphNodeData.material, FRPRenderRequestNode.kMaterialFoldoutName, renderRequestNode);
-                
-                                // 4. camera assignment
-                                DrawAssignment(graphNodeData.camera, FRPRenderRequestNode.kCameraFoldoutName, renderRequestNode);
-
-                                #endregion
-                                
+                            case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
+                            case FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode:
+                            {
                                 // draw flow edge
                                 if (flowNode.flowOut.Count > 0)
                                 {
@@ -156,7 +169,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                                     var targetNode = m_FrpNodeMap[targetNodeID];
                                     Debug.Assert(targetNode != null, $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
                                     // add edge
-                                    AddEdgeManually(renderRequestNode.FlowOut.ConnectTo(targetNode.FlowIn), true);
+                                    AddEdgeManually(graphNode.FlowOut.ConnectTo(targetNode.FlowIn), true);
                                     
                                     // pass node only has one flow output.
                                     flowNode = m_CurrentRenderGraphData.TryFlowNode(flowNode.flowOut[0]);
@@ -167,12 +180,14 @@ namespace UnityEditor.Rendering.FlowPipeline
                                 }
                             }
                                 break;
+
                             case FlowRenderGraphData.FRPNodeType.FRPBranchNode:
                             {
                                 // TODO:
                                 canBreakLoop = true;
                             }
                                 break;
+                            
                             case FlowRenderGraphData.FRPNodeType.FRPLoopNode:
                             {
                                 // TODO: 
@@ -189,6 +204,8 @@ namespace UnityEditor.Rendering.FlowPipeline
 
                    
                 }
+                
+                Debug.Assert(loopCount <= MaxLoopCount, "A deadloop occured while draw connections, please check is there a new Node type not be managed.");
             }
         }
         
@@ -234,20 +251,26 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             // 0. draw entry node
             DrawNode(m_CurrentRenderGraphData.Entry);
-            
+           
             // 1. draw nodes 
-            var passNodeList = m_CurrentRenderGraphData.PassNodeList;
+            var passNodeList = m_CurrentRenderGraphData.DrawRendererNodeList;
+            var fullScreenNodeList = m_CurrentRenderGraphData.DrawFullScreenNodeList;
             var cullingNodeList = m_CurrentRenderGraphData.CullingNodeList;
             var renderStateNodeList = m_CurrentRenderGraphData.RenderStateNodeList;
             var materialNodeList = m_CurrentRenderGraphData.MaterialNodeList;
             var cameraNodeList = m_CurrentRenderGraphData.CameraNodeList;
-           
-            DrawPassNodeList(passNodeList);
+            
+            // draw parameter node first cause we will draw parameter assignment when drawing pass node
             DrawCullingNodeList(cullingNodeList);
             DrawRenderStateNodeList(renderStateNodeList);
             DrawMaterialNodeList(materialNodeList);
             DrawCameraNodeList(cameraNodeList);
-           
+
+            // draw pass node and it's assignments
+            DrawRendererNodeList(passNodeList);
+            DrawFullScreenNodeList(fullScreenNodeList);
+            
+            
             // 2. set flow connections
             DrawNodeConnections(m_CurrentRenderGraphData.EntryID);
            

@@ -125,7 +125,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         public void UpdateNodeTitle(string newTitle, FRPNodeBase node)
         {
             m_GraphViewSavedData.UpdateNodeName(node.ID, newTitle);
-            m_CurrentRenderGraphData.UpdateNodeName(node.ID, newTitle);
+            m_CurrentRenderGraphData.UpdateNodeName(node.ID, newTitle, node.Type);
         }
         
         public void UpdateGroupTitle(string newTitle, FRPGroup group)
@@ -170,7 +170,8 @@ namespace UnityEditor.Rendering.FlowPipeline
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+                case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
+                case FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode:
                 case FlowRenderGraphData.FRPNodeType.Entry:
                 {
                     edge.style.color = Color.cyan;
@@ -212,7 +213,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPRenderRequestNode:
+                case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
                 case FlowRenderGraphData.FRPNodeType.Entry:
                 {
                     m_CurrentRenderGraphData.DeleteFlowInOut(outNode.ID, inNode.ID);

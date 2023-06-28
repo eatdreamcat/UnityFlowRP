@@ -24,22 +24,25 @@ MonoBehaviour:
   m_CameraNodesMap:
     m_KeyData: []
     m_ValueData: []
-  m_RenderRequestNodesMap:
+  m_DrawRendererNodesMap:
+    m_KeyData: []
+    m_ValueData: []
+  m_DrawFullScreenNodesMap:
     m_KeyData: []
     m_ValueData: []
   m_FlowNodesMap:
     m_KeyData:
-    - a2af5c8d-cc8c-4454-bd9f-1611743ab869
+    - 3c4d08eb-b1ac-43ec-a700-cd180918d094
     m_ValueData:
-    - guid: a2af5c8d-cc8c-4454-bd9f-1611743ab869
-      name: ForwardBaseRenderer
+    - guid: 3c4d08eb-b1ac-43ec-a700-cd180918d094
+      name: Entry
       type: 1
-      dataID: a2af5c8d-cc8c-4454-bd9f-1611743ab869
+      dataID: 3c4d08eb-b1ac-43ec-a700-cd180918d094
       dataType: 2
       flowIn: []
       flowOut: []
   m_EntryNode:
-    guid: a2af5c8d-cc8c-4454-bd9f-1611743ab869
+    guid: 3c4d08eb-b1ac-43ec-a700-cd180918d094
     name: Entry
     type: 2
     startPoint: 
