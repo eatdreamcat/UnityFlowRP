@@ -11,16 +11,16 @@ namespace UnityEditor.Rendering.FlowPipeline
             base.Initialize(view, position, nodeData);
 
             mainContainer.Add(FRPElementUtilities.CreateMaterialParameter(
-                MaterialParameter.renderQueueRange.start, evt =>
+                MaterialParameter, 
+                evt =>
                 {
                     MaterialParameter.renderQueueRange.start = (FlowRenderGraphData.Queue)evt.newValue;
-                },
-                MaterialParameter.renderQueueRange.end, evt =>
+                }, 
+                evt =>
                 {
                     MaterialParameter.renderQueueRange.end = (FlowRenderGraphData.Queue)evt.newValue;
-                },
-                MaterialParameter.shaderTagList
-                ));
+                }
+            ));
         }
     }
 }

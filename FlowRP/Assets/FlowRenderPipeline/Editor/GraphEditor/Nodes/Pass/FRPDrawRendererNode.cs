@@ -218,16 +218,21 @@ namespace UnityEditor.Rendering.FlowPipeline
         #region State
         private void DrawStateBlock(ChangeEvent<bool> evt)
         {
-            // var isExpended = evt.newValue;
-            // var foldoutBlock = m_FoldoutBlocks[kStateFoldoutName];    
-            // foldoutBlock.block.Clear();
-            // if (isExpended)
-            // {
-            //     if (foldoutBlock.assignIn != null)
-            //     {
-            //         foldoutBlock.block.Add(foldoutBlock.assignIn);
-            //     }
-            // }
+            var isExpended = evt.newValue;
+            var foldoutBlock = m_FoldoutBlocks[kStateFoldoutName];    
+            foldoutBlock.block.Clear();
+            if (isExpended)
+            {
+                if (foldoutBlock.assignIn != null && !string.IsNullOrEmpty(RenderRequest.state))
+                {
+                    var stateParameter = m_View.GraphData.TryGetRenderStateNode(RenderRequest.state);
+                    Debug.Assert(stateParameter != null, 
+                        $"RenderState Parameter is null: {RenderRequest.state}");
+                    var previewElement = FRPElementUtilities.CreateStateParameter(stateParameter, true);
+                    previewElement.style.left = Indent * 2;
+                    foldoutBlock.block.Add(previewElement);
+                }
+            }
         }
 
         #endregion
@@ -244,13 +249,11 @@ namespace UnityEditor.Rendering.FlowPipeline
                 {
                     var materialParameter = m_View.GraphData.TryGetMaterialParameterNode(RenderRequest.material);
                     
-                    Debug.Assert(materialParameter != null, $"Material Parameter is null: {RenderRequest.material}");
+                    Debug.Assert(materialParameter != null, 
+                        $"Material Parameter is null: {RenderRequest.material}");
                     
-                    var previewElement = FRPElementUtilities.CreateMaterialParameter(
-                        materialParameter.renderQueueRange.start, null,
-                        materialParameter.renderQueueRange.end, null,
-                        materialParameter.shaderTagList,
-                        true);
+                    var previewElement = FRPElementUtilities.CreateMaterialParameter(materialParameter, 
+                        null, null, true);
                     previewElement.style.left = Indent * 2;
                     foldoutBlock.block.Add(previewElement);
                 }
@@ -273,9 +276,11 @@ namespace UnityEditor.Rendering.FlowPipeline
                 {
                     var cameraParameter = m_View.GraphData.TryGetCameraParameterNode(RenderRequest.camera);
                     
-                    Debug.Assert(cameraParameter != null, $"Camera Parameter is null: {RenderRequest.camera}");
+                    Debug.Assert(cameraParameter != null, 
+                        $"Camera Parameter is null: {RenderRequest.camera}");
 
-                    var previewElement = FRPElementUtilities.CreateCameraParameter(cameraParameter.fov, null, cameraParameter.offset, null, true);
+                    var previewElement = FRPElementUtilities.CreateCameraParameter(cameraParameter.fov, null,
+                        cameraParameter.offset, null, true);
                     previewElement.style.left = Indent * 2;
                     cameraContentRoot.Add(previewElement);
                    

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.FlowPipeline;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
@@ -88,7 +90,7 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             return integerField;
         }
-        
+
         public static Vector2Field CreateVector2Field(Vector2 value, string label = null, EventCallback<ChangeEvent<Vector2>> onValueChanged = null, bool isReadonly = false)
         {
             var vector2 = new Vector2Field()
@@ -144,8 +146,26 @@ namespace UnityEditor.Rendering.FlowPipeline
         public static MaskField CreateMaskField(int value, string label, List<string> choices,
             EventCallback<ChangeEvent<int>> onValueChanged = null, bool isReadonly = false)
         {
-            MaskField layerMaskField = new MaskField(choices, value);
-            layerMaskField.label = label;
+            MaskField maskField = new MaskField(choices, value);
+            maskField.label = label;
+
+            if (onValueChanged != null)
+            {
+                maskField.RegisterValueChangedCallback(onValueChanged);
+            }
+            
+            maskField.SetEnabled(!isReadonly);
+            return maskField;
+        }
+        
+        public static LayerMaskField CreateLayerMaskField(int value, string label,
+            EventCallback<ChangeEvent<int>> onValueChanged = null, bool isReadonly = false)
+        {
+            LayerMaskField layerMaskField = new LayerMaskField()
+            {
+                value = value,
+                label = label
+            };
 
             if (onValueChanged != null)
             {
@@ -207,10 +227,10 @@ namespace UnityEditor.Rendering.FlowPipeline
             return toggle;
         }
 
-        public static VisualElement CreateListView<T>(
+        public static VisualElement CreateListView<T, ItemElement>(
             List<T> data, string title, Func<VisualElement> makeItem, Action<VisualElement, int> bindItem,
             float itemHeight = 25, SelectionType selectionType = SelectionType.Single, bool reorderable = true,
-            ListViewReorderMode reorderMode = ListViewReorderMode.Animated, bool showFoldoutHeader = true, bool showAddRemoveFooter = true)
+            ListViewReorderMode reorderMode = ListViewReorderMode.Animated, bool showFoldoutHeader = true, bool showAddRemoveFooter = true) where ItemElement : VisualElement
         {
             VisualElement result;
             ListView listView = new ListView();
@@ -221,23 +241,42 @@ namespace UnityEditor.Rendering.FlowPipeline
             listView.showFoldoutHeader = false;
             listView.showAddRemoveFooter = showAddRemoveFooter;
             
+            listView.userData =  new List<VisualElement>();
+
+            float GetListHeight()
+            {
+                var totalHeight = 0f;
+                totalHeight += extraHeightAdd * 23;
+                // var scrollView = listView.Q<ScrollView>();
+                // var viewport = scrollView.contentViewport;
+                // var contentContainer = scrollView.contentContainer;   
+                // totalHeight += contentContainer.worldBound.height;
+
+                totalHeight += listView.itemsSource.Count * listView.fixedItemHeight;
+                
+                return totalHeight;
+            }
             if (showFoldoutHeader)
             {
+                
                 var header = new VisualElement();
-               // list foldout
+                // list foldout
                 var foldout = new Foldout();
                 header.Add(foldout);
                 foldout.text = title;
                 foldout.Add(listView);
                 foldout.RegisterValueChangedCallback(evt =>
                 {
-                    if (evt.newValue)
+                    if (itemHeight > 0)
                     {
-                        listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
-                    }
-                    else
-                    {
-                        listView.style.height = 0;
+                        if (evt.newValue)
+                        {
+                            listView.style.height = GetListHeight();
+                        }
+                        else
+                        {
+                            listView.style.height = 0;
+                        }
                     }
                 });
                 listView.style.left = -6;
@@ -270,17 +309,30 @@ namespace UnityEditor.Rendering.FlowPipeline
                             listView.itemsSource.RemoveAt(index);
                         }
                     }
-                    listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
+
+                    if (itemHeight > 0)
+                    {
+                        listView.style.height = GetListHeight();
+                    }
                     listView.Rebuild();
                     
                 });
+
+                listView.itemsAdded += ints =>
+                { 
+                    arraySize.value = listView.itemsSource.Count;
+                };
+
+                listView.itemsRemoved += ints =>
+                {
+                    arraySize.value = listView.itemsSource.Count;
+                };
+                
                 arraySize.focusable = true;
                 arraySize.isDelayed = true;
                 arraySize.AddToClassList(ListView.arraySizeFieldUssClassName);
                 header.Add(arraySize);
 
-                
-                
                 result = header;
             }
             else
@@ -297,7 +349,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             listView.bindItem = bindItem;
             listView.selectionType = selectionType;
             
-            listView.fixedItemHeight = itemHeight;
+            
             listView.reorderable = reorderable;
 
             // to prevent the event propagation 
@@ -310,19 +362,23 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 evt.StopImmediatePropagation();
             });
-            
-            listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
 
-            if (listView.showAddRemoveFooter)
+            if (itemHeight > 0)
+            {
+                listView.fixedItemHeight = itemHeight;
+                listView.style.height = GetListHeight();
+            }
+
+            if (listView.showAddRemoveFooter && itemHeight > 0)
             {
                 listView.itemsAdded += ints =>
                 {
-                    listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
+                    listView.style.height = GetListHeight();
                 };
 
                 listView.itemsRemoved += ints =>
                 {
-                    listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
+                    listView.style.height = GetListHeight();
                 }; 
             }
             
@@ -381,93 +437,18 @@ namespace UnityEditor.Rendering.FlowPipeline
             cullingRoot.Add(rendererCulling);
             
             // layer mask
-            // Get the layer names and values
-            List<string> layerNames = new List<string>();
-            const int TotalBit = 32;
-            for (int i = 0; i < TotalBit; ++i)
+            LayerMaskField layerMaskField= CreateLayerMaskField(layerMask.value, "LayerMask", evt =>
             {
-                string layerName = InternalEditorUtility.GetLayerName(i);
-                if (string.IsNullOrEmpty(layerName))
+                if (!isReadonly)
                 {
-                    continue;
-                }
-                layerNames.Add(layerName);
-            }
-            
-            int MaskFieldValueToLayerValue(int maskFieldlValue)
-            {
-                // maskField (0 nothing, -1 everything)
-                // layerMask (0 nothing, -1 everything, 1 default, ...)
-                if (maskFieldlValue == 0 || maskFieldlValue == -1)
-                {
-                    return maskFieldlValue;
+                    cullingMaskChanged(evt.newValue);
                 }
                 
-                List<string> nameList = new List<string>();
-                var bitMask = layerNames.Count;
-                while (--bitMask >= 0)
-                {
-                    var layerBitMask = 1 << bitMask;
-                    if ((maskFieldlValue & layerBitMask) == layerBitMask)
-                    {
-                        // Debug.Log($"BitMask :{bitMask} , Layer name:{layerNames[bitMask]}");
-                        nameList.Add(layerNames[bitMask]);
-                    }
-                  
-                }
-                
-                var layerValue = 0;
-                for (int i = 0; i < nameList.Count; i++)
-                {
-                    layerValue += (1 << (LayerMask.NameToLayer(nameList[i])));
-                }
-                return layerValue;
-            }
-
-            int LayerValueToMaskFieldValue(int layer)
-            {
-                // maskField (0 nothing, -1 everything)
-                // layerMask (0 nothing, -1 everything, 1 default, ...)
-                if (layer == 0 || layer == -1)
-                {
-                    return layer;
-                }
-                List<string> nameList = new List<string>();
-                var bitMask = TotalBit;
-                while (--bitMask >= 0)
-                {
-                    var layerBitMask = 1 << bitMask;
-                    if ((layer & layerBitMask) == layerBitMask)
-                    {
-                        // Debug.Log($"BitMask :{bitMask} , Layer name:{LayerMask.LayerToName(bitMask)}");
-                        nameList.Add(LayerMask.LayerToName(bitMask));
-                    }
-                  
-                }
-
-                var maskFieldLayerValue = 0;
-                for (int i = 0; i < nameList.Count; i++)
-                {
-                    maskFieldLayerValue += (1 << (layerNames.IndexOf(nameList[i])));
-                }
-                return maskFieldLayerValue;
-            }
-
-            MaskField layerMaskField = CreateMaskField(LayerValueToMaskFieldValue(layerMask.value), "LayerMask",
-                layerNames,
-                evt =>
-                {
-                    if (!isReadonly)
-                    {
-                        cullingMaskChanged(MaskFieldValueToLayerValue(evt.newValue));
-                    }
-                    
-                }, isReadonly);
-            
+            }, isReadonly);
             cullingRoot.Add(layerMaskField);
+            
             cullingRoot.SetEnabled(!isReadonly);
             cullingRoot.style.left = 5;
-            
             return cullingRoot;
         }
 
@@ -492,35 +473,35 @@ namespace UnityEditor.Rendering.FlowPipeline
         }
 
         public static VisualElement CreateMaterialParameter(
-            FlowRenderGraphData.Queue start, EventCallback<ChangeEvent<Enum>> onQueueStartChanged, 
-            FlowRenderGraphData.Queue end, EventCallback<ChangeEvent<Enum>> onQueueEndChanged, 
-            List<string> shaderTags,
+            FlowRenderGraphData.MaterialParameterNode materialParameter,
+            EventCallback<ChangeEvent<Enum>> onQueueStartChanged, 
+            EventCallback<ChangeEvent<Enum>> onQueueEndChanged, 
             bool isReadonly = false)
         {
             VisualElement materialRoot = new VisualElement();
 
             // render queue range
-            var queueStartField = CreateEnumField(start, "Queue Start", onQueueStartChanged, isReadonly);
+            var queueStartField = CreateEnumField(materialParameter.renderQueueRange.start, "Queue Start", onQueueStartChanged, isReadonly);
             materialRoot.Add(queueStartField);
             
-            var queueEndField = CreateEnumField(end, "Queue End", onQueueEndChanged, isReadonly);
+            var queueEndField = CreateEnumField(materialParameter.renderQueueRange.end, "Queue End", onQueueEndChanged, isReadonly);
             materialRoot.Add(queueEndField);
             
             EventCallback<ChangeEvent<string>> callback = evt =>
             {
                 var index = (int)((TextField) evt.target).userData;
-                shaderTags[index] = evt.newValue;
+                materialParameter.shaderTagList[index] = evt.newValue;
             };
             
             // shader tags 
-            var shaderTagsField = CreateListView(shaderTags, "ShaderTags", () =>
+            var shaderTagsField = CreateListView<string, TextField>(materialParameter.shaderTagList, "ShaderTags", () =>
             {
                 return CreateTextField("New-Textfield", null, null);
                 
             }, (element, i) =>
             {
                 var textField = element as TextField;
-                textField.value = shaderTags[i];
+                textField.value = materialParameter.shaderTagList[i];
                 textField.userData = i;
                 textField.UnregisterValueChangedCallback(callback);
                 textField.RegisterValueChangedCallback(callback);
@@ -528,12 +509,308 @@ namespace UnityEditor.Rendering.FlowPipeline
             }, 22);
             
             materialRoot.Add(shaderTagsField);
+            
+            // material object field
+            var materialOverride = CreateObjectField(materialParameter.overrideMaterial, "Material", evt =>
+            {
+                materialParameter.overrideMaterial = (Material)evt.newValue;
+                
+            }, isReadonly);
 
+            materialOverride.style.left = isReadonly ? 0 : 10;
+
+            if (!isReadonly)
+            {
+                var isOverrideMaterialToggle =
+                    CreateToggle(materialParameter.overrideMaterial != null, "OverrideMaterial", evt =>
+                    {
+                        if (evt.newValue)
+                        {
+                            materialRoot.Add(materialOverride);
+                        }
+                        else
+                        {
+                            materialRoot.Remove(materialOverride);
+                            materialOverride.value = null;
+                            materialParameter.overrideMaterial = null;
+                        }
+                    
+                    }, isReadonly);
+
+               
+                materialRoot.Add(isOverrideMaterialToggle);
+                
+                isOverrideMaterialToggle.value = materialParameter.overrideMaterial != null;
+                if (isOverrideMaterialToggle.value)
+                {
+                    materialRoot.Add(materialOverride);
+                }
+                
+            } else {
+                
+                materialRoot.Add(materialOverride);
+            }
+            
+            
             materialRoot.SetEnabled(!isReadonly);
             materialRoot.style.left = 5;
             return materialRoot;
         }
 
+        public class BlendStateElement : VisualElement
+        {
+            private bool m_hasInitialized = false;
+            public void Initialize(FlowRenderGraphData.BlendStateData blendStateData)
+            {
+                if (m_hasInitialized) return;
+                m_hasInitialized = true;
+                
+                writeMaskField = CreateMaskField((int)blendStateData.writeMask, "WriteMask", new List<string>()
+                    {
+                        "Alpha",
+                        /// <summary>
+                        ///   <para>Write blue component.</para>
+                        /// </summary>
+                        "Blue",
+                        /// <summary>
+                        ///   <para>Write green component.</para>
+                        /// </summary>
+                        "Green",
+                        /// <summary>
+                        ///   <para>Write red component.</para>
+                        /// </summary>
+                        "Red"
+                    },
+                    evt =>
+                    {
+                        
+                    });
+                Add(writeMaskField);
+            }
+
+            public void Update(FlowRenderGraphData.BlendStateData blendStateData)
+            {
+                if (!m_hasInitialized) return;
+                writeMaskField.value = (int)blendStateData.writeMask;
+            }
+
+            
+            public MaskField writeMaskField;
+        }
+        public static BlendStateElement CreateBlendStateParameter(FlowRenderGraphData.BlendStateData blendStateData)
+        {
+            var blendStateRoot = new BlendStateElement();
+            blendStateRoot.RegisterCallback<MouseDownEvent>(evt =>
+            {
+                // evt.StopImmediatePropagation();
+            });
+
+            blendStateRoot.Initialize(blendStateData);
+            
+            return blendStateRoot;
+        }
+        public static VisualElement CreateStateParameter(FlowRenderGraphData.RenderStateNode stateParameter, bool isReadonly = false)
+        {
+            VisualElement stateRoot = new VisualElement();
+
+            #region Raster State
+
+            var rasterFoldout = new Foldout()
+            {
+                text = "Raster State",
+                value = isReadonly
+            };
+            stateRoot.Add(rasterFoldout);
+
+            var cullModeField = CreateEnumField(stateParameter.rasterState.cullingMode, "CullMode", evt =>
+            {
+                stateParameter.rasterState.cullingMode = (CullMode)evt.newValue;
+            }, isReadonly);
+            rasterFoldout.Add(cullModeField);
+
+            var offsetUnitsField = CreateIntegerField(stateParameter.rasterState.offsetUnits, "OffsetUnits", evt =>
+            {
+                stateParameter.rasterState.offsetUnits = evt.newValue;
+            }, isReadonly);
+            rasterFoldout.Add(offsetUnitsField);
+
+            var offsetFactorField = CreateFloatField(stateParameter.rasterState.offsetFactor, "OffsetFactor", evt =>
+            {
+                stateParameter.rasterState.offsetFactor = evt.newValue;
+            }, isReadonly);
+            rasterFoldout.Add(offsetFactorField);
+
+            var depthClipToggle = CreateToggle(stateParameter.rasterState.depthClip, "DepthClip", evt =>
+            {
+                stateParameter.rasterState.depthClip = evt.newValue;
+            }, isReadonly);
+            rasterFoldout.Add(depthClipToggle);
+
+            #endregion
+            
+            #region Depth State
+
+            var depthFoldout = new Foldout()
+            {
+                text = "Depth State",
+                value = isReadonly
+            };
+            stateRoot.Add(depthFoldout);
+
+            var writeEnableToggle = CreateToggle(stateParameter.depthState.writeEnabled, "WriteEnabled", evt =>
+            {
+                stateParameter.depthState.writeEnabled = evt.newValue;
+                
+            }, isReadonly);
+            depthFoldout.Add(writeEnableToggle);
+
+            var depthCompareFuncField = CreateEnumField(stateParameter.depthState.compareFunction, "DepthCompare", evt =>
+            {
+                stateParameter.depthState.compareFunction = (CompareFunction)evt.newValue;
+            }, isReadonly);
+            depthFoldout.Add(depthCompareFuncField);
+
+            #endregion
+            
+            #region Stencil State
+
+            var stencilFoldout = new Foldout()
+            {
+                text = "Stencil State",
+                value = isReadonly
+            };
+            stateRoot.Add(stencilFoldout);
+
+            var enabledField = CreateToggle(stateParameter.stencilState.enabled, "Enabled", evt =>
+            {
+                stateParameter.stencilState.enabled = evt.newValue;
+            }, isReadonly);
+            stencilFoldout.Add(enabledField);
+
+            var readMaskField = CreateIntegerField(stateParameter.stencilState.readMask, "ReadMask", evt =>
+            {
+                stateParameter.stencilState.readMask = (byte)evt.newValue;
+                ((IntegerField) evt.target).value = stateParameter.stencilState.readMask;
+                
+            }, isReadonly);
+            stencilFoldout.Add(readMaskField);
+            
+            var writeMaskField = CreateIntegerField(stateParameter.stencilState.writeMask, "WriteMask", evt =>
+            {
+                stateParameter.stencilState.writeMask = (byte)evt.newValue;
+                ((IntegerField) evt.target).value = stateParameter.stencilState.writeMask;
+                
+            }, isReadonly);
+            stencilFoldout.Add(writeMaskField);
+
+            #region Front
+
+            var compareFunctionFrontField = CreateEnumField(stateParameter.stencilState.compareFunctionFront,
+                "CompareFunctionFront",
+                evt =>
+                {
+                    stateParameter.stencilState.compareFunctionFront = (CompareFunction) evt.newValue;
+                    
+                }, isReadonly);
+            stencilFoldout.Add(compareFunctionFrontField);
+
+            var passOpFrontField = CreateEnumField(stateParameter.stencilState.passOperationFront, "PassOperationFront",
+                evt =>
+                {
+                    stateParameter.stencilState.passOperationFront = (StencilOp) evt.newValue;
+
+                }, isReadonly);
+            stencilFoldout.Add(passOpFrontField);
+            passOpFrontField.style.left = 10;
+            
+            var failOpFrontField = CreateEnumField(stateParameter.stencilState.failOperationFront, "FailOperationFront",
+                evt =>
+                {
+                    stateParameter.stencilState.failOperationFront = (StencilOp) evt.newValue;
+
+                }, isReadonly);
+            stencilFoldout.Add(failOpFrontField);
+            failOpFrontField.style.left = 10;
+            
+            var zFailOpFrontField = CreateEnumField(stateParameter.stencilState.zFailOperationFront, "Z-FailOperationFront",
+                evt =>
+                {
+                    stateParameter.stencilState.zFailOperationFront = (StencilOp) evt.newValue;
+
+                }, isReadonly);
+            stencilFoldout.Add(zFailOpFrontField);
+            zFailOpFrontField.style.left = 10;
+
+            #endregion
+
+            #region Back
+
+            var compareFunctionBackField = CreateEnumField(stateParameter.stencilState.compareFunctionBack,
+                "CompareFunctionBack",
+                evt =>
+                {
+                    stateParameter.stencilState.compareFunctionBack = (CompareFunction) evt.newValue;
+                    
+                }, isReadonly);
+            stencilFoldout.Add(compareFunctionBackField);
+
+            var passOpBackField = CreateEnumField(stateParameter.stencilState.passOperationBack, "PassOperationBack",
+                evt =>
+                {
+                    stateParameter.stencilState.passOperationBack = (StencilOp) evt.newValue;
+
+                }, isReadonly);
+            stencilFoldout.Add(passOpBackField);
+            passOpBackField.style.left = 10;
+            
+            var failOpBackField = CreateEnumField(stateParameter.stencilState.failOperationBack, "FailOperationBack",
+                evt =>
+                {
+                    stateParameter.stencilState.failOperationBack = (StencilOp) evt.newValue;
+
+                }, isReadonly);
+            stencilFoldout.Add(failOpBackField);
+            failOpBackField.style.left = 10;
+            
+            var zFailOpBackField = CreateEnumField(stateParameter.stencilState.zFailOperationBack, "Z-FailOperationBack",
+                evt =>
+                {
+                    stateParameter.stencilState.zFailOperationBack = (StencilOp) evt.newValue;
+
+                }, isReadonly);
+            stencilFoldout.Add(zFailOpBackField);
+            zFailOpBackField.style.left = 10;
+
+            #endregion
+            
+            #endregion
+            
+            #region Blend State
+            
+            var tempData = new FlowRenderGraphData.BlendStateData();
+           
+            var blendStatesListView = CreateListView<FlowRenderGraphData.BlendStateData, BlendStateElement>(stateParameter.blendStates, "Blend States", () =>
+            {
+                return CreateBlendStateParameter(tempData);
+                
+            }, (element, i) =>
+            {
+                stateParameter.blendStates[i] = stateParameter.blendStates[i] is null
+                    ? new FlowRenderGraphData.BlendStateData()
+                    : stateParameter.blendStates[i];
+                
+                var blendStateElement = element as BlendStateElement;
+                var data = stateParameter.blendStates[i];
+                blendStateElement.Update(data);
+                
+            }, 23 * 8);
+            stateRoot.Add(blendStatesListView);
+
+            #endregion
+
+            stateRoot.SetEnabled(!isReadonly);
+            return stateRoot;
+        }
         #endregion
     }
 

@@ -19,8 +19,8 @@ MonoBehaviour:
     m_ValueData:
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
-    - position: {x: 655, y: -832, z: 0}
-      scale: {x: 2, y: 2, z: 1}
+    - position: {x: 128, y: -56, z: 0}
+      scale: {x: 1.3225, y: 1.3225, z: 1}
   m_Datas:
     m_KeyData:
     - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
@@ -43,9 +43,11 @@ MonoBehaviour:
         - 8031a20e-550a-4626-a39a-c6e2bf718a3a
         - 66858a97-ad92-4d62-97c5-2ef6e6f261c5
         - 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
+        - b2e63b1f-4022-4902-9ac9-611ea2723a78
+        - 06095ef3-9d7c-4537-8fb3-5669eb4901c8
         m_ValueData:
         - name: Entry
-          position: {x: 100, y: 200}
+          position: {x: 33, y: 189}
           groupGuid: 
         - name: FRPDrawRendererNode
           position: {x: 588, y: 234}
@@ -54,10 +56,16 @@ MonoBehaviour:
           position: {x: -155, y: 570}
           groupGuid: 
         - name: FRPCullingParameterNode
-          position: {x: 100, y: 311}
+          position: {x: 93, y: 350}
           groupGuid: 
         - name: FRPDrawRendererNode
-          position: {x: 432.17392, y: 629.56525}
+          position: {x: 406, y: 1013}
+          groupGuid: 
+        - name: FRPCameraParameterNode
+          position: {x: -48, y: 836}
+          groupGuid: 
+        - name: FRPRenderStateNode
+          position: {x: 86, y: 1091}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

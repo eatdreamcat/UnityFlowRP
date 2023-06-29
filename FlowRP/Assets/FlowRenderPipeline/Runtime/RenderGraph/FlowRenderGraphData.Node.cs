@@ -72,7 +72,6 @@ namespace UnityEngine.Rendering.FlowPipeline
         [Serializable]
         public class DrawRendererNode : BaseNode
         {
-            public bool isEnabled;
             public string culling;
             public string state;
             public string material;
@@ -89,8 +88,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                 name = name,
                 guid = guid,
                 type = FRPNodeType.FRPDrawRendererNode,
-                isEnabled = true,
-                
+
                 inputList = new List<string>(),
                 outputList = new List<string>()
             };
@@ -99,7 +97,6 @@ namespace UnityEngine.Rendering.FlowPipeline
         [Serializable]
         public class DrawFullScreenNode : BaseNode
         {
-            public bool isEnabled;
             public string state;
             public Shader shader;
             public List<string> shaderTagList;
@@ -115,7 +112,6 @@ namespace UnityEngine.Rendering.FlowPipeline
                 name = name,
                 guid = guid,
                 type = FRPNodeType.FRPDrawFullScreenNode,
-                isEnabled = true,
                 
                 inputList = new List<string>(),
                 outputList = new List<string>()
@@ -178,7 +174,8 @@ namespace UnityEngine.Rendering.FlowPipeline
         }
         
         [Serializable]
-        public struct BlendStateData
+        // chichi: we use class here to prevent the issue that when click ListView "+" button, it will raise a exception which I can't figure out yet. sad....
+        public class BlendStateData
         {
             public ColorWriteMask writeMask;
             public BlendMode sourceColorBlendMode;
