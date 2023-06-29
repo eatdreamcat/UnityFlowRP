@@ -143,6 +143,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             return vector4;
         }
 
+        
         public static MaskField CreateMaskField(int value, string label, List<string> choices,
             EventCallback<ChangeEvent<int>> onValueChanged = null, bool isReadonly = false)
         {
@@ -560,49 +561,67 @@ namespace UnityEditor.Rendering.FlowPipeline
         public class BlendStateElement : VisualElement
         {
             private bool m_hasInitialized = false;
-            public void Initialize(FlowRenderGraphData.BlendStateData blendStateData)
+            private FlowRenderGraphData.BlendStateData m_BlendStateData;
+            public void Initialize(FlowRenderGraphData.BlendStateData tempblendStateData)
             {
                 if (m_hasInitialized) return;
                 m_hasInitialized = true;
                 
-                writeMaskField = CreateMaskField((int)blendStateData.writeMask, "WriteMask", new List<string>()
+                m_WriteMask = CreateMaskField((int)tempblendStateData.writeMask, "WriteMask", new List<string>()
                     {
-                        "Alpha",
+                        "Alpha", // 1   0001
                         /// <summary>
                         ///   <para>Write blue component.</para>
                         /// </summary>
-                        "Blue",
+                        "Blue", // 2    0010
                         /// <summary>
                         ///   <para>Write green component.</para>
                         /// </summary>
-                        "Green",
+                        "Green", // 4   0100
                         /// <summary>
                         ///   <para>Write red component.</para>
                         /// </summary>
-                        "Red"
-                    },
-                    evt =>
+                        "Red", // 8     1000
+                       //  "All" // 15
+                    }, evt =>
+                {
+                    if (m_BlendStateData != null)
                     {
-                        
-                    });
-                Add(writeMaskField);
+                        m_BlendStateData.writeMask = (ColorWriteMask)evt.newValue;
+                    }
+                });
+             
+                Add(m_WriteMask);
+                
+                
             }
-
+            
+          
             public void Update(FlowRenderGraphData.BlendStateData blendStateData)
             {
                 if (!m_hasInitialized) return;
-                writeMaskField.value = (int)blendStateData.writeMask;
+
+                m_BlendStateData = blendStateData;
+                m_WriteMask.value = (int)blendStateData.writeMask;
+                
             }
 
             
-            public MaskField writeMaskField;
+            private MaskField m_WriteMask;
+            private EnumField m_SourceColorBlendMode;
+            private EnumField m_DestinationColorBlendMode;
+            private EnumField m_SourceAlphaBlendMode;
+            private EnumField m_DestinationAlphaBlendMode;
+            private EnumField m_ColorBlendOperation;
+            private EnumField m_AlphaBlendOperation;
+
         }
         public static BlendStateElement CreateBlendStateParameter(FlowRenderGraphData.BlendStateData blendStateData)
         {
             var blendStateRoot = new BlendStateElement();
             blendStateRoot.RegisterCallback<MouseDownEvent>(evt =>
             {
-                // evt.StopImmediatePropagation();
+                evt.StopImmediatePropagation();
             });
 
             blendStateRoot.Initialize(blendStateData);
