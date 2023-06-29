@@ -19,8 +19,8 @@ MonoBehaviour:
     m_ValueData:
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
-    - position: {x: 602, y: -807, z: 0}
-      scale: {x: 1.7490063, y: 1.7490063, z: 1}
+    - position: {x: 655, y: -832, z: 0}
+      scale: {x: 2, y: 2, z: 1}
   m_Datas:
     m_KeyData:
     - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
@@ -51,7 +51,7 @@ MonoBehaviour:
           position: {x: 588, y: 234}
           groupGuid: 
         - name: FRPRenderMaterialNode
-          position: {x: -156, y: 570}
+          position: {x: -155, y: 570}
           groupGuid: 
         - name: FRPCullingParameterNode
           position: {x: 100, y: 311}

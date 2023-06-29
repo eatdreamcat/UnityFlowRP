@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEditorInternal;
@@ -37,7 +39,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 pickingMode = isReadonly ? PickingMode.Ignore : PickingMode.Position,
             };
 
-           textField.SetEnabled(!isReadonly);
+            textField.SetEnabled(!isReadonly);
             
             if (onValueChanged != null)
             {
@@ -65,6 +67,26 @@ namespace UnityEditor.Rendering.FlowPipeline
             }
 
             return floatField;
+        }
+        
+        public static IntegerField CreateIntegerField(int value = 0, string label = null, EventCallback<ChangeEvent<int>> onValueChanged = null, bool isReadonly = false)
+        {
+            IntegerField integerField = new IntegerField()
+            {
+                value = value,
+                label = label,
+                isReadOnly = isReadonly,
+                pickingMode = isReadonly ? PickingMode.Ignore : PickingMode.Position,
+            };
+
+            integerField.SetEnabled(!isReadonly);
+            
+            if (onValueChanged != null)
+            {
+                integerField.RegisterValueChangedCallback(onValueChanged);
+            }
+
+            return integerField;
         }
         
         public static Vector2Field CreateVector2Field(Vector2 value, string label = null, EventCallback<ChangeEvent<Vector2>> onValueChanged = null, bool isReadonly = false)
@@ -185,18 +207,91 @@ namespace UnityEditor.Rendering.FlowPipeline
             return toggle;
         }
 
-        public static ListView CreateListView<T>(
+        public static VisualElement CreateListView<T>(
             List<T> data, string title, Func<VisualElement> makeItem, Action<VisualElement, int> bindItem,
-            float itemHeight = 5, SelectionType selectionType = SelectionType.Single, bool reorderable = true,
+            float itemHeight = 25, SelectionType selectionType = SelectionType.Single, bool reorderable = true,
             ListViewReorderMode reorderMode = ListViewReorderMode.Animated, bool showFoldoutHeader = true, bool showAddRemoveFooter = true)
         {
+            VisualElement result;
             ListView listView = new ListView();
             listView.reorderMode = reorderMode;
             listView.headerTitle = title;
             listView.itemsSource = data;
-            
-            listView.showFoldoutHeader = showFoldoutHeader;
+            var extraHeightAdd = 0;
+            listView.showFoldoutHeader = false;
             listView.showAddRemoveFooter = showAddRemoveFooter;
+            
+            if (showFoldoutHeader)
+            {
+                var header = new VisualElement();
+               // list foldout
+                var foldout = new Foldout();
+                header.Add(foldout);
+                foldout.text = title;
+                foldout.Add(listView);
+                foldout.RegisterValueChangedCallback(evt =>
+                {
+                    if (evt.newValue)
+                    {
+                        listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
+                    }
+                    else
+                    {
+                        listView.style.height = 0;
+                    }
+                });
+                listView.style.left = -6;
+             
+                // array size 
+                var arraySize = CreateIntegerField(listView.itemsSource.Count, null, evt =>
+                {
+                    int itemCount = listView.itemsSource.Count;
+                    if (evt.newValue > itemCount)
+                    {
+                        var list = new List<T>()
+                        {
+                            Capacity = evt.newValue - itemCount
+                        };
+                        for (int i = 0; i < list.Capacity; ++i)
+                        {
+                            list.Add(data[data.Count-1]);
+                        }
+                        listView.itemsSource.AddRange(list);
+                    }
+                    else
+                    {
+                        if (evt.newValue >= itemCount)
+                        {
+                            return;
+                        }
+
+                        for (int index = itemCount - 1; index >= evt.newValue; --index)
+                        {
+                            listView.itemsSource.RemoveAt(index);
+                        }
+                    }
+                    listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
+                    listView.Rebuild();
+                    
+                });
+                arraySize.focusable = true;
+                arraySize.isDelayed = true;
+                arraySize.AddToClassList(ListView.arraySizeFieldUssClassName);
+                header.Add(arraySize);
+
+                
+                
+                result = header;
+            }
+            else
+            {
+                result = listView;
+            }
+
+            if (showAddRemoveFooter)
+            {
+                ++extraHeightAdd;
+            }
             
             listView.makeItem = makeItem;
             listView.bindItem = bindItem;
@@ -205,10 +300,33 @@ namespace UnityEditor.Rendering.FlowPipeline
             listView.fixedItemHeight = itemHeight;
             listView.reorderable = reorderable;
 
-            
-            
+            // to prevent the event propagation 
+            listView.RegisterCallback<MouseDownEvent>(evt =>
+            {
+                evt.StopImmediatePropagation();
+            });
 
-            return listView;
+            listView.RegisterCallback<DragEnterEvent>(evt =>
+            {
+                evt.StopImmediatePropagation();
+            });
+            
+            listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
+
+            if (listView.showAddRemoveFooter)
+            {
+                listView.itemsAdded += ints =>
+                {
+                    listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
+                };
+
+                listView.itemsRemoved += ints =>
+                {
+                    listView.style.height = listView.fixedItemHeight * (listView.itemsSource.Count + extraHeightAdd);
+                }; 
+            }
+            
+            return result;
         }
         
         public static bool CanAcceptConnector(Port startPort, Port endPort)
@@ -230,7 +348,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             Direction direction = Direction.Output, 
             Port.Capacity capacity = Port.Capacity.Single,
             Type allowedNodeType = null
-            )
+        )
         {
             allowedNodeType = allowedNodeType == null ? typeof(FRPNodeBase) : allowedNodeType;
             
@@ -321,7 +439,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                     var layerBitMask = 1 << bitMask;
                     if ((layer & layerBitMask) == layerBitMask)
                     {
-                       // Debug.Log($"BitMask :{bitMask} , Layer name:{LayerMask.LayerToName(bitMask)}");
+                        // Debug.Log($"BitMask :{bitMask} , Layer name:{LayerMask.LayerToName(bitMask)}");
                         nameList.Add(LayerMask.LayerToName(bitMask));
                     }
                   
@@ -388,6 +506,11 @@ namespace UnityEditor.Rendering.FlowPipeline
             var queueEndField = CreateEnumField(end, "Queue End", onQueueEndChanged, isReadonly);
             materialRoot.Add(queueEndField);
             
+            EventCallback<ChangeEvent<string>> callback = evt =>
+            {
+                var index = (int)((TextField) evt.target).userData;
+                shaderTags[index] = evt.newValue;
+            };
             
             // shader tags 
             var shaderTagsField = CreateListView(shaderTags, "ShaderTags", () =>
@@ -398,43 +521,11 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 var textField = element as TextField;
                 textField.value = shaderTags[i];
-                textField.RegisterValueChangedCallback(evt =>
-                {
-                    
-                });
-                
-                // Debug.Log($"Bind item:{i}");
-                
-            }, 20);
-         
-            shaderTagsField.RegisterCallback<MouseDownEvent>(evt =>
-            {
-                evt.StopImmediatePropagation();
-            });
-            
-            shaderTagsField.RegisterCallback<DragEnterEvent>(evt =>
-            {
-                evt.StopImmediatePropagation();
-            });
+                textField.userData = i;
+                textField.UnregisterValueChangedCallback(callback);
+                textField.RegisterValueChangedCallback(callback);
 
-            shaderTagsField.onSelectedIndicesChange += ints =>
-            {
-                foreach (var i in ints)
-                {
-                    Debug.Log($"onSelectedIndicesChange:{i}");
-                }
-            };
-
-            shaderTagsField.onSelectionChange += objects =>
-            {
-                Debug.Log($"onSelectionChange:{objects}");
-            };
-
-            shaderTagsField.onItemsChosen += objects =>
-            {
-                Debug.Log($"onItemsChosen:{objects}");
-            };
-            
+            }, 22);
             
             materialRoot.Add(shaderTagsField);
 
