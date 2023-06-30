@@ -109,7 +109,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             }
         }
         
-        public FlowRenderGraphData.BaseNode AddNewNodeToData(string ID, string name, FlowRenderGraphData.FRPNodeType type, Vector2 position)
+        public FlowRenderGraphData.BaseNode AddNewNodeToData(string ID, string name, FlowRenderGraphData.NodeType type, Vector2 position)
         {
             
             m_GraphViewSavedData.AddNewNode(ID, new FRPGraphViewSavedData.NodeData()
@@ -146,33 +146,33 @@ namespace UnityEditor.Rendering.FlowPipeline
 
             switch (outNode.Type)
             {
-                case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
+                case FlowRenderGraphData.NodeType.CullingParameterNode:
                 {
                     m_CurrentRenderGraphData.AddCullingAssignment(outNode.ID, inNode.ID);
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPRenderStateNode:
+                case FlowRenderGraphData.NodeType.RenderStateNode:
                 {
                     m_CurrentRenderGraphData.AddRenderStateAssignment(outNode.ID, inNode.ID);
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:
+                case FlowRenderGraphData.NodeType.RenderMaterialNode:
                 {
                     m_CurrentRenderGraphData.AddMaterialAssignment(outNode.ID, inNode.ID);
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
+                case FlowRenderGraphData.NodeType.CameraParameterNode:
                 {
                     m_CurrentRenderGraphData.AddCameraAssignment(outNode.ID, inNode.ID);
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
-                case FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode:
-                case FlowRenderGraphData.FRPNodeType.Entry:
+                case FlowRenderGraphData.NodeType.DrawRendererNode:
+                case FlowRenderGraphData.NodeType.DrawFullScreenNode:
+                case FlowRenderGraphData.NodeType.EntryNode:
                 {
                     edge.style.color = Color.cyan;
                     m_CurrentRenderGraphData.AddFlowInOut(outNode.ID, inNode.ID);
@@ -189,32 +189,32 @@ namespace UnityEditor.Rendering.FlowPipeline
             
             switch (outNode.Type)
             {
-                case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
+                case FlowRenderGraphData.NodeType.CullingParameterNode:
                 {
                     m_CurrentRenderGraphData.DeleteCullingAssignment(outNode.ID, inNode.ID);
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPRenderStateNode:
+                case FlowRenderGraphData.NodeType.RenderStateNode:
                 {
                     m_CurrentRenderGraphData.DeleteRenderStateAssignment(outNode.ID, inNode.ID);
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:
+                case FlowRenderGraphData.NodeType.RenderMaterialNode:
                 {
                     m_CurrentRenderGraphData.DeleteMaterialAssignment(outNode.ID, inNode.ID);
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
+                case FlowRenderGraphData.NodeType.CameraParameterNode:
                 {
                     m_CurrentRenderGraphData.DeleteCameraAssignment(outNode.ID, inNode.ID);
                 }
                     break;
 
-                case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
-                case FlowRenderGraphData.FRPNodeType.Entry:
+                case FlowRenderGraphData.NodeType.DrawRendererNode:
+                case FlowRenderGraphData.NodeType.EntryNode:
                 {
                     m_CurrentRenderGraphData.DeleteFlowInOut(outNode.ID, inNode.ID);
                 }

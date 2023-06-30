@@ -13,105 +13,28 @@ MonoBehaviour:
   m_Name: DefaultRenderer
   m_EditorClassIdentifier: 
   m_CullingNodesMap:
-    m_KeyData:
-    - 66858a97-ad92-4d62-97c5-2ef6e6f261c5
-    m_ValueData:
-    - guid: 66858a97-ad92-4d62-97c5-2ef6e6f261c5
-      name: FRPCullingParameterNode
-      type: 8
-      isAllowPassCulling: 1
-      isAllowRendererCulling: 1
-      cullingMask:
-        serializedVersion: 2
-        m_Bits: 39
+    m_KeyData: []
+    m_ValueData: []
   m_RenderStateNodesMap:
-    m_KeyData:
-    - 06095ef3-9d7c-4537-8fb3-5669eb4901c8
-    m_ValueData:
-    - guid: 06095ef3-9d7c-4537-8fb3-5669eb4901c8
-      name: FRPRenderStateNode
-      type: 10
-      rasterState:
-        cullingMode: 2
-        offsetUnits: 0
-        offsetFactor: 0
-        depthClip: 0
-      depthState:
-        writeEnabled: 0
-        compareFunction: 8
-      stencilState:
-        enabled: 0
-        readMask: 9
-        writeMask: 0
-        compareFunctionFront: 0
-        passOperationFront: 1
-        failOperationFront: 0
-        zFailOperationFront: 3
-        compareFunctionBack: 0
-        passOperationBack: 0
-        failOperationBack: 5
-        zFailOperationBack: 0
-      blendStates:
-      - writeMask: 14
-        sourceColorBlendMode: 0
-        destinationColorBlendMode: 0
-        sourceAlphaBlendMode: 0
-        destinationAlphaBlendMode: 0
-        colorBlendOperation: 0
-        alphaBlendOperation: 0
-      - writeMask: 0
-        sourceColorBlendMode: 0
-        destinationColorBlendMode: 0
-        sourceAlphaBlendMode: 0
-        destinationAlphaBlendMode: 0
-        colorBlendOperation: 0
-        alphaBlendOperation: 0
+    m_KeyData: []
+    m_ValueData: []
   m_MaterialNodesMap:
-    m_KeyData:
-    - 8031a20e-550a-4626-a39a-c6e2bf718a3a
-    m_ValueData:
-    - guid: 8031a20e-550a-4626-a39a-c6e2bf718a3a
-      name: FRPRenderMaterialNode
-      type: 9
-      renderQueueRange:
-        start: 0
-        end: 2000
-      shaderTagList:
-      - ddd
-      - 23
-      - 
-      - 
-      overrideMaterial: {fileID: 10758, guid: 0000000000000000f000000000000000, type: 0}
+    m_KeyData: []
+    m_ValueData: []
   m_CameraNodesMap:
-    m_KeyData:
-    - b2e63b1f-4022-4902-9ac9-611ea2723a78
-    m_ValueData:
-    - guid: b2e63b1f-4022-4902-9ac9-611ea2723a78
-      name: FRPCameraParameterNode
-      type: 7
-      fov: 69.1
-      offset: {x: 0, y: 0, z: 0}
+    m_KeyData: []
+    m_ValueData: []
   m_DrawRendererNodesMap:
     m_KeyData:
-    - bcddf93a-ef78-4c59-95aa-975c591b0bc5
-    - 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
+    - d9ec1a93-4ed4-47d6-948d-521408d763c8
     m_ValueData:
-    - guid: bcddf93a-ef78-4c59-95aa-975c591b0bc5
-      name: FRPDrawRendererNode
-      type: 11
-      culling: 66858a97-ad92-4d62-97c5-2ef6e6f261c5
+    - guid: d9ec1a93-4ed4-47d6-948d-521408d763c8
+      name: DrawRendererNode
+      type: 9
+      culling: 
       state: 
-      material: 8031a20e-550a-4626-a39a-c6e2bf718a3a
+      material: 
       camera: 
-      inputList: []
-      outputList: []
-    - guid: 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
-      name: FRPDrawRendererNode
-      type: 11
-      culling: 66858a97-ad92-4d62-97c5-2ef6e6f261c5
-      state: 06095ef3-9d7c-4537-8fb3-5669eb4901c8
-      material: 8031a20e-550a-4626-a39a-c6e2bf718a3a
-      camera: b2e63b1f-4022-4902-9ac9-611ea2723a78
       inputList: []
       outputList: []
   m_DrawFullScreenNodesMap:
@@ -119,38 +42,28 @@ MonoBehaviour:
     m_ValueData: []
   m_FlowNodesMap:
     m_KeyData:
-    - aeb96523-b0b8-4966-bd92-c319f8c85da5
-    - bcddf93a-ef78-4c59-95aa-975c591b0bc5
-    - 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
+    - cac79d33-abde-49e5-96b0-226e05f624a5
+    - d9ec1a93-4ed4-47d6-948d-521408d763c8
     m_ValueData:
-    - guid: aeb96523-b0b8-4966-bd92-c319f8c85da5
+    - guid: cac79d33-abde-49e5-96b0-226e05f624a5
       name: Entry
       type: 1
-      dataID: aeb96523-b0b8-4966-bd92-c319f8c85da5
+      dataID: cac79d33-abde-49e5-96b0-226e05f624a5
       dataType: 2
       flowIn: []
       flowOut:
-      - bcddf93a-ef78-4c59-95aa-975c591b0bc5
-    - guid: bcddf93a-ef78-4c59-95aa-975c591b0bc5
-      name: FRPDrawRendererNode
+      - d9ec1a93-4ed4-47d6-948d-521408d763c8
+    - guid: d9ec1a93-4ed4-47d6-948d-521408d763c8
+      name: DrawRendererNode
       type: 1
-      dataID: bcddf93a-ef78-4c59-95aa-975c591b0bc5
-      dataType: 11
+      dataID: d9ec1a93-4ed4-47d6-948d-521408d763c8
+      dataType: 9
       flowIn:
-      - aeb96523-b0b8-4966-bd92-c319f8c85da5
-      flowOut:
-      - 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
-    - guid: 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
-      name: FRPDrawRendererNode
-      type: 1
-      dataID: 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
-      dataType: 11
-      flowIn:
-      - bcddf93a-ef78-4c59-95aa-975c591b0bc5
+      - cac79d33-abde-49e5-96b0-226e05f624a5
       flowOut: []
   m_EntryNode:
-    guid: aeb96523-b0b8-4966-bd92-c319f8c85da5
+    guid: cac79d33-abde-49e5-96b0-226e05f624a5
     name: Entry
     type: 2
-    startPoint: bcddf93a-ef78-4c59-95aa-975c591b0bc5
-  GraphGuid: 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
+    startPoint: d9ec1a93-4ed4-47d6-948d-521408d763c8
+  GraphGuid: 44467ba9-cc73-4b95-9454-1e709ebab66e

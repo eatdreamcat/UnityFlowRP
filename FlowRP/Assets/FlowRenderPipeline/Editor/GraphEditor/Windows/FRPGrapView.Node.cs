@@ -9,6 +9,8 @@ namespace UnityEditor.Rendering.FlowPipeline
 {
     public partial class FRPGraphView
     {
+        private static readonly string NodeClassNamePrefix = "FRP";
+        private static readonly string BaseNodeClassName = "NodeBase";
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
             
@@ -46,17 +48,17 @@ namespace UnityEditor.Rendering.FlowPipeline
             string nodeTypeName = "";
             switch (baseNode.type)
             {
-                case FlowRenderGraphData.FRPNodeType.Entry:
-                    nodeTypeName = "FRPNodeBase";
+                case FlowRenderGraphData.NodeType.EntryNode:
+                    nodeTypeName = BaseNodeClassName;
                     break;
                 default:
                     nodeTypeName = baseNode.type.ToString();
                     break;
             }
             
-            Type nodeClass = Type.GetType($"UnityEditor.Rendering.FlowPipeline.{nodeTypeName}");
+            Type nodeClass = Type.GetType($"UnityEditor.Rendering.FlowPipeline.{NodeClassNamePrefix + nodeTypeName}");
             
-            Debug.Assert(nodeClass != null, $"Node class type is null : {nodeTypeName}");
+            Debug.Assert(nodeClass != null, $"Node class type is null : {NodeClassNamePrefix + nodeTypeName}");
             
             FRPNodeBase node = (FRPNodeBase)Activator.CreateInstance(nodeClass);
             

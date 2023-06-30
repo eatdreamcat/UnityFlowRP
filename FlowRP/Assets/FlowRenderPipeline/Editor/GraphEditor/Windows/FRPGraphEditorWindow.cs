@@ -70,14 +70,18 @@ namespace UnityEditor.Rendering.FlowPipeline
         #region Initialize
         
         private bool Initialize() {
+            
             if (!GraphicsSettings.currentRenderPipeline || GraphicsSettings.currentRenderPipeline.GetType() != typeof(FlowRenderPipelineAsset))
                 return false;
+            
             m_PipelineAsset = (FlowRenderPipelineAsset)GraphicsSettings.currentRenderPipeline;
 
             m_CurrentIndex = 0;
             m_CurrentSelectedGraphData = m_PipelineAsset.FlowRenderGraphDataList[0];
             
-            return true;
+            Debug.Assert(m_CurrentSelectedGraphData != null , " Invalid RenderGraphData.");
+            
+            return m_CurrentSelectedGraphData != null;
         }
             
         private void AddToolBar()
@@ -96,11 +100,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             rootVisualElement.Add(toolbar);
         }
 
-        private void Save()
-        {
-            m_GraphView.Save();
-        }
-
+     
         private void AddGraphDropdownList(Toolbar toolbar)
         {
             // Create a dropdown menu

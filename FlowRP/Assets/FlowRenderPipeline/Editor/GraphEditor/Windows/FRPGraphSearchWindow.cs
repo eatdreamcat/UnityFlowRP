@@ -38,35 +38,35 @@ namespace UnityEditor.Rendering.FlowPipeline
                 new SearchTreeEntry(new GUIContent("DrawRenderer", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode
+                    userData = FlowRenderGraphData.NodeType.DrawRendererNode
                 },
                 new SearchTreeEntry(new GUIContent("DrawFullScreen", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode
+                    userData = FlowRenderGraphData.NodeType.DrawFullScreenNode
                 },
                 new SearchTreeEntry(new GUIContent("Culling Options", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode
+                    userData = FlowRenderGraphData.NodeType.CullingParameterNode
                 },
                 
                 new SearchTreeEntry(new GUIContent("Material", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode
+                    userData = FlowRenderGraphData.NodeType.RenderMaterialNode
                 },
                 
                 new SearchTreeEntry(new GUIContent("Camera Options", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode
+                    userData = FlowRenderGraphData.NodeType.CameraParameterNode
                 },
                 
                 new SearchTreeEntry(new GUIContent("Render State", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPRenderStateNode
+                    userData = FlowRenderGraphData.NodeType.RenderStateNode
                 },
                 
                 /// level 2
@@ -74,12 +74,12 @@ namespace UnityEditor.Rendering.FlowPipeline
                 new SearchTreeEntry(new GUIContent("Branch", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPBranchNode
+                    userData = FlowRenderGraphData.NodeType.BranchNode
                 },
                 new SearchTreeEntry(new GUIContent("Loop", m_EmptyTexture))
                 {
                     level = 3,
-                    userData = FlowRenderGraphData.FRPNodeType.FRPLoopNode
+                    userData = FlowRenderGraphData.NodeType.LoopNode
                 },
                 
                 
@@ -112,23 +112,23 @@ namespace UnityEditor.Rendering.FlowPipeline
              
                
                // render pass
-               case FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode:
-               case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
-               case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
-               case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
-               case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:
-               case FlowRenderGraphData.FRPNodeType.FRPRenderStateNode:
+               case FlowRenderGraphData.NodeType.DrawFullScreenNode:
+               case FlowRenderGraphData.NodeType.DrawRendererNode:
+               case FlowRenderGraphData.NodeType.CameraParameterNode:
+               case FlowRenderGraphData.NodeType.CullingParameterNode:
+               case FlowRenderGraphData.NodeType.RenderMaterialNode:
+               case FlowRenderGraphData.NodeType.RenderStateNode:
 
                // logic flow control
-               case FlowRenderGraphData.FRPNodeType.FRPBranchNode:
-               case FlowRenderGraphData.FRPNodeType.FRPLoopNode:
+               case FlowRenderGraphData.NodeType.BranchNode:
+               case FlowRenderGraphData.NodeType.LoopNode:
                {
                    m_View.AddElement(m_View.CreateNode(
                            localMousePosition, 
                            m_View.AddNewNodeToData(
                                Guid.NewGuid().ToString(), 
                                SearchTreeEntry.userData.ToString(), 
-                               (FlowRenderGraphData.FRPNodeType)SearchTreeEntry.userData, 
+                               (FlowRenderGraphData.NodeType)SearchTreeEntry.userData, 
                                localMousePosition
                                ))
                        );

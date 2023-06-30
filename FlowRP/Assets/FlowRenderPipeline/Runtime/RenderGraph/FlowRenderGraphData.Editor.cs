@@ -17,7 +17,6 @@ namespace UnityEngine.Rendering.FlowPipeline
             {
                 //Create asset
                 FlowRenderGraphData data = CreateInstance<FlowRenderGraphData>();
-                data.InitGUID();
                 AssetDatabase.CreateAsset(data, path);
                 FlowUtility.SaveAsset(data);
                 ResourceReloader.ReloadAllNullIn(data, FlowUtility.GetFlowRenderPipelinePath());
@@ -37,8 +36,12 @@ namespace UnityEngine.Rendering.FlowPipeline
                 "New Render Graph Data Asset.asset",null, null);
         }
 
+        public FlowRenderGraphData()
+        {
+            InitGUID();
+        }
         
-        public void InitGUID()
+        private void InitGUID()
         {
             GraphGuid = Guid.NewGuid().ToString();
         }
@@ -56,7 +59,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
 
             m_EntryNode = CreateEntryNode("Entry", Guid.NewGuid().ToString());
-            var entryFlow = CreateFlowNode("Entry", EntryID, FRPNodeType.Entry);
+            var entryFlow = CreateFlowNode("Entry", EntryID, NodeType.EntryNode);
             m_FlowNodesMap.Add(entryFlow.guid, entryFlow);
             
             FlowUtility.SaveAsset(this);
@@ -68,13 +71,13 @@ namespace UnityEngine.Rendering.FlowPipeline
             };
         }
 
-        public BaseNode AddNode(string nodeName, string guid, FRPNodeType nodeType)
+        public BaseNode AddNode(string nodeName, string guid, NodeType nodeType)
         {
             BaseNode result = default;
             switch (nodeType)
             {
                 // render request
-                case FRPNodeType.FRPDrawRendererNode:
+                case NodeType.DrawRendererNode:
                 {
                     // check and set the first render request
                     if (string.IsNullOrEmpty(m_EntryNode.startPoint))
@@ -85,7 +88,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     var renderRequestNode = CreateRenderRequestNode(nodeName, guid);
                     m_DrawRendererNodesMap.Add(guid, renderRequestNode);
                     var flowNode = CreateFlowNode(renderRequestNode.name, renderRequestNode.guid,
-                        FRPNodeType.FRPDrawRendererNode);
+                        NodeType.DrawRendererNode);
                     m_FlowNodesMap.Add(flowNode.guid, flowNode);
 
                     result =  renderRequestNode;
@@ -93,7 +96,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     break;
                 }
 
-                case FRPNodeType.FRPDrawFullScreenNode:
+                case NodeType.DrawFullScreenNode:
                 {
                     // check and set the first render request
                     if (string.IsNullOrEmpty(m_EntryNode.startPoint))
@@ -104,7 +107,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     var drawFullScreenNode = CreateDrawFullScreenNode(nodeName, guid);
                     m_DrawFullScreenNodesMap.Add(guid, drawFullScreenNode);
                     var flowNode = CreateFlowNode(drawFullScreenNode.name, drawFullScreenNode.guid,
-                        FRPNodeType.FRPDrawFullScreenNode);
+                        NodeType.DrawFullScreenNode);
                     m_FlowNodesMap.Add(flowNode.guid, flowNode);
                     
                     result = drawFullScreenNode;
@@ -112,7 +115,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     break;
                 }
 
-                case FRPNodeType.FRPCullingParameterNode:
+                case NodeType.CullingParameterNode:
                 {
                     var cullingNode = CreateCullingParameterNode(nodeName, guid);
                     m_CullingNodesMap.Add(guid, cullingNode);
@@ -122,7 +125,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                 }
                     
 
-                case FRPNodeType.FRPRenderStateNode:
+                case NodeType.RenderStateNode:
                 {
                     var renderState = CreateRenderStateNode(nodeName, guid);
                     m_RenderStateNodesMap.Add(guid, renderState);
@@ -131,7 +134,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     break;
                 }
 
-                case FRPNodeType.FRPCameraParameterNode:
+                case NodeType.CameraParameterNode:
                 {
                     var cameraParameter = CreateCameraParameterNode(nodeName, guid);
                     m_CameraNodesMap.Add(guid, cameraParameter);
@@ -141,7 +144,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                 }
                   
 
-                case FRPNodeType.FRPRenderMaterialNode:
+                case NodeType.RenderMaterialNode:
                 {
                     var materialNode = CreateMaterialParameterNode(nodeName, guid);
                     m_MaterialNodesMap.Add(guid, materialNode);
@@ -151,12 +154,12 @@ namespace UnityEngine.Rendering.FlowPipeline
                 }
                  
                 // flow control
-                case FRPNodeType.FRPLoopNode:
+                case NodeType.LoopNode:
                 {
 
                 }
                     break;
-                case FRPNodeType.FRPBranchNode:
+                case NodeType.BranchNode:
                 {
 
                 }
@@ -172,11 +175,11 @@ namespace UnityEngine.Rendering.FlowPipeline
             return result;
         }
 
-        public void UpdateNodeName(string guid, string newName, FRPNodeType nodeType)
+        public void UpdateNodeName(string guid, string newName, NodeType nodeType)
         {
             switch (nodeType)
             {
-                case FRPNodeType.FRPDrawRendererNode:
+                case NodeType.DrawRendererNode:
                 {
                     if (m_DrawRendererNodesMap.TryGetValue(guid, out var node))
                     {
@@ -186,7 +189,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     }
                 }
                     break;
-                case FRPNodeType.FRPDrawFullScreenNode:
+                case NodeType.DrawFullScreenNode:
                 {
                     if (m_DrawFullScreenNodesMap.TryGetValue(guid, out var node))
                     {
@@ -201,11 +204,11 @@ namespace UnityEngine.Rendering.FlowPipeline
             Debug.LogError($"[GraphData.UpdateNodeName] Node {guid} not exist.");
         }
 
-        public void DeleteNode(string guid, FRPNodeType nodeType)
+        public void DeleteNode(string guid, NodeType nodeType)
         {
             switch (nodeType)
             {
-                case FRPNodeType.FRPDrawRendererNode:
+                case NodeType.DrawRendererNode:
                 {
                     if (m_DrawRendererNodesMap.ContainsKey(guid))
                     {
@@ -218,7 +221,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                 }
                     break;
                 
-                case FRPNodeType.FRPDrawFullScreenNode:
+                case NodeType.DrawFullScreenNode:
                 {
                     if (m_DrawFullScreenNodesMap.ContainsKey(guid))
                     {
@@ -262,7 +265,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
             if (m_FlowNodesMap.TryGetValue(flowOutID, out var outNode))
             {
-                if (outNode.dataType == FRPNodeType.FRPBranchNode)
+                if (outNode.dataType == NodeType.BranchNode)
                 {
                     // branch node can have multiple flow outputs
                     outNode.flowOut.Add(flowInID);

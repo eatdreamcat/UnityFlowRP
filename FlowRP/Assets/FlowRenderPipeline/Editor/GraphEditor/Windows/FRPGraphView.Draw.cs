@@ -124,7 +124,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         private void DrawNodeConnections(string entryID)
         {
             var flowNode = m_CurrentRenderGraphData.TryFlowNode(entryID);
-            Debug.Assert(flowNode.dataType == FlowRenderGraphData.FRPNodeType.Entry, "Entry Flow not binding to Entry Node.");
+            Debug.Assert(flowNode.dataType == FlowRenderGraphData.NodeType.EntryNode, "Entry Flow not binding to Entry Node.");
           
             // entry node flow...
             if (flowNode.flowOut.Count > 0)
@@ -139,7 +139,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                     {
                         switch (flowNode.dataType)
                         {
-                            case FlowRenderGraphData.FRPNodeType.Entry:
+                            case FlowRenderGraphData.NodeType.EntryNode:
                             {
                                 var targetNodeID = flowNode.flowOut[0];
                                 var targetNode = m_FrpNodeMap[targetNodeID];
@@ -159,8 +159,8 @@ namespace UnityEditor.Rendering.FlowPipeline
                             }
                                 break;
                             
-                            case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
-                            case FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode:
+                            case FlowRenderGraphData.NodeType.DrawRendererNode:
+                            case FlowRenderGraphData.NodeType.DrawFullScreenNode:
                             {
                                 // draw flow edge
                                 if (flowNode.flowOut.Count > 0)
@@ -181,14 +181,14 @@ namespace UnityEditor.Rendering.FlowPipeline
                             }
                                 break;
 
-                            case FlowRenderGraphData.FRPNodeType.FRPBranchNode:
+                            case FlowRenderGraphData.NodeType.BranchNode:
                             {
                                 // TODO:
                                 canBreakLoop = true;
                             }
                                 break;
                             
-                            case FlowRenderGraphData.FRPNodeType.FRPLoopNode:
+                            case FlowRenderGraphData.NodeType.LoopNode:
                             {
                                 // TODO: 
                                 canBreakLoop = true;

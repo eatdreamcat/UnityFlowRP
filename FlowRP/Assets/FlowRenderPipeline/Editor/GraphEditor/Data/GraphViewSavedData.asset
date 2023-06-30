@@ -14,58 +14,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ViewTransformDatas:
     m_KeyData:
-    - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
-    - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
+    - 44467ba9-cc73-4b95-9454-1e709ebab66e
+    - 3070563e-cbb9-4d7f-81de-aafaba7fc89d
     m_ValueData:
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
-    - position: {x: 663, y: 213, z: 0}
-      scale: {x: 0.32690176, y: 0.32690176, z: 1}
+    - position: {x: 0, y: 0, z: 0}
+      scale: {x: 1, y: 1, z: 1}
   m_Datas:
     m_KeyData:
-    - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
-    - 7e7c0820-d4a7-4849-b664-ab6f0fe5deb1
+    - 44467ba9-cc73-4b95-9454-1e709ebab66e
+    - 3070563e-cbb9-4d7f-81de-aafaba7fc89d
     m_ValueData:
     - m_NodeMap:
         m_KeyData:
-        - 47711448-995b-4190-a303-6977de35f70c
+        - cac79d33-abde-49e5-96b0-226e05f624a5
+        - d9ec1a93-4ed4-47d6-948d-521408d763c8
         m_ValueData:
         - name: Entry
-          position: {x: 100, y: 200}
+          position: {x: 241, y: 258}
+          groupGuid: 
+        - name: DrawRendererNode
+          position: {x: 650, y: 196}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []
         m_ValueData: []
     - m_NodeMap:
         m_KeyData:
-        - aeb96523-b0b8-4966-bd92-c319f8c85da5
-        - bcddf93a-ef78-4c59-95aa-975c591b0bc5
-        - 8031a20e-550a-4626-a39a-c6e2bf718a3a
-        - 66858a97-ad92-4d62-97c5-2ef6e6f261c5
-        - 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
-        - b2e63b1f-4022-4902-9ac9-611ea2723a78
-        - 06095ef3-9d7c-4537-8fb3-5669eb4901c8
+        - a38029e0-1d80-4c43-8b74-cb2d219f9e26
         m_ValueData:
         - name: Entry
-          position: {x: 33, y: 189}
-          groupGuid: 
-        - name: FRPDrawRendererNode
-          position: {x: 653, y: 266}
-          groupGuid: 
-        - name: FRPRenderMaterialNode
-          position: {x: 70, y: 483}
-          groupGuid: 
-        - name: FRPCullingParameterNode
-          position: {x: 207, y: 303}
-          groupGuid: 
-        - name: FRPDrawRendererNode
-          position: {x: 1024, y: 301}
-          groupGuid: 
-        - name: FRPCameraParameterNode
-          position: {x: 653, y: 550}
-          groupGuid: 
-        - name: FRPRenderStateNode
-          position: {x: 70, y: 718}
+          position: {x: 100, y: 200}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

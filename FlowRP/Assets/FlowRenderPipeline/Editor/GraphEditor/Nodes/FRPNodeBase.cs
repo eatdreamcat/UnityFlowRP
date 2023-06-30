@@ -63,36 +63,42 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                 switch (Type)
                 {
-                    case FlowRenderGraphData.FRPNodeType.FRPCameraParameterNode:
+                    case FlowRenderGraphData.NodeType.CameraParameterNode:
                     {
                         FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPCameraParameterNode));
                         outputContainer.Add(FlowOut);
                     }
                         break;
                     
-                    case FlowRenderGraphData.FRPNodeType.FRPCullingParameterNode:
+                    case FlowRenderGraphData.NodeType.CullingParameterNode:
                     {
                         FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPCullingParameterNode));
                         outputContainer.Add(FlowOut);
                     }
                         break;
                     
-                    case FlowRenderGraphData.FRPNodeType.FRPRenderMaterialNode:
+                    case FlowRenderGraphData.NodeType.RenderMaterialNode:
                     {
                         FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPRenderMaterialNode));
                         outputContainer.Add(FlowOut);
                     }
                         break;
                     
-                    case FlowRenderGraphData.FRPNodeType.FRPRenderStateNode:
+                    case FlowRenderGraphData.NodeType.RenderStateNode:
                     {
                         FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPRenderStateNode));
                         outputContainer.Add(FlowOut);
                     }
                         break;
+                    case FlowRenderGraphData.NodeType.BufferNode:
+                    {
+                        FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPBufferNode));
+                        outputContainer.Add(FlowOut);
+                    }
+                        break;
                     
-                    case FlowRenderGraphData.FRPNodeType.FRPDrawRendererNode:
-                    case FlowRenderGraphData.FRPNodeType.FRPDrawFullScreenNode:   
+                    case FlowRenderGraphData.NodeType.DrawRendererNode:
+                    case FlowRenderGraphData.NodeType.DrawFullScreenNode:   
                     {
                         /* INPUT CONTAINER */
                         FlowIn = this.CreatePort("Flow-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Single);
@@ -160,11 +166,11 @@ namespace UnityEditor.Rendering.FlowPipeline
         {
             get
             {
-                return Type == FlowRenderGraphData.FRPNodeType.Entry;
+                return Type == FlowRenderGraphData.NodeType.EntryNode;
             }
         }
 
-        public FlowRenderGraphData.FRPNodeType Type => m_GraphNodeData.type;
+        public FlowRenderGraphData.NodeType Type => m_GraphNodeData.type;
 
         public virtual void Initialize(FRPGraphView view, Vector2 position, FlowRenderGraphData.BaseNode nodeData)
         {

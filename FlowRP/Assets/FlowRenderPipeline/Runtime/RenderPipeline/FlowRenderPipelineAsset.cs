@@ -74,8 +74,6 @@ namespace UnityEngine.Rendering.FlowPipeline
             else
                 dataPath = path;
             
-            // we need store guid, cause we using guid to map the GraphViewSavedData.
-            data.InitGUID();
             AssetDatabase.CreateAsset(data, dataPath);
             FlowUtility.SaveAsset(data);
             ResourceReloader.ReloadAllNullIn(data, FlowUtility.GetFlowRenderPipelinePath());

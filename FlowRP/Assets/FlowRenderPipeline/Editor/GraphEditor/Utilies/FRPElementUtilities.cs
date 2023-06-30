@@ -41,6 +41,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 pickingMode = isReadonly ? PickingMode.Ignore : PickingMode.Position,
             };
 
+            textField.multiline = false;
             textField.SetEnabled(!isReadonly);
             
             if (onValueChanged != null)

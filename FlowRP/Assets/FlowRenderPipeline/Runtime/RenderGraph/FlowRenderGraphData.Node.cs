@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.Experimental.Rendering.RenderGraphModule;
+using UnityEngine.UIElements;
 
 namespace UnityEngine.Rendering.FlowPipeline
 {
@@ -11,7 +14,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             /* using for tracking layout data*/
             public string guid;
             public string name;
-            public FRPNodeType type;
+            public NodeType type;
         }
 
         [Serializable]
@@ -19,13 +22,13 @@ namespace UnityEngine.Rendering.FlowPipeline
         {
             // for a flow node , it only contains flow information, data id is used to bind a extra data , like render request data
             public string dataID;
-            public FRPNodeType dataType;
+            public NodeType dataType;
             
             public List<string> flowIn;
             public List<string> flowOut;
         }
 
-        public FlowNode CreateFlowNode(string nodeName, string dataID, FRPNodeType dataType)
+        public FlowNode CreateFlowNode(string nodeName, string dataID, NodeType dataType)
         {
             return new FlowNode()
             {
@@ -33,7 +36,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                 guid = dataID,
                 dataType = dataType,
                 dataID = dataID,
-                type = FRPNodeType.Flow,
+                type = NodeType.Flow,
                 flowIn = new List<string>(),
                 flowOut = new List<string>()
             };
@@ -63,7 +66,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             {
                 name = name,
                 guid = guid,
-                type = FRPNodeType.Entry,
+                type = NodeType.EntryNode,
                 startPoint = ""
             };
         }
@@ -87,7 +90,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             {
                 name = name,
                 guid = guid,
-                type = FRPNodeType.FRPDrawRendererNode,
+                type = NodeType.DrawRendererNode,
 
                 inputList = new List<string>(),
                 outputList = new List<string>()
@@ -111,7 +114,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             {
                 name = name,
                 guid = guid,
-                type = FRPNodeType.FRPDrawFullScreenNode,
+                type = NodeType.DrawFullScreenNode,
                 
                 inputList = new List<string>(),
                 outputList = new List<string>()
@@ -132,7 +135,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             {
                 name = name,
                 guid = guid,
-                type = FRPNodeType.FRPCullingParameterNode,
+                type = NodeType.CullingParameterNode,
                 isAllowPassCulling = true,
                 isAllowRendererCulling = true,
                 cullingMask = -1
@@ -206,7 +209,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             {
                 name = name,
                 guid = guid,
-                type = FRPNodeType.FRPRenderStateNode,
+                type = NodeType.RenderStateNode,
                 rasterState = default,
                 depthState = default,
                 stencilState = default,
@@ -277,7 +280,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     "FRPForwardOnly"
                 },
                 overrideMaterial = null,
-                type = FRPNodeType.FRPRenderMaterialNode
+                type = NodeType.RenderMaterialNode
             };
         }
         
@@ -297,8 +300,162 @@ namespace UnityEngine.Rendering.FlowPipeline
                 offset = Vector3.zero,
                 name = name,
                 guid = guid,
-                type = FRPNodeType.FRPCameraParameterNode
+                type = NodeType.CameraParameterNode
             };
+        }
+
+        /// chichi: RenderBufferNode is also a special node like FlowNode, only keep the actual data 's reference key.
+        /// because there may exist a shared buffer , which can shared among multiple graph within one frame, so we need
+        /// store shared buffer to pipeline asset..
+
+        public enum BufferType
+        {
+            TextureBuffer,
+            ComputerBuffer
+        }
+
+        public enum BufferLifeTime
+        {
+            PerFrame,
+            PerCamera,
+            PerPass
+        }
+        
+        [Serializable]
+        public class BufferNode : BaseNode
+        {
+            public string bufferID;
+            public BufferType bufferType;
+            public BufferLifeTime lifeTime;
+        }
+
+        public static BufferNode CreateBufferNode(string nodeName, string bufferID, BufferType bufferType, BufferLifeTime lifeTime = BufferLifeTime.PerPass)
+        {
+            return new BufferNode()
+            {
+                name = nodeName,
+                guid = bufferID,
+                type = NodeType.BufferNode,
+                bufferType = bufferType,
+                lifeTime = lifeTime
+            };
+        }
+
+        [Serializable]
+        public class TextureBufferNode : BaseNode
+        {
+            #region Header Info
+
+            ///<summary>Texture name.</summary>
+            public string name;
+            ///<summary>Texture is a shadow map.</summary>
+            public bool isShadowMap;
+            ///<summary>Determines whether the texture will fallback to a black texture if it is read without ever writing to it.</summary>
+            public bool fallBackToBlackTexture;
+            
+            #endregion
+
+            #region Size Info
+
+            public TextureSizeMode sizeMode;
+            public int width;
+            public int height;
+            public Vector2 scale;
+            public bool dynamicResolution;
+            ///<summary>Texture uses dynamic scaling.</summary>
+            public bool useDynamicScale;
+            ///<summary>used for xr.</summary>
+            public int slices;
+            #endregion
+
+            #region Init State
+
+            // Initial state. Those should not be used in the hash
+            ///<summary>Texture needs to be cleared on first use.</summary>
+            public bool clearBuffer;
+            ///<summary>Clear color.</summary>
+            public Color clearColor;
+
+            #endregion
+
+            #region Format Info
+
+            public GraphicsFormat colorFormat;
+            public DepthBits depthBits;
+            ///<summary>Texture dimension.</summary>
+            public TextureDimension dimension;
+
+            #endregion
+
+            #region Filtering and Addressing
+
+            ///<summary>Filtering mode.</summary>
+            public FilterMode filterMode;
+            ///<summary>Addressing mode.</summary>
+            public TextureWrapMode wrapMode;
+            ///<summary>Anisotropic filtering level.</summary>
+            public int anisoLevel;
+            
+            #endregion
+
+            #region Mipmap Info
+
+            ///<summary>Texture needs mip maps.</summary>
+            public bool useMipMap;
+            ///<summary>Automatically generate mip maps.</summary>
+            public bool autoGenerateMips;
+            ///<summary>Mip map bias.</summary>
+            public float mipMapBias;
+
+            #endregion
+
+            #region Memory Info
+
+            ///<summary>Enable random UAV read/write on the texture.</summary>
+            public bool enableRandomWrite;
+            ///<summary>Memory less flag.</summary>
+            public RenderTextureMemoryless memoryless;
+            // fast memory desc
+            public FastMemoryDesc fastMemoryDesc;
+
+            public DepthAccess depthAccess;
+            
+            #endregion
+
+            #region MSAA
+
+            ///<summary>Number of MSAA samples.</summary>
+            public MSAASamples msaaSamples;
+            ///<summary>Bind texture multi sampled.</summary>
+            public bool bindTextureMS;
+
+            #endregion
+        }
+
+        public static TextureBufferNode CreateTextureBufferNode(string name, string guid)
+        {
+            return new TextureBufferNode()
+            {
+                name = name,
+                type = NodeType.TextureBuffer,
+                guid = guid,
+                
+                // Size related init
+                sizeMode = TextureSizeMode.Explicit,
+                width = 1,
+                height = 1,
+                // Important default values not handled by zero construction in this()
+                msaaSamples = MSAASamples.None,
+                useDynamicScale = false,
+                slices = 1,
+                dimension = TextureDimension.Tex2D
+            };
+        }
+        
+        [Serializable]
+        public class ComputerBufferNode : BaseNode
+        {
+            
         }
     }
 }

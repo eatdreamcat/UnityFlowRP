@@ -9,32 +9,39 @@ namespace UnityEngine.Rendering.FlowPipeline
     public partial class FlowRenderGraphData : ScriptableObject, ISerializationCallbackReceiver
     {
         
-        public enum FRPNodeType
+        /// <summary>
+        /// with "Node" suffix , will be render to GraphView and also store data
+        /// others are only used for data.
+        /// </summary>
+        public enum NodeType
         {
             Unknow,
             Flow,
             
-            Entry,
-            
-            // buffer
-            ComputerBuffer,
-            RenderBuffer,
+            EntryNode,
             
             // logic
-            FRPBranchNode,
-            FRPLoopNode,
+            BranchNode,
+            LoopNode,
             
             // parameter
-            FRPCameraParameterNode,
-            FRPCullingParameterNode,
-            FRPRenderMaterialNode,
-            FRPRenderStateNode,
+            CameraParameterNode,
+            CullingParameterNode,
+            RenderMaterialNode,
+            RenderStateNode,
             
             // pass
-            FRPDrawRendererNode,
-            FRPDrawFullScreenNode,
-            FRPComputeNode,
+            DrawRendererNode,
+            DrawFullScreenNode,
+            ComputeNode,
             
+            
+            // buffer - only reference
+            BufferNode,
+            TextureBuffer,
+            ComputerBuffer,
+
+
             // variables
             
             
