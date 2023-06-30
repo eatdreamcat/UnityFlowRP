@@ -52,14 +52,14 @@ MonoBehaviour:
         failOperationBack: 5
         zFailOperationBack: 0
       blendStates:
-      - writeMask: 0
+      - writeMask: 14
         sourceColorBlendMode: 0
         destinationColorBlendMode: 0
         sourceAlphaBlendMode: 0
         destinationAlphaBlendMode: 0
         colorBlendOperation: 0
         alphaBlendOperation: 0
-      - writeMask: -1
+      - writeMask: 0
         sourceColorBlendMode: 0
         destinationColorBlendMode: 0
         sourceAlphaBlendMode: 0
@@ -79,6 +79,8 @@ MonoBehaviour:
       shaderTagList:
       - ddd
       - 23
+      - 
+      - 
       overrideMaterial: {fileID: 10758, guid: 0000000000000000f000000000000000, type: 0}
   m_CameraNodesMap:
     m_KeyData:
@@ -136,13 +138,15 @@ MonoBehaviour:
       dataType: 11
       flowIn:
       - aeb96523-b0b8-4966-bd92-c319f8c85da5
-      flowOut: []
+      flowOut:
+      - 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
     - guid: 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
       name: FRPDrawRendererNode
       type: 1
       dataID: 748f3c02-e2ff-4a7a-87e3-954c75b57ebb
       dataType: 11
-      flowIn: []
+      flowIn:
+      - bcddf93a-ef78-4c59-95aa-975c591b0bc5
       flowOut: []
   m_EntryNode:
     guid: aeb96523-b0b8-4966-bd92-c319f8c85da5
