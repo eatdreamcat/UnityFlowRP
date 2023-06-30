@@ -19,8 +19,8 @@ MonoBehaviour:
     m_ValueData:
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
-    - position: {x: 312, y: 268, z: 0}
-      scale: {x: 0.8695652, y: 0.8695652, z: 1}
+    - position: {x: 663, y: 213, z: 0}
+      scale: {x: 0.32690176, y: 0.32690176, z: 1}
   m_Datas:
     m_KeyData:
     - c918e36d-72cf-46b9-8eb1-0f7b7f1a6dba
@@ -65,7 +65,7 @@ MonoBehaviour:
           position: {x: 653, y: 550}
           groupGuid: 
         - name: FRPRenderStateNode
-          position: {x: 749, y: 81}
+          position: {x: 70, y: 718}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

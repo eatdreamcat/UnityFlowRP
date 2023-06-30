@@ -241,7 +241,7 @@ namespace UnityEditor.Rendering.FlowPipeline
             var extraHeightAdd = 0;
             listView.showFoldoutHeader = false;
             listView.showAddRemoveFooter = showAddRemoveFooter;
-            
+            listView.showAlternatingRowBackgrounds = AlternatingRowBackground.All;
             listView.userData =  new List<VisualElement>();
 
             float GetListHeight()
@@ -592,8 +592,74 @@ namespace UnityEditor.Rendering.FlowPipeline
                 });
              
                 Add(m_WriteMask);
+
+                // color blend mode
+                m_SourceColorBlendMode = CreateEnumField(tempblendStateData.sourceColorBlendMode,
+                    "Source Color Blend Mode",
+                    evt =>
+                    {
+                        if (m_BlendStateData != null)
+                        {
+                            m_BlendStateData.sourceColorBlendMode = (BlendMode)evt.newValue;
+                        }
+                    });
+                Add(m_SourceColorBlendMode);
                 
+                m_DestinationColorBlendMode = CreateEnumField(tempblendStateData.destinationColorBlendMode,
+                    "Destination Color Blend Mode",
+                    evt =>
+                    {
+                        if (m_BlendStateData != null)
+                        {
+                            m_BlendStateData.destinationColorBlendMode = (BlendMode)evt.newValue;
+                        }
+                    });
+                Add(m_DestinationColorBlendMode);
                 
+                // alpha blend mode
+                m_SourceAlphaBlendMode = CreateEnumField(tempblendStateData.sourceAlphaBlendMode,
+                    "Source Alpha Blend Mode",
+                    evt =>
+                    {
+                        if (m_BlendStateData != null)
+                        {
+                            m_BlendStateData.sourceAlphaBlendMode = (BlendMode)evt.newValue;
+                        }
+                    });
+                Add(m_SourceAlphaBlendMode);
+                
+                m_DestinationAlphaBlendMode = CreateEnumField(tempblendStateData.destinationAlphaBlendMode,
+                    "Destination Alpha Blend Mode",
+                    evt =>
+                    {
+                        if (m_BlendStateData != null)
+                        {
+                            m_BlendStateData.destinationAlphaBlendMode = (BlendMode)evt.newValue;
+                        }
+                    });
+                Add(m_DestinationAlphaBlendMode);
+                
+                m_ColorBlendOperation = CreateEnumField(tempblendStateData.colorBlendOperation,
+                    "Color Blend Operation",
+                    evt =>
+                    {
+                        if (m_BlendStateData != null)
+                        {
+                            m_BlendStateData.colorBlendOperation = (BlendOp)evt.newValue;
+                        }
+                    });
+                Add(m_ColorBlendOperation);
+                
+                m_AlphaBlendOperation = CreateEnumField(tempblendStateData.alphaBlendOperation,
+                    "Alpha Blend Operation",
+                    evt =>
+                    {
+                        if (m_BlendStateData != null)
+                        {
+                            m_BlendStateData.alphaBlendOperation = (BlendOp)evt.newValue;
+                        }
+                    });
+                Add(m_AlphaBlendOperation);
             }
             
           
@@ -604,14 +670,26 @@ namespace UnityEditor.Rendering.FlowPipeline
                 m_BlendStateData = blendStateData;
                 m_WriteMask.value = (int)blendStateData.writeMask;
                 
+                m_BlendStateData.sourceColorBlendMode = blendStateData.sourceColorBlendMode;
+                m_BlendStateData.destinationColorBlendMode = blendStateData.destinationColorBlendMode;
+
+                m_BlendStateData.sourceAlphaBlendMode = blendStateData.sourceAlphaBlendMode;
+                m_BlendStateData.destinationAlphaBlendMode = blendStateData.destinationAlphaBlendMode;
+
+
+                m_BlendStateData.colorBlendOperation = blendStateData.colorBlendOperation;
+                m_BlendStateData.alphaBlendOperation = blendStateData.alphaBlendOperation;
+                
             }
 
             
             private MaskField m_WriteMask;
             private EnumField m_SourceColorBlendMode;
             private EnumField m_DestinationColorBlendMode;
+            
             private EnumField m_SourceAlphaBlendMode;
             private EnumField m_DestinationAlphaBlendMode;
+            
             private EnumField m_ColorBlendOperation;
             private EnumField m_AlphaBlendOperation;
 
@@ -822,7 +900,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 var data = stateParameter.blendStates[i];
                 blendStateElement.Update(data);
                 
-            }, 23 * 8);
+            }, 23 * 7);
             stateRoot.Add(blendStatesListView);
 
             #endregion
