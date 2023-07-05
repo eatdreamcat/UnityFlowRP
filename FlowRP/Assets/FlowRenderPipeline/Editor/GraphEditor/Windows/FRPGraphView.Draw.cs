@@ -82,6 +82,9 @@ namespace UnityEditor.Rendering.FlowPipeline
                 
                 // 4. camera assignment
                 DrawAssignment(graphNodeData.camera, FRPDrawRendererNode.kCameraFoldoutName, renderRequestNode);
+                
+                // 5. buffer assignment
+                DrawBufferAssignment(graphNodeData.inputList, graphNodeData.outputList, renderRequestNode);
 
                 #endregion
             }
@@ -118,6 +121,30 @@ namespace UnityEditor.Rendering.FlowPipeline
                 var parameterNode = m_FrpNodeMap[assignID];
                 Debug.Assert(parameterNode != null, $"parameterNode {assignID} is null.");
                 AddEdgeManually(parameterNode.FlowOut.ConnectTo(renderRequestNode.GetBlockPort(kBlockName)));
+            }
+        }
+
+        void DrawBufferAssignment(List<string> inputList, List<string> outputList, FRPDrawRendererNode renderRequestNode)
+        {
+            foreach (var bufferInID in inputList)
+            {
+                if (!string.IsNullOrEmpty(bufferInID))
+                {
+                    var bufferNode = m_FrpNodeMap[bufferInID];
+                    Debug.Assert(bufferNode != null, $"bufferNode {bufferInID} is null.");
+                    AddEdgeManually(bufferNode.FlowOut.ConnectTo(renderRequestNode.BufferInput));
+                }
+            }
+            
+            foreach (var bufferOutID in outputList)
+            {
+                if (!string.IsNullOrEmpty(bufferOutID))
+                {
+                    var bufferNode = m_FrpNodeMap[bufferOutID];
+                    Debug.Assert(bufferNode != null, $"bufferNode {bufferOutID} is null.");
+                    AddEdgeManually(bufferNode.FlowIn.ConnectTo(renderRequestNode.BufferOutput));
+                }
+                
             }
         }
         

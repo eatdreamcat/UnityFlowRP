@@ -169,13 +169,44 @@ namespace UnityEditor.Rendering.FlowPipeline
                     m_CurrentRenderGraphData.AddCameraAssignment(outNode.ID, inNode.ID);
                 }
                     break;
+                case FlowRenderGraphData.NodeType.BufferNode:
+                {
+                    FRPBufferNode bufferNode = outNode as FRPBufferNode;
+                    
+                    if (bufferNode.BufferNode.bufferType == FlowRenderGraphData.BufferType.TextureBuffer)
+                    {
+                        m_CurrentRenderGraphData.AddTextureBufferInputAssignment(outNode.ID, inNode.ID);
+                        
+                    } else if (bufferNode.BufferNode.bufferType == FlowRenderGraphData.BufferType.ComputerBuffer)
+                    {
+                        
+                    }
+                }
+                    break;
 
                 case FlowRenderGraphData.NodeType.DrawRendererNode:
                 case FlowRenderGraphData.NodeType.DrawFullScreenNode:
                 case FlowRenderGraphData.NodeType.EntryNode:
                 {
-                    edge.style.color = Color.cyan;
-                    m_CurrentRenderGraphData.AddFlowInOut(outNode.ID, inNode.ID);
+                    if (inNode.Type == FlowRenderGraphData.NodeType.BufferNode)
+                    {
+                        // assign render target
+                        FRPBufferNode bufferNode = inNode as FRPBufferNode;
+                        
+                        if (bufferNode.BufferNode.bufferType == FlowRenderGraphData.BufferType.TextureBuffer)
+                        {
+                            m_CurrentRenderGraphData.AddTextureBufferOutputAssignment(inNode.ID, outNode.ID);
+                        
+                        } else if (bufferNode.BufferNode.bufferType == FlowRenderGraphData.BufferType.ComputerBuffer)
+                        {
+                        
+                        }
+                    }
+                    else
+                    {
+                        edge.style.color = Color.cyan;
+                        m_CurrentRenderGraphData.AddFlowInOut(outNode.ID, inNode.ID);
+                    }
                 }
                     break;
             }
@@ -212,11 +243,43 @@ namespace UnityEditor.Rendering.FlowPipeline
                     m_CurrentRenderGraphData.DeleteCameraAssignment(outNode.ID, inNode.ID);
                 }
                     break;
+                case FlowRenderGraphData.NodeType.BufferNode:
+                {
+                    FRPBufferNode bufferNode = outNode as FRPBufferNode;
+                    
+                    if (bufferNode.BufferNode.bufferType == FlowRenderGraphData.BufferType.TextureBuffer)
+                    {
+                        m_CurrentRenderGraphData.DeleteTextureBufferInputAssignment(outNode.ID, inNode.ID);
+                        
+                    } else if (bufferNode.BufferNode.bufferType == FlowRenderGraphData.BufferType.ComputerBuffer)
+                    {
+                        
+                    }
+                }
+                    break;
 
                 case FlowRenderGraphData.NodeType.DrawRendererNode:
                 case FlowRenderGraphData.NodeType.EntryNode:
                 {
-                    m_CurrentRenderGraphData.DeleteFlowInOut(outNode.ID, inNode.ID);
+                    if (inNode.Type == FlowRenderGraphData.NodeType.BufferNode)
+                    {
+                        // assign render target
+                        FRPBufferNode bufferNode = inNode as FRPBufferNode;
+                        
+                        if (bufferNode.BufferNode.bufferType == FlowRenderGraphData.BufferType.TextureBuffer)
+                        {
+                            m_CurrentRenderGraphData.DeleteTextureBufferOutputAssignment(inNode.ID, outNode.ID);
+                        
+                        } else if (bufferNode.BufferNode.bufferType == FlowRenderGraphData.BufferType.ComputerBuffer)
+                        {
+                        
+                        }
+                    }
+                    else
+                    {
+                        m_CurrentRenderGraphData.DeleteFlowInOut(outNode.ID, inNode.ID);
+                    }
+                    
                 }
                     break;
             }

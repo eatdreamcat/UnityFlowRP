@@ -55,9 +55,6 @@ namespace UnityEditor.Rendering.FlowPipeline
         public static readonly string kMaterialFoldoutName = "Material";
         public static readonly string kCameraFoldoutName = "Camera";
         
-        public static readonly string kInputOutputBlockName = "Input-Output";
-        public static readonly string kParametersBlockName = "Parameters";
-
         public struct FoldoutDisplay
         {
             public string title;
@@ -175,12 +172,22 @@ namespace UnityEditor.Rendering.FlowPipeline
           
         }
 
+        private Port m_BufferInput;
+        public Port BufferInput => m_BufferInput;
+        
+        private Port m_BufferOutput;
+
+        public Port BufferOutput => m_BufferOutput;
         
         private void DrawBufferInputOutput()
         {
-            inputContainer.Add(this.CreatePort("Buffer-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Multi, typeof(BufferAsPassInput)));
-            
-            outputContainer.Add(this.CreatePort("Buffer-Out", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(BufferAsPassOutput)));
+            m_BufferInput = this.CreatePort("Buffer-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Multi,
+                typeof(BufferAsPassInput));
+            inputContainer.Add(m_BufferInput);
+
+            m_BufferOutput = this.CreatePort("Buffer-Out", Orientation.Horizontal, Direction.Output,
+                Port.Capacity.Multi, typeof(BufferAsPassOutput));
+            outputContainer.Add(m_BufferOutput);
         }
 
         public Port GetBlockPort(string blockName)

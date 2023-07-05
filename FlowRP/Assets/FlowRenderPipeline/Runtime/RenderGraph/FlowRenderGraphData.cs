@@ -208,16 +208,16 @@ namespace UnityEngine.Rendering.FlowPipeline
             }
         }
         
+       
         public void OnBeforeSerialize()
         {
-          //  throw new NotImplementedException();
-        }
-
-        public void OnAfterDeserialize()
-        {
-          //  throw new NotImplementedException();
+            //  throw new NotImplementedException();
         }
         
+        public void OnAfterDeserialize()
+        {
+            
+        }
         
     }
 }

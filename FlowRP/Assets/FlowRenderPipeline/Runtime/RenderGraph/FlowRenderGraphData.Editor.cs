@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
-using UnityEditor.VersionControl;
 
 namespace UnityEngine.Rendering.FlowPipeline
 {
@@ -35,7 +33,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<CreateRenderGraphDataAsset>(),
                 "New Render Graph Data Asset.asset",null, null);
         }
-
+        
         public FlowRenderGraphData()
         {
             InitGUID();
@@ -179,6 +177,7 @@ namespace UnityEngine.Rendering.FlowPipeline
 
                 }
                     break;
+                
                 case NodeType.BranchNode:
                 {
 
@@ -287,6 +286,58 @@ namespace UnityEngine.Rendering.FlowPipeline
                     }
                 }
                     break;
+
+                case NodeType.CullingParameterNode:
+                {
+                    if (m_CullingNodesMap.ContainsKey(guid))
+                    {
+                        m_CullingNodesMap.Remove(guid);
+
+                        FlowUtility.SaveAsset(this);
+
+                        return;
+                    }
+                }
+                    break;
+                
+                case NodeType.RenderStateNode:
+                {
+                    if (m_RenderStateNodesMap.ContainsKey(guid))
+                    {
+                        m_RenderStateNodesMap.Remove(guid);
+
+                        FlowUtility.SaveAsset(this);
+
+                        return;
+                    }
+                }
+                    break;
+                
+                case NodeType.RenderMaterialNode:
+                {
+                    if (m_MaterialNodesMap.ContainsKey(guid))
+                    {
+                        m_MaterialNodesMap.Remove(guid);
+
+                        FlowUtility.SaveAsset(this);
+
+                        return;
+                    }
+                }
+                    break;
+                
+                case NodeType.CameraParameterNode:
+                {
+                    if (m_CameraNodesMap.ContainsKey(guid))
+                    {
+                        m_CameraNodesMap.Remove(guid);
+
+                        FlowUtility.SaveAsset(this);
+
+                        return;
+                    }
+                }
+                    break;
             }
 
             Debug.LogError($"[GraphData.DeleteNode] Node {guid}, {nodeType} not exist.");
@@ -371,6 +422,56 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         
         #region RenderRequestNode
+        
+        public void AddTextureBufferInputAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                inNode.inputList.Add(assignIn);
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.AddTextureBufferInputAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+        
+        public void DeleteTextureBufferInputAssignment(string assignIn, string targetNodeID)
+        {
+            if (m_DrawRendererNodesMap.TryGetValue(targetNodeID, out var inNode))
+            {
+                Debug.Assert(inNode.inputList.IndexOf(assignIn) >= 0, "Current assignment is not equal to the to-disconnected one .");
+                inNode.inputList.Remove(assignIn);
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.DeleteTextureBufferInputAssignment] Node(In) {targetNodeID} not exist.");
+            }
+        }
+        
+        public void AddTextureBufferOutputAssignment(string writeTarget, string operationNode)
+        {
+            if (m_DrawRendererNodesMap.TryGetValue(operationNode, out var inNode))
+            {
+                inNode.outputList.Add(writeTarget);
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.AddTextureBufferOutputAssignment] Node(In) {operationNode} not exist.");
+            }
+        }
+        
+        public void DeleteTextureBufferOutputAssignment(string writeTarget, string operationNode)
+        {
+            if (m_DrawRendererNodesMap.TryGetValue(operationNode, out var inNode))
+            {
+                Debug.Assert(inNode.outputList.IndexOf(writeTarget) >= 0, "Current assignment is not equal to the to-disconnected one .");
+                inNode.outputList.Remove(writeTarget);
+            }
+            else
+            {
+                Debug.LogError($"[GraphData.DeleteTextureBufferOutputAssignment] Node(In) {operationNode} not exist.");
+            }
+        }
         
         public void AddCullingAssignment(string assignIn, string targetNodeID)
         {
@@ -473,6 +574,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         }
         
         #endregion
+        
     }
     
 #endif
