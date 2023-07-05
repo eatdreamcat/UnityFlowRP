@@ -17,8 +17,8 @@ MonoBehaviour:
     - 44467ba9-cc73-4b95-9454-1e709ebab66e
     - 3070563e-cbb9-4d7f-81de-aafaba7fc89d
     m_ValueData:
-    - position: {x: -936, y: -272, z: 0}
-      scale: {x: 2, y: 2, z: 1}
+    - position: {x: -613, y: 92, z: 0}
+      scale: {x: 1.3225, y: 1.3225, z: 1}
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
   m_Datas:
@@ -53,7 +53,7 @@ MonoBehaviour:
           position: {x: 240, y: 439}
           groupGuid: 
         - name: Tex1
-          position: {x: 605, y: 273}
+          position: {x: 548, y: 262}
           groupGuid: 
         - name: ComputerBuffer
           position: {x: 178.26088, y: 500.00003}
