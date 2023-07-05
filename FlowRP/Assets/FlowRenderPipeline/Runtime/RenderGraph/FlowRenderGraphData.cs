@@ -181,7 +181,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             return m_TextureBufferNodeMap[nodeID];
         }
         
-        public FlowNode TryFlowNode(string nodeID)
+        public FlowNode TryGetFlowNode(string nodeID)
         {
             Debug.Assert(m_FlowNodesMap.ContainsKey(nodeID), $"Flow Node {nodeID} not exist.");
             return m_FlowNodesMap[nodeID];

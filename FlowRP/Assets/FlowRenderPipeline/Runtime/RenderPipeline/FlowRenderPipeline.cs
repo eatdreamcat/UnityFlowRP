@@ -80,21 +80,12 @@ namespace UnityEngine.Rendering.FlowPipeline
          */
         struct RenderRequest
         {
-            public struct Target
-            {
-                public RenderTargetIdentifier id;
-                public CubemapFace face;
-                public RTHandle copyToTarget;
-                public RTHandle targetDepth;
-            }
-
-            public FRPCamera frpCamera;
             public FlowRPCullingResults cullingResults;
             public int index;
-            public Target target;
+            public FRPCamera frpCamera;
             
-            // Indices of render request to render before this one
-            public List<int> dependsOnRenderRequestIndices;
+            public FlowRenderGraphData.NodeType nodeType;
+            public string nodeID;
         }
 
         #endregion
@@ -181,7 +172,6 @@ namespace UnityEngine.Rendering.FlowPipeline
 
               // This syntax is awful and hostile to debugging, please don't use it... !!! So why you using it !!!??????????
             using (ListPool<RenderRequest>.Get(out List<RenderRequest> renderRequests))
-            using (ListPool<int>.Get(out List<int> rootRenderRequestIndices))
             {
 
                 #region CameraList Construct and Sort
@@ -238,7 +228,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     var skipRequest = false;
                     
                     // get culling params
-                    skipRequest = !TryCalculateFrameParameters(camera, out var additionalCameraData, out var cullingParams);
+                    skipRequest = !TryCalculateFrameParameters(camera, out var additionalCameraData, out var cullingParams, out var currentGraphData);
 
                     /// Skip !!! Off duty !!!!!!!!!!!!!!!!!!
                     if (skipRequest)
@@ -251,7 +241,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     }
 
                     skipRequest = !TryCull(camera, renderContext, cullingParams, m_Asset, ref cullingResults);
-
+                    
                     /// Skip !!! Off duty !!!!!!!!!!!!!!!!!!
                     if (skipRequest)
                     {
@@ -261,163 +251,98 @@ namespace UnityEngine.Rendering.FlowPipeline
                         EndCameraRendering(renderContext, camera);
                         continue;
                     }
-
-
+                    
                     /// oops!!!! we need to work more
-                    ///
-                    // Select render target
-                    RenderTargetIdentifier targetId = camera.targetTexture ?? new RenderTargetIdentifier(BuiltinRenderTextureType.CameraTarget);
+                 
                     // Add render request
-                    var request = new RenderRequest
+                    var flowNode = currentGraphData.TryGetFlowNode(currentGraphData.EntryID);
+                    bool canBreakLoop = false;
+                    int loopCount = 0;
+                    const int MaxLoopCount = 1000;
+                    while (flowNode != null && canBreakLoop == false && ++loopCount <= MaxLoopCount)
                     {
-                        cullingResults = cullingResults,
-                        target = new RenderRequest.Target
+                        if (!string.IsNullOrEmpty(flowNode.dataID))
                         {
-                            id = targetId,
-                            face = CubemapFace.Unknown,
-                        },
-                        frpCamera = FRPCamera.GetOrCreate(camera),
-                        dependsOnRenderRequestIndices = ListPool<int>.Get(),
-                        index = renderRequests.Count,
-                    };
-                    renderRequests.Add(request);
-                    // This is a root render request
-                    rootRenderRequestIndices.Add(request.index);
+                            switch (flowNode.dataType)
+                            {
+                                case FlowRenderGraphData.NodeType.EntryNode:
+                                {
+                                    var targetNodeID = flowNode.flowOut[0];
+                                    Debug.Assert(!string.IsNullOrEmpty(targetNodeID), $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
+                                    if (flowNode.flowOut.Count > 0)
+                                    {
+                                        // pass node only has one flow output.
+                                        flowNode = currentGraphData.TryGetFlowNode(flowNode.flowOut[0]);
+                                    }
+                                    else
+                                    {
+                                        canBreakLoop = true;
+                                    }
+                                }
+                                    break;
+                                
+                                case FlowRenderGraphData.NodeType.DrawRendererNode:
+                                case FlowRenderGraphData.NodeType.DrawFullScreenNode:
+                                {
+                                    // draw flow edge
+                                    if (flowNode.flowOut.Count > 0)
+                                    {
+                                        var targetNodeID = flowNode.flowOut[0];
+                                        Debug.Assert(!string.IsNullOrEmpty(targetNodeID), $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
+                                        // pass node only has one flow output.
+                                        flowNode = currentGraphData.TryGetFlowNode(flowNode.flowOut[0]);
+                                        
+                                        renderRequests.Add(new RenderRequest()
+                                        {
+                                            cullingResults = cullingResults,
+                                            index = renderRequests.Count,
+                                            frpCamera = FRPCamera.GetOrCreate(camera), 
+                                
+                                            nodeType = flowNode.dataType,
+                                            nodeID = flowNode.dataID
+                                        });
+                                        
+                                    }
+                                    else
+                                    {
+                                        canBreakLoop = true;
+                                    }
+                                }
+                                    break;
+                                
+                                case FlowRenderGraphData.NodeType.BranchNode:
+                                {
+                                    // TODO:
+                                    canBreakLoop = true;
+                                }
+                                    break;
+                            
+                                case FlowRenderGraphData.NodeType.LoopNode:
+                                {
+                                    // TODO: 
+                                    canBreakLoop = true;
+                                }
+                                    break;
+                            }
+                        }
+                    }
                     
-                    
-
+                    Debug.Assert(loopCount <= MaxLoopCount, "A deadloop occured while draw connections, please check is there a new Node type not be managed.");
                 } // end of culling loop
 
                 #endregion
 
-                #region setup Temporary Target for Cubemaps
-
-                 // TODO: Refactor into a method. If possible remove the intermediate target
-                // Find max size for Cubemap face targets and resize/allocate if required the intermediate render target
-                {
-                    var size = Vector2Int.zero;
-                    for (int i = 0; i < renderRequests.Count; ++i)
-                    {
-                        var renderRequest = renderRequests[i];
-                        var isCubemapFaceTarget = renderRequest.target.face != CubemapFace.Unknown;
-                        if (!isCubemapFaceTarget)
-                            continue;
-
-                        // var width = renderRequest..actualWidth;
-                        // var height = renderRequest.flowRPCamera.actualHeight;
-                        // size.x = Mathf.Max(width, size.x);
-                        // size.y = Mathf.Max(height, size.y);
-                    }
-
-                    if (size != Vector2.zero)
-                    {
-                        // todo: 
-                        var probeFormat = GraphicsFormat.D16_UNorm; //(GraphicsFormat)m_Asset.currentPlatformRenderPipelineSettings.lightLoopSettings.reflectionProbeFormat;
-                        if (m_TemporaryTargetForCubemaps != null)
-                        {
-                            if (m_TemporaryTargetForCubemaps.width != size.x
-                                || m_TemporaryTargetForCubemaps.height != size.y
-                                || m_TemporaryTargetForCubemaps.graphicsFormat != probeFormat)
-                            {
-                                m_TemporaryTargetForCubemaps.Release();
-                                m_TemporaryTargetForCubemaps = null;
-                            }
-                        }
-                        if (m_TemporaryTargetForCubemaps == null)
-                        {
-                            m_TemporaryTargetForCubemaps = new RenderTexture(
-                                size.x, size.y, 1, probeFormat
-                            )
-                            {
-                                autoGenerateMips = false,
-                                useMipMap = false,
-                                name = "Temporary Target For Cubemap Face",
-                                volumeDepth = 1,
-                                useDynamicScale = false
-                            };
-                        }
-                    }
-                }
-                
-
-                #endregion
-
-
                 #region Render the render requset
-
-                /// Now is time to Do Rendering Work!!!
-                using (ListPool<int>.Get(out List<int> renderRequestIndicesToRender))
-                {
-                    // Flatten the render requests graph in an array that guarantee dependency constraints
-                    // TODO: maybe to remove cause we using nodes to drive render pass
-                    {
-                        using (GenericPool<Stack<int>>.Get(out Stack<int> stack))
-                        {
-                            stack.Clear();
-                            for (int i = rootRenderRequestIndices.Count - 1; i >= 0; --i)
-                            {
-                                stack.Push(rootRenderRequestIndices[i]);
-                                while (stack.Count > 0)
-                                {
-                                    var index = stack.Pop();
-                                    if (!renderRequestIndicesToRender.Contains(index))
-                                        renderRequestIndicesToRender.Add(index);
-
-                                    var request = renderRequests[index];
-                                    for (int j = 0; j < request.dependsOnRenderRequestIndices.Count; ++j)
-                                        stack.Push(request.dependsOnRenderRequestIndices[j]);
-                                }
-                            }
-                        }
-                    }
-
-                    /// render all the render request
+                /// render all the render request
                     using (new ProfilingScope(null, ProfilingSampler.Get(ProfileId.FlowPipelineRenderAllRenderRequest)))
                     {
-                        // TODO: do some optimization ? 
-                        // Warm up the RTHandle system so that it gets init to the maximum resolution available (avoiding to call multiple resizes
-                        // that can lead to high memory spike as the memory release is delayed while the creation is immediate).
-                        {
-                            Vector2Int maxSize = new Vector2Int(1, 1);
-
-                            for (int i = renderRequestIndicesToRender.Count - 1; i >= 0; --i)
-                            {
-                                var renderRequestIndex = renderRequestIndicesToRender[i];
-                                var renderRequest = renderRequests[renderRequestIndex];
-                                // TODO：
-                                // var hdCamera = renderRequest.hdCamera;
-                                //
-                                // maxSize.x = Math.Max((int)hdCamera.finalViewport.size.x, maxSize.x);
-                                // maxSize.y = Math.Max((int)hdCamera.finalViewport.size.y, maxSize.y);
-                            }
-
-                            // Here we use the non scaled resolution for the RTHandleSystem ref size because we assume that at some point we will need full resolution anyway.
-                            // This is necessary because we assume that after post processes, we have the full size render target for debug rendering
-                            // The only point of calling this here is to grow the render targets. The call in BeginRender will setup the current RTHandle viewport size.
-                            // RTHandles.SetReferenceSize(maxSize.x, maxSize.y);
-                        }
+                       
                         
-                        // Execute render request graph, in reverse order
-                        for (int i = renderRequestIndicesToRender.Count - 1; i >= 0; --i)
+                        // Execute render request graph
+                        for (int i = 0; i < renderRequests.Count; ++i)
                         {
-                            var renderRequestIndex = renderRequestIndicesToRender[i];
-                            var renderRequest = renderRequests[renderRequestIndex];
-
+                            var renderRequest = renderRequests[i];
                             var cmd = CommandBufferPool.Get("");
-                            
-                            // TODO: Avoid the intermediate target and render directly into final target
-                            //  CommandBuffer.Blit does not work on Cubemap faces
-                            //  So we use an intermediate RT to perform a CommandBuffer.CopyTexture in the target Cubemap face
-                            if (renderRequest.target.face != CubemapFace.Unknown)
-                            {
-                                if (!m_TemporaryTargetForCubemaps.IsCreated())
-                                    m_TemporaryTargetForCubemaps.Create();
-
-                                var frpCamera = renderRequest.frpCamera;
-                                ref var target = ref renderRequest.target;
-                                target.id = m_TemporaryTargetForCubemaps;
-                            }
-                            
                             // TODO: handle dependent Probe data
 
                             #region Render AVOs
@@ -460,9 +385,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                             #endregion
                             
                         }
-                        
-                      
-                    }
+                    
                 }
 
                 #endregion
@@ -505,7 +428,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             var frpCamera = renderRequest.frpCamera;
             var camera = frpCamera.camera;
             var cullingResults = renderRequest.cullingResults.cullingResults;
-            var target = renderRequest.target;
+           
             
             // Updates RTHandle
             frpCamera.BeginRender(cmd);
@@ -561,15 +484,18 @@ namespace UnityEngine.Rendering.FlowPipeline
         bool TryCalculateFrameParameters(
             Camera camera,
             out FlowRPAdditionalCameraData additionalCameraData,
-            out ScriptableCullingParameters cullingParams
+            out ScriptableCullingParameters cullingParams,
+            out FlowRenderGraphData currentGraphData
         )
         {
             // First, get aggregate of frame settings base on global settings, camera frame settings and debug settings
             // Note: the SceneView camera will never have additionalCameraData
             additionalCameraData = FlowUtility.TryGetAdditionalCameraDataOrDefault(camera);
             cullingParams = default;
+            
+            currentGraphData = additionalCameraData.renderGraphData;
 
-            if (!camera.TryGetCullingParameters(camera.stereoEnabled, out cullingParams))
+            if (!camera.TryGetCullingParameters(camera.stereoEnabled, out cullingParams) || currentGraphData == null || !currentGraphData.HasEntry() || string.IsNullOrEmpty(currentGraphData.Entry.startPoint))
             {
                 return false;
             }

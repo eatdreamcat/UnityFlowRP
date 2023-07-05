@@ -150,7 +150,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         
         private void DrawNodeConnections(string entryID)
         {
-            var flowNode = m_CurrentRenderGraphData.TryFlowNode(entryID);
+            var flowNode = m_CurrentRenderGraphData.TryGetFlowNode(entryID);
             Debug.Assert(flowNode.dataType == FlowRenderGraphData.NodeType.EntryNode, "Entry Flow not binding to Entry Node.");
           
             // entry node flow...
@@ -177,7 +177,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                                 if (flowNode.flowOut.Count > 0)
                                 {
                                     // pass node only has one flow output.
-                                    flowNode = m_CurrentRenderGraphData.TryFlowNode(flowNode.flowOut[0]);
+                                    flowNode = m_CurrentRenderGraphData.TryGetFlowNode(flowNode.flowOut[0]);
                                 }
                                 else
                                 {
@@ -199,7 +199,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                                     AddEdgeManually(graphNode.FlowOut.ConnectTo(targetNode.FlowIn), true);
                                     
                                     // pass node only has one flow output.
-                                    flowNode = m_CurrentRenderGraphData.TryFlowNode(flowNode.flowOut[0]);
+                                    flowNode = m_CurrentRenderGraphData.TryGetFlowNode(flowNode.flowOut[0]);
                                 }
                                 else
                                 {
