@@ -16,8 +16,23 @@
     background-color: var(--ds-colors-window-dark-grey-3);
     border-radius: var(--ds-metrics-window-pixels-4);
     padding: var(--ds-metrics-window-pixels-8);
+   
 }
 
+
+.sarp-node__buffer-input-container
+{
+    background-color: var(--ds-colors-window-dark-grey-3);
+    border-radius: var(--ds-metrics-window-pixels-4);
+    padding: var(--ds-metrics-window-pixels-8);
+}
+
+.sarp-node__buffer-output-container
+{
+    background-color: var(--ds-colors-window-dark-grey-3);
+    border-radius: var(--ds-metrics-window-pixels-4);
+    padding: var(--ds-metrics-window-pixels-8);
+}
 /* INPUTS */
 
 .ds-node__text-field > .unity-text-field__input

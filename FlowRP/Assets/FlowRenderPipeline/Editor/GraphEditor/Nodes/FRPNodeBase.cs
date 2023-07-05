@@ -92,8 +92,11 @@ namespace UnityEditor.Rendering.FlowPipeline
                         break;
                     case FlowRenderGraphData.NodeType.BufferNode:
                     {
-                        FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(FRPBufferNode));
+                        FlowOut = this.CreatePort("Assign-To", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(BufferAsPassInput));
                         outputContainer.Add(FlowOut);
+                        
+                        FlowIn = this.CreatePort("Write-To", Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(BufferAsPassOutput));
+                        inputContainer.Add(FlowIn);
                     }
                         break;
                     
@@ -205,6 +208,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 RefreshExpandedState();
             }
         }
+        
 
         #endregion
     }

@@ -328,26 +328,37 @@ namespace UnityEngine.Rendering.FlowPipeline
             public BufferType bufferType;
             public BufferLifeTime lifeTime;
         }
+        
 
-        public static BufferNode CreateBufferNode(string nodeName, string bufferID, BufferType bufferType, BufferLifeTime lifeTime = BufferLifeTime.PerPass)
+        public static BufferNode CreateBufferNode(string nodeName, string guid, string bufferID, BufferType bufferType, BufferLifeTime lifeTime = BufferLifeTime.PerPass)
         {
             return new BufferNode()
             {
                 name = nodeName,
-                guid = bufferID,
+                guid = guid,
                 type = NodeType.BufferNode,
                 bufferType = bufferType,
+                bufferID = bufferID,
                 lifeTime = lifeTime
             };
+        }
+
+        [Serializable]
+        public struct FastMemory
+        {
+            ///<summary>Whether the texture will be in fast memory.</summary>
+            public bool inFastMemory;
+            ///<summary>Flag to determine what parts of the render target is spilled if not fully resident in fast memory.</summary>
+            public FastMemoryFlags flags;
+            ///<summary>How much of the render target is to be switched into fast memory (between 0 and 1).</summary>
+            public float residencyFraction;
         }
 
         [Serializable]
         public class TextureBufferNode : BaseNode
         {
             #region Header Info
-
-            ///<summary>Texture name.</summary>
-            public string name;
+            
             ///<summary>Texture is a shadow map.</summary>
             public bool isShadowMap;
             ///<summary>Determines whether the texture will fallback to a black texture if it is read without ever writing to it.</summary>
@@ -361,7 +372,6 @@ namespace UnityEngine.Rendering.FlowPipeline
             public int width;
             public int height;
             public Vector2 scale;
-            public bool dynamicResolution;
             ///<summary>Texture uses dynamic scaling.</summary>
             public bool useDynamicScale;
             ///<summary>used for xr.</summary>
@@ -416,7 +426,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             ///<summary>Memory less flag.</summary>
             public RenderTextureMemoryless memoryless;
             // fast memory desc
-            public FastMemoryDesc fastMemoryDesc;
+            public FastMemory fastMemoryDesc;
 
             public DepthAccess depthAccess;
             
@@ -444,11 +454,15 @@ namespace UnityEngine.Rendering.FlowPipeline
                 sizeMode = TextureSizeMode.Explicit,
                 width = 1,
                 height = 1,
+                scale = Vector2.one,
+                
                 // Important default values not handled by zero construction in this()
                 msaaSamples = MSAASamples.None,
                 useDynamicScale = false,
                 slices = 1,
-                dimension = TextureDimension.Tex2D
+                dimension = TextureDimension.Tex2D,
+                
+                fastMemoryDesc = new FastMemory()
             };
         }
         

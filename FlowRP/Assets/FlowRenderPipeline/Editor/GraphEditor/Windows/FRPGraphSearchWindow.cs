@@ -32,6 +32,18 @@ namespace UnityEditor.Rendering.FlowPipeline
                 
                 /// level 2
                 new SearchTreeGroupEntry(new GUIContent("Buffer Node"), 2),
+                
+                new SearchTreeEntry(new GUIContent("TextureBuffer", m_EmptyTexture))
+                {
+                    level = 3,
+                    userData = FlowRenderGraphData.NodeType.TextureBuffer
+                },
+                
+                new SearchTreeEntry(new GUIContent("ComputerBuffer", m_EmptyTexture))
+                {
+                    level = 3,
+                    userData = FlowRenderGraphData.NodeType.ComputerBuffer
+                },
 
                 /// level 2
                 new SearchTreeGroupEntry(new GUIContent("Pass Node"), 2),
@@ -110,7 +122,9 @@ namespace UnityEditor.Rendering.FlowPipeline
             {
                // buffer
              
-               
+               case FlowRenderGraphData.NodeType.ComputerBuffer:
+               case FlowRenderGraphData.NodeType.TextureBuffer:    
+
                // render pass
                case FlowRenderGraphData.NodeType.DrawFullScreenNode:
                case FlowRenderGraphData.NodeType.DrawRendererNode:

@@ -241,6 +241,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             }
         }
         
+        private void DrawBufferNodeList(List<FlowRenderGraphData.BufferNode> nodeList)
+        {
+            for (int i = 0; i < nodeList.Count; ++i)
+            {
+                DrawNode(nodeList[i]);
+            }
+        } 
+        
         private void Draw()
         {
             
@@ -259,12 +267,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             var renderStateNodeList = m_CurrentRenderGraphData.RenderStateNodeList;
             var materialNodeList = m_CurrentRenderGraphData.MaterialNodeList;
             var cameraNodeList = m_CurrentRenderGraphData.CameraNodeList;
+            var bufferNodeList = m_CurrentRenderGraphData.BufferNodeList;
             
             // draw parameter node first cause we will draw parameter assignment when drawing pass node
             DrawCullingNodeList(cullingNodeList);
             DrawRenderStateNodeList(renderStateNodeList);
             DrawMaterialNodeList(materialNodeList);
             DrawCameraNodeList(cameraNodeList);
+            DrawBufferNodeList(bufferNodeList);
 
             // draw pass node and it's assignments
             DrawRendererNodeList(passNodeList);

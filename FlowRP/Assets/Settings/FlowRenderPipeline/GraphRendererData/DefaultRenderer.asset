@@ -61,6 +61,51 @@ MonoBehaviour:
       flowIn:
       - cac79d33-abde-49e5-96b0-226e05f624a5
       flowOut: []
+  m_BufferNodeMap:
+    m_KeyData:
+    - e12b1b55-8c69-43cc-8083-621519717fe8
+    m_ValueData:
+    - guid: e12b1b55-8c69-43cc-8083-621519717fe8
+      name: TextureBuffer
+      type: 12
+      bufferID: e12b1b55-8c69-43cc-8083-621519717fe8
+      bufferType: 0
+      lifeTime: 2
+  m_TextureBufferNodeMap:
+    m_KeyData:
+    - e12b1b55-8c69-43cc-8083-621519717fe8
+    m_ValueData:
+    - guid: e12b1b55-8c69-43cc-8083-621519717fe8
+      name: TextureBuffer
+      type: 13
+      isShadowMap: 0
+      fallBackToBlackTexture: 0
+      sizeMode: 0
+      width: 1
+      height: 1
+      scale: {x: 1, y: 1}
+      useDynamicScale: 0
+      slices: 1
+      clearBuffer: 0
+      clearColor: {r: 0, g: 0, b: 0, a: 0}
+      colorFormat: 0
+      depthBits: 0
+      dimension: 2
+      filterMode: 0
+      wrapMode: 0
+      anisoLevel: 0
+      useMipMap: 0
+      autoGenerateMips: 0
+      mipMapBias: 0
+      enableRandomWrite: 0
+      memoryless: 0
+      fastMemoryDesc:
+        inFastMemory: 0
+        flags: 0
+        residencyFraction: 0
+      depthAccess: 1
+      msaaSamples: 8
+      bindTextureMS: 0
   m_EntryNode:
     guid: cac79d33-abde-49e5-96b0-226e05f624a5
     name: Entry

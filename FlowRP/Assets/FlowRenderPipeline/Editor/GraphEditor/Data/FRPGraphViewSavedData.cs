@@ -222,7 +222,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                     return;
                 }
                 
-                Debug.LogError($"[ViewSavedData.DeleteNode] Node {guid} already exisit.");
+                Debug.LogError($"[ViewSavedData.DeleteNode] Node {guid} not exisit.");
             }
             
             

@@ -51,6 +51,10 @@ namespace UnityEditor.Rendering.FlowPipeline
                 case FlowRenderGraphData.NodeType.EntryNode:
                     nodeTypeName = BaseNodeClassName;
                     break;
+                case FlowRenderGraphData.NodeType.ComputerBuffer:
+                case FlowRenderGraphData.NodeType.TextureBuffer:
+                    nodeTypeName = FlowRenderGraphData.NodeType.BufferNode.ToString();
+                    break;
                 default:
                     nodeTypeName = baseNode.type.ToString();
                     break;

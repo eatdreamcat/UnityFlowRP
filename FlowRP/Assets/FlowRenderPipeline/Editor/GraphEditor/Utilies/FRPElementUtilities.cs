@@ -144,6 +144,26 @@ namespace UnityEditor.Rendering.FlowPipeline
             return vector4;
         }
 
+        public static Slider CreateSlider(float lowValue, float highValue, float value, SliderDirection direction, string label = null, EventCallback<ChangeEvent<float>> onValueChanged = null, bool isReadonly = false)
+        {
+            Slider slider = new Slider()
+            {
+                lowValue = lowValue,
+                highValue = highValue,
+                value = value,
+                direction = direction,
+                label = label,
+                showInputField = true
+            };
+            
+            slider.SetEnabled(!isReadonly);
+            if (onValueChanged != null)
+            {
+                slider.RegisterValueChangedCallback(onValueChanged);
+            }
+            
+            return slider;
+        }
         
         public static MaskField CreateMaskField(int value, string label, List<string> choices,
             EventCallback<ChangeEvent<int>> onValueChanged = null, bool isReadonly = false)
@@ -227,6 +247,25 @@ namespace UnityEditor.Rendering.FlowPipeline
             toggle.SetEnabled(!isReadonly);
 
             return toggle;
+        }
+
+        public static T CreateField<T, V>(V value, string label, EventCallback<ChangeEvent<V>> onValueChanged,
+            bool isReadonly = false) where T : BaseField<V>, new ()
+        {
+            T field = new T()
+            {
+                value = value,
+                label = label
+            };
+            
+            if (onValueChanged != null)
+            {
+                field.RegisterValueChangedCallback(onValueChanged);
+            }
+            
+            field.SetEnabled(!isReadonly);
+
+            return field;
         }
 
         public static VisualElement CreateListView<T, ItemElement>(
@@ -389,7 +428,7 @@ namespace UnityEditor.Rendering.FlowPipeline
         
         public static bool CanAcceptConnector(Port startPort, Port endPort)
         {
-            if (endPort.node != null && startPort.portType == endPort.portType)
+            if (endPort.node != null && startPort.portType == endPort.portType && endPort.node != startPort.node)
             {
                 return true; // Allow connection
             }

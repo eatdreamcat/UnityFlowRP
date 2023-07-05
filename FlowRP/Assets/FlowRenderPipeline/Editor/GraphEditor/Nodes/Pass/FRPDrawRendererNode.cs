@@ -112,6 +112,7 @@ namespace UnityEditor.Rendering.FlowPipeline
 
         private VisualElement m_ContentContainer = new VisualElement();
         private VisualElement m_RenderConfigRoot = new VisualElement();
+
         // private Foldout m_ConfigFoldout = new Foldout()
         // {
         //     value = true,
@@ -172,7 +173,14 @@ namespace UnityEditor.Rendering.FlowPipeline
             // Camera
             m_FoldoutBlocks[kCameraFoldoutName].foldout.RegisterValueChangedCallback(DrawCameraBlock);
           
+        }
+
+        
+        private void DrawBufferInputOutput()
+        {
+            inputContainer.Add(this.CreatePort("Buffer-In", Orientation.Horizontal, Direction.Input, Port.Capacity.Multi, typeof(BufferAsPassInput)));
             
+            outputContainer.Add(this.CreatePort("Buffer-Out", Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(BufferAsPassOutput)));
         }
 
         public Port GetBlockPort(string blockName)
@@ -311,6 +319,8 @@ namespace UnityEditor.Rendering.FlowPipeline
         public override void Draw(bool refresh = true)
         {
             base.Draw(false);
+            
+            DrawBufferInputOutput();
             
             RefreshExpandedState();
         }

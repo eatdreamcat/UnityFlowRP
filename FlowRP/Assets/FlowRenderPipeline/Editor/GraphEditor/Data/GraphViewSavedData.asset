@@ -17,8 +17,8 @@ MonoBehaviour:
     - 44467ba9-cc73-4b95-9454-1e709ebab66e
     - 3070563e-cbb9-4d7f-81de-aafaba7fc89d
     m_ValueData:
-    - position: {x: 0, y: 0, z: 0}
-      scale: {x: 1, y: 1, z: 1}
+    - position: {x: 79, y: -42, z: 0}
+      scale: {x: 1.15, y: 1.15, z: 1}
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
   m_Datas:
@@ -30,12 +30,32 @@ MonoBehaviour:
         m_KeyData:
         - cac79d33-abde-49e5-96b0-226e05f624a5
         - d9ec1a93-4ed4-47d6-948d-521408d763c8
+        - 1fabaa60-5ad9-4b26-8f93-a3354d2f02ef
+        - 6c84ce11-d4ad-43bc-80f5-c4524a3322a7
+        - e9b607fa-f362-445b-a166-1bd9a6d863d9
+        - e12b1b55-8c69-43cc-8083-621519717fe8
+        - b45df1be-898f-4471-9adf-0ba7132d3955
         m_ValueData:
         - name: Entry
-          position: {x: 241, y: 258}
+          position: {x: 241, y: 119}
           groupGuid: 
         - name: DrawRendererNode
           position: {x: 650, y: 196}
+          groupGuid: 
+        - name: TextureBuffer
+          position: {x: 254, y: 387}
+          groupGuid: 
+        - name: TextureBuffer
+          position: {x: 214, y: 445}
+          groupGuid: 
+        - name: TextureBuffer
+          position: {x: 240, y: 439}
+          groupGuid: 
+        - name: TextureBuffer
+          position: {x: 225, y: 238}
+          groupGuid: 
+        - name: ComputerBuffer
+          position: {x: 178.26088, y: 500.00003}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

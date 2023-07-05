@@ -35,12 +35,12 @@ namespace UnityEngine.Rendering.FlowPipeline
             DrawFullScreenNode,
             ComputeNode,
             
+            BufferNode,
             
             // buffer - only reference
-            BufferNode,
             TextureBuffer,
             ComputerBuffer,
-
+           
 
             // variables
             
@@ -90,7 +90,12 @@ namespace UnityEngine.Rendering.FlowPipeline
         internal sealed class DrawFullScreenNodeDictionary : FRPSerializedDictionary<string, DrawFullScreenNode> { }
         [Serializable]
         internal sealed class FlowNodeDictionary : FRPSerializedDictionary<string, FlowNode> { }
+        [Serializable]
+        internal sealed class BufferNodeDictionay : FRPSerializedDictionary<string, BufferNode> {}
+        [Serializable]
+        internal sealed class TextureBufferNodeDictionary : FRPSerializedDictionary<string, TextureBufferNode> {}
         
+
         [SerializeField]
         private CullingNodeDictionary m_CullingNodesMap = new  CullingNodeDictionary();
         [SerializeField]
@@ -105,6 +110,10 @@ namespace UnityEngine.Rendering.FlowPipeline
         private DrawFullScreenNodeDictionary m_DrawFullScreenNodesMap = new DrawFullScreenNodeDictionary();
         [SerializeField]
         private FlowNodeDictionary m_FlowNodesMap = new  FlowNodeDictionary();
+
+        [SerializeField] private BufferNodeDictionay m_BufferNodeMap = new BufferNodeDictionay();
+        [SerializeField] private TextureBufferNodeDictionary m_TextureBufferNodeMap = new TextureBufferNodeDictionary();
+        
         
         #endregion
        
@@ -156,6 +165,20 @@ namespace UnityEngine.Rendering.FlowPipeline
         {
             Debug.Assert(m_DrawFullScreenNodesMap.ContainsKey(nodeID), $"Draw Full Screen Node {nodeID} not exist.");
             return m_DrawFullScreenNodesMap[nodeID];
+        }
+
+        public List<BufferNode> BufferNodeList => m_BufferNodeMap.Values.ToList();
+
+        public BufferNode TryGetBufferNode(string nodeID)
+        {
+            Debug.Assert(m_BufferNodeMap.ContainsKey(nodeID), $"Buffer Node {nodeID} not exist.");
+            return m_BufferNodeMap[nodeID];
+        }
+        
+        public TextureBufferNode TryGetTextureBufferNode(string nodeID)
+        {
+            Debug.Assert(m_TextureBufferNodeMap.ContainsKey(nodeID), $"Texture Buffer Node {nodeID} not exist.");
+            return m_TextureBufferNodeMap[nodeID];
         }
         
         public FlowNode TryFlowNode(string nodeID)

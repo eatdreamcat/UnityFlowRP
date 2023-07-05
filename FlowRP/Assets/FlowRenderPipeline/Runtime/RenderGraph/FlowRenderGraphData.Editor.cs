@@ -152,7 +152,27 @@ namespace UnityEngine.Rendering.FlowPipeline
                     
                     break;
                 }
-                 
+                
+                // Buffer
+                case NodeType.TextureBuffer:
+                {
+                    var textureBufferNode = CreateTextureBufferNode(nodeName, guid);
+                    var bufferNode = CreateBufferNode(nodeName, guid, textureBufferNode.guid, BufferType.TextureBuffer);
+                    m_BufferNodeMap.Add(bufferNode.guid, bufferNode);
+                    m_TextureBufferNodeMap.Add(textureBufferNode.guid, textureBufferNode);
+
+                    result = bufferNode;
+                    
+                    break;
+                }
+                
+                case NodeType.ComputerBuffer:
+                {
+                   
+                    
+                    break;
+                }
+                
                 // flow control
                 case NodeType.LoopNode:
                 {
@@ -165,7 +185,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                 }
                     break;
                 
-                // Buffer
+               
                 
                 
                 // Variables
@@ -199,9 +219,25 @@ namespace UnityEngine.Rendering.FlowPipeline
                     }
                 }
                     break;
+                case NodeType.BufferNode:
+                {
+                    if (m_BufferNodeMap.TryGetValue(guid, out var node))
+                    {
+                        node.name = newName;
+
+                        if (node.bufferType == BufferType.TextureBuffer)
+                        {
+                            m_TextureBufferNodeMap[guid].name = newName;
+                        }
+                        
+                        FlowUtility.SaveAsset(this);
+                        return;
+                    }
+                }
+                    break;
             }
             
-            Debug.LogError($"[GraphData.UpdateNodeName] Node {guid} not exist.");
+            Debug.LogError($"[GraphData.UpdateNodeName] Node {guid}, {nodeType} not exist.");
         }
 
         public void DeleteNode(string guid, NodeType nodeType)
@@ -233,9 +269,27 @@ namespace UnityEngine.Rendering.FlowPipeline
                     }
                 }
                     break;
+                
+                case NodeType.BufferNode:
+                {
+                    if (m_BufferNodeMap.TryGetValue(guid, out var node))
+                    {
+                       
+                        if (node.bufferType == BufferType.TextureBuffer)
+                        {
+                            m_TextureBufferNodeMap.Remove(guid);
+                        }
+
+                        m_BufferNodeMap.Remove(guid);
+                        
+                        FlowUtility.SaveAsset(this);
+                        return;
+                    }
+                }
+                    break;
             }
 
-            Debug.LogError($"[GraphData.DeleteNode] Node {guid} not exist.");
+            Debug.LogError($"[GraphData.DeleteNode] Node {guid}, {nodeType} not exist.");
         }
 
 
