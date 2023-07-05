@@ -35,9 +35,10 @@ MonoBehaviour:
       state: 
       material: 
       camera: 
-      inputList: []
-      outputList:
+      inputList:
       - e12b1b55-8c69-43cc-8083-621519717fe8
+      outputList:
+      - 61f7f561-771d-4f65-8d51-06764edbbe16
   m_DrawFullScreenNodesMap:
     m_KeyData: []
     m_ValueData: []
@@ -68,7 +69,7 @@ MonoBehaviour:
     - 61f7f561-771d-4f65-8d51-06764edbbe16
     m_ValueData:
     - guid: e12b1b55-8c69-43cc-8083-621519717fe8
-      name: TextureBuffer
+      name: Tex1
       type: 12
       bufferID: e12b1b55-8c69-43cc-8083-621519717fe8
       bufferType: 0
@@ -85,7 +86,7 @@ MonoBehaviour:
     - 61f7f561-771d-4f65-8d51-06764edbbe16
     m_ValueData:
     - guid: e12b1b55-8c69-43cc-8083-621519717fe8
-      name: TextureBuffer
+      name: Tex1
       type: 13
       isShadowMap: 0
       fallBackToBlackTexture: 0

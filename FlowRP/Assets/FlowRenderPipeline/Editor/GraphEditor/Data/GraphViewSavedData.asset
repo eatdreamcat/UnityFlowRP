@@ -17,8 +17,8 @@ MonoBehaviour:
     - 44467ba9-cc73-4b95-9454-1e709ebab66e
     - 3070563e-cbb9-4d7f-81de-aafaba7fc89d
     m_ValueData:
-    - position: {x: -708, y: 14, z: 0}
-      scale: {x: 1.3225, y: 1.3225, z: 1}
+    - position: {x: -936, y: -272, z: 0}
+      scale: {x: 2, y: 2, z: 1}
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
   m_Datas:
@@ -41,7 +41,7 @@ MonoBehaviour:
           position: {x: 645, y: 79}
           groupGuid: 
         - name: DrawRendererNode
-          position: {x: 863, y: 206}
+          position: {x: 938, y: 174}
           groupGuid: 
         - name: TextureBuffer
           position: {x: 254, y: 387}
@@ -52,7 +52,7 @@ MonoBehaviour:
         - name: TextureBuffer
           position: {x: 240, y: 439}
           groupGuid: 
-        - name: TextureBuffer
+        - name: Tex1
           position: {x: 605, y: 273}
           groupGuid: 
         - name: ComputerBuffer
