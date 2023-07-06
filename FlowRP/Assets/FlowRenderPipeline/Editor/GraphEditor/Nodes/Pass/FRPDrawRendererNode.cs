@@ -217,9 +217,9 @@ namespace UnityEditor.Rendering.FlowPipeline
                     Debug.Assert(cullingParameter != null, $"Culling Parameter is null: {RenderRequest.culling}");
                     
                     var previewElement = FRPElementUtilities.CreateCullingParameter(
-                        cullingParameter.isAllowPassCulling, null,
-                        cullingParameter.isAllowRendererCulling, null,
-                        cullingParameter.cullingMask, null,
+                        cullingParameter, null,
+                         null,
+                     null,null,
                         true);
                     previewElement.style.left = Indent * 2;
                     cullingContentRoot.Add(previewElement);

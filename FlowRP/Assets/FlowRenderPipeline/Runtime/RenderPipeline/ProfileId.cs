@@ -6,8 +6,8 @@ namespace UnityEngine.Rendering.FlowPipeline
         FlowPipelineRenderAllRenderRequest,
         FlowRenderPipelineRenderCamera,
         RecordRenderGraph,
-        ForwardOpaqueDebug,
-        ForwardOpaque
+        DrawRendererDebug,
+        DrawRenderer
     }
     
 }

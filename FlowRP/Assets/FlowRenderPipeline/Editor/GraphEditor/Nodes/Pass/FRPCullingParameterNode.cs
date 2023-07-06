@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.FlowPipeline;
 
 namespace UnityEditor.Rendering.FlowPipeline
@@ -11,17 +12,21 @@ namespace UnityEditor.Rendering.FlowPipeline
             base.Initialize(view, position, nodeData);
             
             mainContainer.Add(FRPElementUtilities.CreateCullingParameter(
-                CullingParameter.isAllowPassCulling, evt =>
+                CullingParameter, evt =>
                 {
                     CullingParameter.isAllowPassCulling = evt.newValue;
-                },
-                CullingParameter.isAllowRendererCulling, evt =>
+                }, 
+                evt =>
                 {
                     CullingParameter.isAllowRendererCulling = evt.newValue;
                 },
-                CullingParameter.cullingMask, newLayer =>
+              newLayer =>
                 {
                     CullingParameter.cullingMask.value = newLayer;
+                },
+                evt =>
+                {
+                    CullingParameter.perObjectData = (PerObjectData) evt.newValue;
                 }
             ));
         }

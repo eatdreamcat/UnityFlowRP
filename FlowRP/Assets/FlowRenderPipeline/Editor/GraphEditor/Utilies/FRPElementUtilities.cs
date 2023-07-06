@@ -460,25 +460,25 @@ namespace UnityEditor.Rendering.FlowPipeline
         #region Node Parameters
 
         public static VisualElement CreateCullingParameter(
-            bool isAllowPassCulling,
-            EventCallback<ChangeEvent<bool>> isAllowPassCullingChanged, 
-            bool isAllowRendererCulling,
-            EventCallback<ChangeEvent<bool>> isAllowRendererCullingChanged, 
-            LayerMask layerMask,
-            EventCallback<int> cullingMaskChanged, bool isReadonly = false)
+            FlowRenderGraphData.CullingParameterNode cullingParameterNode,
+            EventCallback<ChangeEvent<bool>> isAllowPassCullingChanged,
+            EventCallback<ChangeEvent<bool>> isAllowRendererCullingChanged,
+            EventCallback<int> cullingMaskChanged,
+            EventCallback<ChangeEvent<int>> perObjectDataChanged,
+            bool isReadonly = false)
         {
             VisualElement cullingRoot = new VisualElement();
 
             // pass culling toggle
-            Toggle passCulling = CreateToggle(isAllowPassCulling, "PassCulling", isAllowPassCullingChanged, isReadonly);
+            Toggle passCulling = CreateToggle(cullingParameterNode.isAllowPassCulling, "PassCulling", isAllowPassCullingChanged, isReadonly);
             cullingRoot.Add(passCulling);
 
             // renderer culling toggle
-            Toggle rendererCulling = CreateToggle(isAllowRendererCulling, "AllowRendererCulling", isAllowRendererCullingChanged, isReadonly);
+            Toggle rendererCulling = CreateToggle(cullingParameterNode.isAllowRendererCulling, "AllowRendererCulling", isAllowRendererCullingChanged, isReadonly);
             cullingRoot.Add(rendererCulling);
             
             // layer mask
-            LayerMaskField layerMaskField= CreateLayerMaskField(layerMask.value, "LayerMask", evt =>
+            LayerMaskField layerMaskField= CreateLayerMaskField(cullingParameterNode.cullingMask.value, "LayerMask", evt =>
             {
                 if (!isReadonly)
                 {
@@ -487,6 +487,56 @@ namespace UnityEditor.Rendering.FlowPipeline
                 
             }, isReadonly);
             cullingRoot.Add(layerMaskField);
+
+            MaskField perObjectField = CreateMaskField((int) cullingParameterNode.perObjectData, "PerObjectData",
+                new List<string>()
+                {
+                    /// <summary>
+                    ///   <para>Setup per-object light probe SH data.</para>
+                    /// </summary>
+                    "LightProbe",
+                    /// <summary>
+                    ///   <para>Setup per-object reflection probe data.</para>
+                    /// </summary>
+                    "ReflectionProbes",
+                    /// <summary>
+                    ///   <para>Setup per-object light probe proxy volume data.</para>
+                    /// </summary>
+                    "LightProbeProxyVolume",
+                    /// <summary>
+                    ///   <para>Setup per-object lightmaps.</para>
+                    /// </summary>
+                    "Lightmaps",
+                    /// <summary>
+                    ///   <para>Setup per-object light data.</para>
+                    /// </summary>
+                    "LightData", // 0x00000010
+                    /// <summary>
+                    ///   <para>Setup per-object motion vectors.</para>
+                    /// </summary>
+                    "MotionVectors", // 0x00000020
+                    /// <summary>
+                    ///   <para>Setup per-object light indices.</para>
+                    /// </summary>
+                    "LightIndices", // 0x00000040
+                    /// <summary>
+                    ///   <para>Setup per-object reflection probe index offset and count.</para>
+                    /// </summary>
+                    "ReflectionProbeData", // 0x00000080
+                    /// <summary>
+                    ///   <para>Setup per-object occlusion probe data.</para>
+                    /// </summary>
+                    "OcclusionProbe", // 0x00000100
+                    /// <summary>
+                    ///   <para>Setup per-object occlusion probe proxy volume data (occlusion in alpha channels).</para>
+                    /// </summary>
+                    "OcclusionProbeProxyVolume", // 0x00000200
+                    /// <summary>
+                    ///   <para>Setup per-object shadowmask.</para>
+                    /// </summary>
+                    "ShadowMask", // 0x00000400
+                }, perObjectDataChanged, isReadonly);
+            cullingRoot.Add(perObjectField);
             
             cullingRoot.SetEnabled(!isReadonly);
             cullingRoot.style.left = 5;

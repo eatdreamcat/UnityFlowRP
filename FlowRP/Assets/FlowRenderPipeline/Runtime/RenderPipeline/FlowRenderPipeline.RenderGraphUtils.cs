@@ -19,7 +19,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             //     return true;
             // }
 
-            return true;
+            return false;
         }
         
         Color GetColorBufferClearColor(FRPCamera frpCamera)

@@ -127,6 +127,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             public bool isAllowPassCulling;
             public bool isAllowRendererCulling;
             public LayerMask cullingMask;
+            public PerObjectData perObjectData;
         }
 
         public static CullingParameterNode CreateCullingParameterNode(string name, string guid)
@@ -138,7 +139,8 @@ namespace UnityEngine.Rendering.FlowPipeline
                 type = NodeType.CullingParameterNode,
                 isAllowPassCulling = true,
                 isAllowRendererCulling = true,
-                cullingMask = -1
+                cullingMask = -1,
+                perObjectData = 0,
             };
         }
         

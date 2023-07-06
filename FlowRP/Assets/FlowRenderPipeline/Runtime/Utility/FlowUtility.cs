@@ -1,13 +1,82 @@
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 
 namespace UnityEngine.Rendering.FlowPipeline
 {
     public class FlowUtility 
     {
+
+
+        #region Culling
+
+        internal static  readonly PerObjectData k_DefaultPerObjectData = 
+            PerObjectData.LightData | 
+            PerObjectData.Lightmaps | 
+            PerObjectData.LightIndices | 
+            PerObjectData.LightProbe | 
+            PerObjectData.MotionVectors | 
+            PerObjectData.OcclusionProbe | 
+            PerObjectData.ReflectionProbes |
+            PerObjectData.ShadowMask |
+            PerObjectData.ReflectionProbeData | 
+            PerObjectData.LightProbeProxyVolume |
+            PerObjectData.OcclusionProbeProxyVolume;
+
+        internal static readonly LayerMask k_DefaultLayerMask = -1;
+
+        internal static readonly FlowRenderGraphData.CullingParameterNode k_DefaultCullingNode =
+            new FlowRenderGraphData.CullingParameterNode()
+            {
+                isAllowPassCulling = true,
+                isAllowRendererCulling = true,
+                cullingMask = k_DefaultLayerMask,
+                perObjectData = k_DefaultPerObjectData
+            };
+
+        #endregion
+
+
+        #region State
+
+        internal static readonly FlowRenderGraphData.RenderStateNode k_DefaultRenderStateNode =
+            new FlowRenderGraphData.RenderStateNode()
+            {
+
+            };
+
+        #endregion
+
+        #region Material
+
+        internal static readonly FlowRenderGraphData.MaterialParameterNode k_DefaultMaterialNode =
+            new FlowRenderGraphData.MaterialParameterNode()
+            {
+                renderQueueRange = new FlowRenderGraphData.QueueRange()
+                {
+                    start = FlowRenderGraphData.Queue.Start,
+                    end = FlowRenderGraphData.Queue.End
+                },
+                shaderTagList = new List<string>()
+                {
+                    "SRPUnlitDefault"
+                },
+                overrideMaterial = null
+            };
+
+        #endregion
+
+        #region Camera
+
+        internal static readonly FlowRenderGraphData.CameraParameterNode k_DefaultCameraOverrideNode = 
+            new FlowRenderGraphData.CameraParameterNode() 
+            {
+                fov = 0, 
+                offset = Vector3.zero
+                
+            };
         
-        internal const PerObjectData k_RendererConfigurationBakedLighting = PerObjectData.LightProbe | PerObjectData.Lightmaps | PerObjectData.LightProbeProxyVolume;
-        internal const PerObjectData k_RendererConfigurationBakedLightingWithShadowMask = k_RendererConfigurationBakedLighting | PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume | PerObjectData.ShadowMask;
+        #endregion
         
         static internal FlowRPAdditionalCameraData s_DefaultFlowRPAdditionalCameraData { get { return ComponentSingleton<FlowRPAdditionalCameraData>.instance; } }
    

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Experimental.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.RendererUtils;
@@ -32,7 +34,20 @@ namespace UnityEngine.Rendering.FlowPipeline
             // public LightingBuffers lightingBuffers;
             public bool enableDecals;
         }
+
+
+        class DrawRendererPassData
+        {
+            public RendererListHandle rendererList;
+        }
         
+        public struct TextureCreationData
+        {
+            public FlowRenderGraphData.TextureBufferNode textureBuffer;
+            public FlowRenderGraphData.BufferLifeTime lifeTime;
+        }
+
+        private int m_FrameIndex = 0;
         
         #endregion
 
@@ -55,8 +70,8 @@ namespace UnityEngine.Rendering.FlowPipeline
             // var passNames = frpCamera.frameSettings.litShaderMode == LitShaderMode.Forward
             //     ? m_ForwardAndForwardOnlyPassNames
             //     : m_ForwardOnlyPassNames;
-            var passNames = m_ForwardAndForwardOnlyPassNames;
-            return CreateOpaqueRendererListDesc(cullResults, frpCamera.camera, passNames, m_CurrentRendererConfigurationBakedLighting);
+         
+            return CreateOpaqueRendererListDesc(cullResults, frpCamera.camera, new ShaderTagId[] {}, PerObjectData.Lightmaps);
         }
         
         
@@ -70,51 +85,105 @@ namespace UnityEngine.Rendering.FlowPipeline
             ScriptableRenderContext renderContext,
             CommandBuffer commandBuffer)
         {
+            switch (renderRequest.nodeType)
+            {
+                case FlowRenderGraphData.NodeType.DrawRendererNode:
+                    ExecuteDrawRendererPass(renderRequest, renderContext, commandBuffer);
+                    break;
+                default:
+                    ExecuteEmptyPass(renderRequest, renderContext, commandBuffer);
+                    break;
+            }
+        }
+
+        void ExecuteEmptyPass(RenderRequest renderRequest,
+            ScriptableRenderContext renderContext,
+            CommandBuffer commandBuffer)
+        {
+            
+        }
+        
+        void ExecuteDrawRendererPass(RenderRequest renderRequest,
+            ScriptableRenderContext renderContext,
+            CommandBuffer commandBuffer)
+        {
+            var graphData = renderRequest.currentGraphData;
+            FlowRenderGraphData.DrawRendererNode drawRendererPass = graphData.TryGetDrawRendererPassNode(renderRequest.nodeID);
+
+            FlowRenderGraphData.CullingParameterNode cullingParameterNode =
+                string.IsNullOrEmpty(drawRendererPass.culling)
+                    ? FlowUtility.k_DefaultCullingNode
+                    : graphData.TryGetCullingParameterNode(drawRendererPass.culling);
+            
+            
             using (m_RenderGraph.RecordAndExecute(new RenderGraphParameters
                    {
                        executionName = renderRequest.frpCamera.name,
-                       currentFrameIndex = 0,
-                       rendererListCulling = false,
+                       currentFrameIndex = m_FrameIndex++,
+                       rendererListCulling = cullingParameterNode.isAllowRendererCulling,
                        scriptableRenderContext = renderContext,
                        commandBuffer = commandBuffer
                    }))
             {
-                RecordRenderGraph(renderRequest, renderContext, commandBuffer);
+                RecordDrawRenderer(renderRequest, renderContext, commandBuffer, drawRendererPass, cullingParameterNode);
             }
         }
 
-        /// <summary>
-        /// Setup render request list
-        /// </summary>
-        /// <param name="renderRequest"></param>
-        /// <param name="aovRequest"></param>
-        /// <param name="aovBuffers"></param>
-        /// <param name="aovCustomPassBuffers"></param>
-        /// <param name="renderContext"></param>
-        /// <param name="commandBuffer"></param>
-        void RecordRenderGraph(RenderRequest renderRequest,
+        void RecordDrawRenderer( 
+            RenderRequest renderRequest,
             ScriptableRenderContext renderContext,
-            CommandBuffer commandBuffer)
+            CommandBuffer commandBuffer,
+            FlowRenderGraphData.DrawRendererNode drawRendererPass,
+            FlowRenderGraphData.CullingParameterNode cullingParameterNode
+        )
         {
+            var graphData = renderRequest.currentGraphData;
+            
+            FlowRenderGraphData.RenderStateNode renderStateNode = string.IsNullOrEmpty(drawRendererPass.state)
+                ? FlowUtility.k_DefaultRenderStateNode
+                : graphData.TryGetRenderStateNode(drawRendererPass.state);
+
+            FlowRenderGraphData.MaterialParameterNode materialParameterNode =
+                string.IsNullOrEmpty(drawRendererPass.material)
+                    ? FlowUtility.k_DefaultMaterialNode
+                    : graphData.TryGetMaterialParameterNode(drawRendererPass.material);
+
+            FlowRenderGraphData.CameraParameterNode cameraParameterNode = string.IsNullOrEmpty(drawRendererPass.camera)
+                ? FlowUtility.k_DefaultCameraOverrideNode
+                : graphData.TryGetCameraParameterNode(drawRendererPass.camera);
+
             using (new ProfilingScope(commandBuffer, ProfilingSampler.Get(ProfileId.RecordRenderGraph)))
             {
                 var frpCamera = renderRequest.frpCamera;
                 
-                TextureHandle colorBuffer = CreateColorBuffer(m_RenderGraph, false, frpCamera , true);
-
-                RenderForwardOpaque(m_RenderGraph, frpCamera, colorBuffer, renderRequest.cullingResults.cullingResults);
+                // DrawRenderer(m_RenderGraph, frpCamera, 
+                //     drawRendererPass, 
+                //     cullingParameterNode, 
+                //     renderStateNode);
                 
                 RenderGizmos(m_RenderGraph, frpCamera, GizmoSubset.PostImageEffects);
             }
         }
 
-        
-        // Guidelines: In deferred by default there is no opaque in forward. However it is possible to force an opaque material to render in forward
-        // by using the pass "ForwardOnly". In this case the .shader should not have "Forward" but only a "ForwardOnly" pass.
-        // It must also have a "DepthForwardOnly" and no "DepthOnly" pass as forward material (either deferred or forward only rendering) have always a depth pass.
-        // The RenderForward pass will render the appropriate pass depends on the engine settings. In case of forward only rendering, both "Forward" pass and "ForwardOnly" pass
-        // material will be render for both transparent and opaque. In case of deferred, both path are used for transparent but only "ForwardOnly" is use for opaque.
-        // (Thus why "Forward" and "ForwardOnly" are exclusive, else they will render two times"
+        void DrawRenderer(
+            RenderGraph renderGraph, 
+            FRPCamera frpCamera, 
+            FlowRenderGraphData.DrawRendererNode drawRendererNode, 
+            FlowRenderGraphData.CullingParameterNode cullingParameterNode,
+            FlowRenderGraphData.RenderStateNode renderStateNode,
+            FlowRenderGraphData.MaterialParameterNode materialParameterNode,
+            FlowRenderGraphData.CameraParameterNode cameraParameterNode,
+            CullingResults cullingResults
+            )
+        {
+            var debugDisplay = false;
+            // using (var builder = renderGraph.AddRenderPass<DrawRendererPassData>(
+            //            debugDisplay ? renderRequest.name : renderRequest.name + " Debug",
+            //            out var passData))
+            // {
+            //     
+            // }
+        }
         void RenderForwardOpaque(RenderGraph renderGraph,
             FRPCamera frpCamera,
             TextureHandle colorBuffer, 
@@ -130,8 +199,8 @@ namespace UnityEngine.Rendering.FlowPipeline
                        debugDisplay ? "Forward (+ Emissive) Opaque  Debug" : "Forward (+ Emissive) Opaque",
                        out var passData,
                        debugDisplay
-                           ? ProfilingSampler.Get(ProfileId.ForwardOpaqueDebug)
-                           : ProfilingSampler.Get(ProfileId.ForwardOpaque)))
+                           ? ProfilingSampler.Get(ProfileId.DrawRendererDebug)
+                           : ProfilingSampler.Get(ProfileId.DrawRenderer)))
             {
                 
                 builder.AllowPassCulling(false);
@@ -176,31 +245,89 @@ namespace UnityEngine.Rendering.FlowPipeline
         }
 
 
-        TextureHandle CreateColorBuffer(RenderGraph renderGraph, bool msaa, FRPCamera frpCamera,
-            bool fallbackToBlack = false)
+        TextureHandle CreateSharedColorBuffer(RenderGraph renderGraph, FRPCamera frpCamera, TextureCreationData textureBufferData)
+        {
+            var textureBufferNode = textureBufferData.textureBuffer;
+            switch (textureBufferData.lifeTime)
+            {
+                case FlowRenderGraphData.BufferLifeTime.PerPass:
+                    throw new Exception("Transient Texture should not create here.");
+                case FlowRenderGraphData.BufferLifeTime.PerCamera:
+                    return renderGraph.CreateSharedTexture(BuildTextureDesc(textureBufferNode, frpCamera));
+                case FlowRenderGraphData.BufferLifeTime.PerFrame:
+                    return renderGraph.CreateSharedTexture(BuildTextureDesc(textureBufferNode, frpCamera));
+                default:
+                    return renderGraph.CreateSharedTexture(BuildTextureDesc(textureBufferNode, frpCamera));
+            }
+        }
+        
+        TextureHandle CreateTransientColorBuffer(RenderGraphBuilder builder, FRPCamera frpCamera, TextureCreationData textureBufferData)
+        {
+            var textureBufferNode = textureBufferData.textureBuffer;
+            switch (textureBufferData.lifeTime)
+            {
+                case FlowRenderGraphData.BufferLifeTime.PerPass:
+                   return builder.CreateTransientTexture(BuildTextureDesc(textureBufferNode, frpCamera));
+                default:
+                    throw new Exception("Shared Texture should not create here.");
+            }
+        }
+
+        TextureDesc BuildTextureDesc(FlowRenderGraphData.TextureBufferNode textureBufferNode, FRPCamera frpCamera)
         {
 #if UNITY_2020_2_OR_NEWER
             FastMemoryDesc colorFastMemDesc;
-            colorFastMemDesc.inFastMemory = true;
-            colorFastMemDesc.residencyFraction = 1.0f;
-            colorFastMemDesc.flags = FastMemoryFlags.SpillTop;
+            colorFastMemDesc.flags = textureBufferNode.fastMemoryDesc.flags;
+            colorFastMemDesc.inFastMemory = textureBufferNode.fastMemoryDesc.inFastMemory;
+            colorFastMemDesc.residencyFraction = textureBufferNode.fastMemoryDesc.residencyFraction;
 #endif
-            return renderGraph.CreateTexture(
-                new TextureDesc(Vector2.one, false, false)
-                {
-                    colorFormat = GetColorBufferFormat(),
-                    depthBufferBits = 0,
-                    enableRandomWrite = !msaa,
-                    bindTextureMS = msaa,
-                    msaaSamples = MSAASamples.None,
-                    clearBuffer = NeedClearColorBuffer(frpCamera),
-                    clearColor = GetColorBufferClearColor(frpCamera),
-                    name = msaa ? "CameraColorMSAA" : "CameraColor",
-                    fallBackToBlackTexture = fallbackToBlack
+            
+            return new TextureDesc()
+            {
+                // header
+                name = textureBufferNode.name,
+                isShadowMap = textureBufferNode.isShadowMap,
+                fallBackToBlackTexture = textureBufferNode.fallBackToBlackTexture,
+                
+                // size 
+                sizeMode = textureBufferNode.sizeMode,
+                width = textureBufferNode.width,
+                height = textureBufferNode.height,
+                scale = textureBufferNode.scale,
+                useDynamicScale = textureBufferNode.useDynamicScale,
+                
+                // init state
+                clearBuffer = textureBufferNode.clearBuffer || NeedClearColorBuffer(frpCamera),
+                clearColor = textureBufferNode.clearBuffer
+                    ? textureBufferNode.clearColor
+                    : GetColorBufferClearColor(frpCamera),
+                
+                // format
+                colorFormat = GetColorBufferFormat(textureBufferNode),
+                depthBufferBits = textureBufferNode.depthBits,
+                dimension = textureBufferNode.dimension,
+
+                // filter & addressing
+                filterMode = textureBufferNode.filterMode,
+                wrapMode = textureBufferNode.wrapMode,
+                anisoLevel = textureBufferNode.anisoLevel,
+                
+                // mip
+                useMipMap = textureBufferNode.useMipMap,
+                autoGenerateMips = textureBufferNode.autoGenerateMips,
+                mipMapBias = textureBufferNode.mipMapBias,
+                
+                // memory
+                enableRandomWrite = textureBufferNode.enableRandomWrite,
+                memoryless = textureBufferNode.memoryless,
 #if UNITY_2020_2_OR_NEWER
-                    , fastMemoryDesc = colorFastMemDesc
+                fastMemoryDesc = colorFastMemDesc,
 #endif
-                });
+                // msaa
+                bindTextureMS = textureBufferNode.bindTextureMS,
+                msaaSamples = textureBufferNode.msaaSamples,
+                
+            };
         }
     }
 }

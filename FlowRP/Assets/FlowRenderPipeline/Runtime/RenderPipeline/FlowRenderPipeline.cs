@@ -17,25 +17,11 @@ namespace UnityEngine.Rendering.FlowPipeline
 {
     public partial class FlowRenderPipeline : RenderPipeline
     {
-
-        // Renderer Bake configuration can vary depends on if shadow mask is enabled or no
-        PerObjectData m_CurrentRendererConfigurationBakedLighting = FlowUtility.k_RendererConfigurationBakedLighting;
-        
-        
-        #region ShaderTagId
-
-        // NOTE: The pass "SRPDefaultUnlit" is a fall back to legacy unlit rendering and is required to support unity 2d + unity UI that render in the scene.
-        ShaderTagId[] m_ForwardAndForwardOnlyPassNames = { FlowShaderPassNames.s_ForwardOnlyName, FlowShaderPassNames.s_ForwardName, FlowShaderPassNames.s_SRPDefaultUnlitName, FlowShaderPassNames.s_DecalMeshForwardEmissiveName };
-        ShaderTagId[] m_ForwardOnlyPassNames = { FlowShaderPassNames.s_ForwardOnlyName, FlowShaderPassNames.s_SRPDefaultUnlitName, FlowShaderPassNames.s_DecalMeshForwardEmissiveName };
-
-        #endregion
-        
         /// <summary>
         /// Shader Tag for the High Definition Render Pipeline.
         /// </summary>
         public const string k_ShaderTagName = "FlowRenderPipeline";
-
-
+         
         // RenderPipeline Config Asset
         public static FlowRenderPipelineAsset asset
         {
@@ -86,6 +72,9 @@ namespace UnityEngine.Rendering.FlowPipeline
             
             public FlowRenderGraphData.NodeType nodeType;
             public string nodeID;
+            public string name;
+
+            public FlowRenderGraphData currentGraphData;
         }
 
         #endregion
@@ -228,7 +217,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     var skipRequest = false;
                     
                     // get culling params
-                    skipRequest = !TryCalculateFrameParameters(camera, out var additionalCameraData, out var cullingParams, out var currentGraphData);
+                    skipRequest = !TryCalculateFrameParameters(camera, out var additionalCameraData, out var cullingParams, out var currentGraphData, out var frpCamera);
 
                     /// Skip !!! Off duty !!!!!!!!!!!!!!!!!!
                     if (skipRequest)
@@ -256,31 +245,25 @@ namespace UnityEngine.Rendering.FlowPipeline
                  
                     // Add render request
                     var flowNode = currentGraphData.TryGetFlowNode(currentGraphData.EntryID);
+                    if (flowNode != null && flowNode.flowOut.Count > 0)
+                    {
+                        // entry node has next pass
+                        flowNode = currentGraphData.TryGetFlowNode(flowNode.flowOut[0]);
+                    }
+                    else
+                    {
+                        flowNode = null;
+                    }
                     bool canBreakLoop = false;
                     int loopCount = 0;
                     const int MaxLoopCount = 1000;
+                    
                     while (flowNode != null && canBreakLoop == false && ++loopCount <= MaxLoopCount)
                     {
                         if (!string.IsNullOrEmpty(flowNode.dataID))
                         {
                             switch (flowNode.dataType)
                             {
-                                case FlowRenderGraphData.NodeType.EntryNode:
-                                {
-                                    var targetNodeID = flowNode.flowOut[0];
-                                    Debug.Assert(!string.IsNullOrEmpty(targetNodeID), $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
-                                    if (flowNode.flowOut.Count > 0)
-                                    {
-                                        // pass node only has one flow output.
-                                        flowNode = currentGraphData.TryGetFlowNode(flowNode.flowOut[0]);
-                                    }
-                                    else
-                                    {
-                                        canBreakLoop = true;
-                                    }
-                                }
-                                    break;
-                                
                                 case FlowRenderGraphData.NodeType.DrawRendererNode:
                                 case FlowRenderGraphData.NodeType.DrawFullScreenNode:
                                 {
@@ -296,10 +279,13 @@ namespace UnityEngine.Rendering.FlowPipeline
                                         {
                                             cullingResults = cullingResults,
                                             index = renderRequests.Count,
-                                            frpCamera = FRPCamera.GetOrCreate(camera), 
+                                            frpCamera = frpCamera, 
                                 
                                             nodeType = flowNode.dataType,
-                                            nodeID = flowNode.dataID
+                                            nodeID = flowNode.dataID,
+                                            name = flowNode.name,
+                                            
+                                            currentGraphData = currentGraphData
                                         });
                                         
                                     }
@@ -342,27 +328,15 @@ namespace UnityEngine.Rendering.FlowPipeline
                         for (int i = 0; i < renderRequests.Count; ++i)
                         {
                             var renderRequest = renderRequests[i];
-                            var cmd = CommandBufferPool.Get("");
-                            // TODO: handle dependent Probe data
-
-                            #region Render AVOs
-
-                            {
-                                // TODO: render AOVs, for virtual multiple cameras support by composition system, no need for this?
-                               
-                            }
+                            var cmd = CommandBufferPool.Get(renderRequest.name);
                             
-
-                            #endregion
-
-
                             #region Render Requset
                             
                             using (new ProfilingScope(cmd, renderRequest.frpCamera.profilingSampler))
                             {
                                 // TODO: camera settings
                                 // cmd.SetInvertCulling(renderRequest.cameraSettings.invertFaceCulling);
-                                ExecuteRenderRequest(renderRequest, renderContext, cmd/*, AOVRequestData.defaultAOVRequestDataNonAlloc*/);
+                                ExecuteRenderRequest(renderRequest, renderContext, cmd);
                                 cmd.SetInvertCulling(false);
                             }
                             
@@ -485,7 +459,8 @@ namespace UnityEngine.Rendering.FlowPipeline
             Camera camera,
             out FlowRPAdditionalCameraData additionalCameraData,
             out ScriptableCullingParameters cullingParams,
-            out FlowRenderGraphData currentGraphData
+            out FlowRenderGraphData currentGraphData,
+            out FRPCamera frpCamera
         )
         {
             // First, get aggregate of frame settings base on global settings, camera frame settings and debug settings
@@ -494,6 +469,10 @@ namespace UnityEngine.Rendering.FlowPipeline
             cullingParams = default;
             
             currentGraphData = additionalCameraData.renderGraphData;
+            
+            frpCamera = FRPCamera.GetOrCreate(camera);
+            // From this point, we should only use frame settings from the camera
+            frpCamera.Update(this);
 
             if (!camera.TryGetCullingParameters(camera.stereoEnabled, out cullingParams) || currentGraphData == null || !currentGraphData.HasEntry() || string.IsNullOrEmpty(currentGraphData.Entry.startPoint))
             {
@@ -508,12 +487,12 @@ namespace UnityEngine.Rendering.FlowPipeline
             m_CameraSystem.Cleanup();
         }
 
-        internal GraphicsFormat GetColorBufferFormat()
+        internal GraphicsFormat GetColorBufferFormat(FlowRenderGraphData.TextureBufferNode textureBufferNode)
         {
             if (CoreUtils.IsSceneFilteringEnabled())
                 return GraphicsFormat.R16G16B16A16_SFloat;
 
-            return GraphicsFormat.R32G32B32A32_SFloat;
+            return textureBufferNode.colorFormat;
         }
 
         #region Static functions

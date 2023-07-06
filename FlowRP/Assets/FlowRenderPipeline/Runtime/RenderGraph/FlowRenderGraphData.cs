@@ -153,7 +153,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         }
 
         public List<DrawRendererNode> DrawRendererNodeList => m_DrawRendererNodesMap.Values.ToList();
-        public DrawRendererNode TryGetRenderPassNode(string nodeID)
+        public DrawRendererNode TryGetDrawRendererPassNode(string nodeID)
         {
             Debug.Assert(m_DrawRendererNodesMap.ContainsKey(nodeID), $"Draw Renderer Node {nodeID} not exist.");
             return m_DrawRendererNodesMap[nodeID];

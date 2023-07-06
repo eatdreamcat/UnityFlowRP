@@ -69,7 +69,7 @@ namespace UnityEditor.Rendering.FlowPipeline
                 
                 #region Draw Assignment
 
-                var graphNodeData = m_CurrentRenderGraphData.TryGetRenderPassNode(nodeList[i].guid);
+                var graphNodeData = m_CurrentRenderGraphData.TryGetDrawRendererPassNode(nodeList[i].guid);
                 
                 // 1. culling assignment
                 DrawAssignment(graphNodeData.culling, FRPDrawRendererNode.kCullingFoldoutName, renderRequestNode);

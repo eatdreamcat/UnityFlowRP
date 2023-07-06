@@ -13,8 +13,18 @@ MonoBehaviour:
   m_Name: DefaultRenderer
   m_EditorClassIdentifier: 
   m_CullingNodesMap:
-    m_KeyData: []
-    m_ValueData: []
+    m_KeyData:
+    - c591e9bd-fbba-4e5c-9d44-8b99b60d9701
+    m_ValueData:
+    - guid: c591e9bd-fbba-4e5c-9d44-8b99b60d9701
+      name: CullingParameterNode
+      type: 6
+      isAllowPassCulling: 1
+      isAllowRendererCulling: 1
+      cullingMask:
+        serializedVersion: 2
+        m_Bits: 4294967295
+      perObjectData: 0
   m_RenderStateNodesMap:
     m_KeyData: []
     m_ValueData: []

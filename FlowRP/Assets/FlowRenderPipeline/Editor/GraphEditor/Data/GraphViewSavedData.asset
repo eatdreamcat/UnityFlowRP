@@ -17,8 +17,8 @@ MonoBehaviour:
     - 44467ba9-cc73-4b95-9454-1e709ebab66e
     - 3070563e-cbb9-4d7f-81de-aafaba7fc89d
     m_ValueData:
-    - position: {x: -613, y: 92, z: 0}
-      scale: {x: 1.3225, y: 1.3225, z: 1}
+    - position: {x: -130, y: 254, z: 0}
+      scale: {x: 0.57175326, y: 0.57175326, z: 1}
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
   m_Datas:
@@ -36,6 +36,7 @@ MonoBehaviour:
         - e12b1b55-8c69-43cc-8083-621519717fe8
         - b45df1be-898f-4471-9adf-0ba7132d3955
         - 61f7f561-771d-4f65-8d51-06764edbbe16
+        - c591e9bd-fbba-4e5c-9d44-8b99b60d9701
         m_ValueData:
         - name: Entry
           position: {x: 645, y: 79}
@@ -60,6 +61,9 @@ MonoBehaviour:
           groupGuid: 
         - name: TextureBuffer
           position: {x: 1273, y: 81}
+          groupGuid: 
+        - name: CullingParameterNode
+          position: {x: 998.6825, y: -157.41054}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []
