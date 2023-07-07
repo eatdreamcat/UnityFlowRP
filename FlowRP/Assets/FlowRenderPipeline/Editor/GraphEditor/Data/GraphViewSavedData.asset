@@ -40,6 +40,7 @@ MonoBehaviour:
         - 81fb20c6-ead4-4222-b5dd-f93211377a9b
         - ba499f60-6558-41dd-851e-e29d3d8fca97
         - b961bd9a-347c-4bf0-942c-946e3db6ab16
+        - 0840bf98-cb02-44d0-b8fc-6ec7312ef596
         m_ValueData:
         - name: Entry
           position: {x: 645, y: 79}
@@ -76,6 +77,9 @@ MonoBehaviour:
           groupGuid: 
         - name: DrawRendererNode
           position: {x: 455, y: 157}
+          groupGuid: 
+        - name: RenderStateNode
+          position: {x: -25, y: 314}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

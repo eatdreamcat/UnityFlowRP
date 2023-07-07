@@ -393,8 +393,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         void ExecuteRenderRequest(
             RenderRequest renderRequest,
             ScriptableRenderContext renderContext,
-            CommandBuffer cmd/*,
-            AOVRequestData aovRequest*/
+            CommandBuffer cmd
         )
         {
             

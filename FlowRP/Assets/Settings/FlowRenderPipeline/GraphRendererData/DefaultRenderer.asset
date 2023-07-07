@@ -16,8 +16,35 @@ MonoBehaviour:
     m_KeyData: []
     m_ValueData: []
   m_RenderStateNodesMap:
-    m_KeyData: []
-    m_ValueData: []
+    m_KeyData:
+    - 0840bf98-cb02-44d0-b8fc-6ec7312ef596
+    m_ValueData:
+    - guid: 0840bf98-cb02-44d0-b8fc-6ec7312ef596
+      name: RenderStateNode
+      type: 8
+      rasterState:
+        cullingMode: 0
+        offsetUnits: 0
+        offsetFactor: 0
+        depthClip: 0
+      depthState:
+        writeEnabled: 0
+        compareFunction: 0
+      stencilState:
+        enabled: 0
+        readMask: 0
+        writeMask: 0
+        compareFunctionFront: 0
+        passOperationFront: 0
+        failOperationFront: 0
+        zFailOperationFront: 0
+        compareFunctionBack: 0
+        passOperationBack: 0
+        failOperationBack: 0
+        zFailOperationBack: 0
+      blendStateSettings:
+        alphaToMask: 0
+        blendStates: []
   m_MaterialNodesMap:
     m_KeyData: []
     m_ValueData: []
