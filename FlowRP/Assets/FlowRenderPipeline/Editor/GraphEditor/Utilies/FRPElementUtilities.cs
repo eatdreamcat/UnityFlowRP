@@ -578,6 +578,48 @@ namespace UnityEditor.Rendering.FlowPipeline
             var queueEndField = CreateEnumField(materialParameter.renderQueueRange.end, "Queue End", onQueueEndChanged, isReadonly);
             materialRoot.Add(queueEndField);
             
+            // sort
+            var sortingCriteria = CreateMaskField((int)materialParameter.sortingCriteria, "Sort Criteria", new List<string>()
+            {
+                /// <summary>
+                ///   <para>Do not sort objects.</para>
+                /// </summary>
+                "None", // = 0,
+                /// <summary>
+                ///   <para>Sort by renderer sorting layer.</para>
+                /// </summary>
+                "SortingLayer",// = 1,
+                /// <summary>
+                ///   <para>Sort by material render queue.</para>
+                /// </summary>
+                "RenderQueue",// = 2,
+                /// <summary>
+                ///   <para>Sort objects back to front.</para>
+                /// </summary>
+                "BackToFront",// = 4,
+                /// <summary>
+                ///   <para>Sort objects in rough front-to-back buckets.</para>
+                /// </summary>
+                "QuantizedFrontToBack",// = 8,
+                /// <summary>
+                ///   <para>Sort objects to reduce draw state changes.</para>
+                /// </summary>
+                "OptimizeStateChanges",// = 16, // 0x00000010
+                /// <summary>
+                ///   <para>Sort renderers taking canvas order into account.</para>
+                /// </summary>
+                "CanvasOrder",// = 32, // 0x00000020
+                /// <summary>
+                ///   <para>Sorts objects by renderer priority.</para>
+                /// </summary>
+                "RendererPriority",// = 64, // 0x00000040
+            }, evt =>
+            {
+                materialParameter.sortingCriteria = (SortingCriteria) evt.newValue;
+            });
+            materialRoot.Add(sortingCriteria);
+            
+            // tags
             EventCallback<ChangeEvent<string>> callback = evt =>
             {
                 var index = (int)((TextField) evt.target).userData;
@@ -973,25 +1015,41 @@ namespace UnityEditor.Rendering.FlowPipeline
             #endregion
             
             #region Blend State
+
+            var blendStateFoldout = new Foldout()
+            {
+                text = "Blend States",
+                value = isReadonly
+            };
+            stateRoot.Add(blendStateFoldout);
+            
+            var alphaToMask = CreateToggle(stateParameter.blendStateSettings.alphaToMask, "AlphaToMask", evt =>
+            {
+                stateParameter.blendStateSettings.alphaToMask = evt.newValue;
+            });
+            
+            blendStateFoldout.Add(alphaToMask);
             
             var tempData = new FlowRenderGraphData.BlendStateData();
            
-            var blendStatesListView = CreateListView<FlowRenderGraphData.BlendStateData, BlendStateElement>(stateParameter.blendStates, "Blend States", () =>
+            var blendStatesListView = CreateListView<FlowRenderGraphData.BlendStateData, BlendStateElement>(stateParameter.blendStateSettings.blendStates, "Blend States", () =>
             {
                 return CreateBlendStateParameter(tempData);
                 
             }, (element, i) =>
             {
-                stateParameter.blendStates[i] = stateParameter.blendStates[i] is null
+                stateParameter.blendStateSettings.blendStates[i] = stateParameter.blendStateSettings.blendStates[i] is null
                     ? new FlowRenderGraphData.BlendStateData()
-                    : stateParameter.blendStates[i];
+                    : stateParameter.blendStateSettings.blendStates[i];
                 
                 var blendStateElement = element as BlendStateElement;
-                var data = stateParameter.blendStates[i];
+                var data = stateParameter.blendStateSettings.blendStates[i];
                 blendStateElement.Update(data);
                 
-            }, 23 * 7);
-            stateRoot.Add(blendStatesListView);
+            }, 20.5f * 7);
+
+            blendStatesListView.style.left = 15;
+            blendStateFoldout.Add(blendStatesListView);
 
             #endregion
 

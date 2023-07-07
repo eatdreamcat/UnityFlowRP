@@ -42,8 +42,13 @@ namespace UnityEngine.Rendering.FlowPipeline
         internal static readonly FlowRenderGraphData.RenderStateNode k_DefaultRenderStateNode =
             new FlowRenderGraphData.RenderStateNode()
             {
-
+                blendStateSettings = new FlowRenderGraphData.BlendStateSettings()
+                {
+                    blendStates = new List<FlowRenderGraphData.BlendStateData>()
+                }
             };
+        
+        internal static readonly RenderTargetBlendState k_DefaultRenderTargetBlendState = RenderTargetBlendState.defaultValue;
 
         #endregion
 

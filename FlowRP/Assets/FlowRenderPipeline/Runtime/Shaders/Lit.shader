@@ -1,4 +1,4 @@
-Shader "Unlit/Lit"
+Shader "Super-Advanced Render Pipeline/Lit/Lit"
 {
     Properties
     {
@@ -6,11 +6,12 @@ Shader "Unlit/Lit"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque"  }
         LOD 100
 
         Pass
         {
+            Tags { "LightMode" = "SRPUnlitDefault" }
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag

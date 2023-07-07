@@ -191,6 +191,14 @@ namespace UnityEngine.Rendering.FlowPipeline
             public BlendOp alphaBlendOperation;
             
         }
+
+        [Serializable]
+        public class BlendStateSettings
+        {
+            public bool alphaToMask;
+            public List<BlendStateData> blendStates;
+        }
+        
         [Serializable]
         public class RenderStateNode : BaseNode
         {
@@ -200,9 +208,8 @@ namespace UnityEngine.Rendering.FlowPipeline
             public DepthStateData depthState;
             [SerializeField]
             public StencilStateData stencilState;
-            [SerializeField]
-            // support for mrt
-            public List<BlendStateData> blendStates;
+
+            [SerializeField] public BlendStateSettings blendStateSettings;
         }
 
         public static RenderStateNode CreateRenderStateNode(string name, string guid)
@@ -215,7 +222,11 @@ namespace UnityEngine.Rendering.FlowPipeline
                 rasterState = default,
                 depthState = default,
                 stencilState = default,
-                blendStates = new List<BlendStateData>()
+                blendStateSettings = new BlendStateSettings()
+                {
+                    alphaToMask = false,
+                    blendStates = new List<BlendStateData>()
+                }
             };
         }
 
@@ -260,6 +271,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         public class MaterialParameterNode : BaseNode
         {
             public QueueRange renderQueueRange;
+            public SortingCriteria sortingCriteria;
             public List<string> shaderTagList;
             public Material overrideMaterial;
         }
@@ -275,6 +287,7 @@ namespace UnityEngine.Rendering.FlowPipeline
                     start = Queue.Start,
                     end = Queue.End
                 },
+                sortingCriteria = SortingCriteria.None,
                 shaderTagList = new List<string>()
                 {
                     "SRPDefaultUnlit",

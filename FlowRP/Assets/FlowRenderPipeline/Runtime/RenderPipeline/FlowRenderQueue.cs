@@ -4,6 +4,7 @@ namespace UnityEngine.Rendering.FlowPipeline
     {
         public enum Priority
         {
+            
             Background = RenderQueue.Background,
             
             // Warning: we must not change Geometry last value to stay compatible with occlusion

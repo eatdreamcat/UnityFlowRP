@@ -446,6 +446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clearDepth: 1
   clearColorMode: 0
+  m_RenderGraphIndex: 0
 --- !u!81 &1522617013
 AudioListener:
   m_ObjectHideFlags: 0
@@ -564,7 +565,7 @@ MeshRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: d816f8356975d36419774ba8a133ade5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

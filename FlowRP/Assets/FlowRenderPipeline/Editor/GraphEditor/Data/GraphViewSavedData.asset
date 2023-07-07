@@ -17,8 +17,8 @@ MonoBehaviour:
     - 44467ba9-cc73-4b95-9454-1e709ebab66e
     - 3070563e-cbb9-4d7f-81de-aafaba7fc89d
     m_ValueData:
-    - position: {x: -130, y: 254, z: 0}
-      scale: {x: 0.57175326, y: 0.57175326, z: 1}
+    - position: {x: 254, y: -73, z: 0}
+      scale: {x: 1.15, y: 1.15, z: 1}
     - position: {x: 0, y: 0, z: 0}
       scale: {x: 1, y: 1, z: 1}
   m_Datas:
@@ -37,6 +37,9 @@ MonoBehaviour:
         - b45df1be-898f-4471-9adf-0ba7132d3955
         - 61f7f561-771d-4f65-8d51-06764edbbe16
         - c591e9bd-fbba-4e5c-9d44-8b99b60d9701
+        - 81fb20c6-ead4-4222-b5dd-f93211377a9b
+        - ba499f60-6558-41dd-851e-e29d3d8fca97
+        - b961bd9a-347c-4bf0-942c-946e3db6ab16
         m_ValueData:
         - name: Entry
           position: {x: 645, y: 79}
@@ -64,6 +67,15 @@ MonoBehaviour:
           groupGuid: 
         - name: CullingParameterNode
           position: {x: 998.6825, y: -157.41054}
+          groupGuid: 
+        - name: RenderStateNode
+          position: {x: 501, y: 623}
+          groupGuid: 
+        - name: Entry
+          position: {x: 100, y: 200}
+          groupGuid: 
+        - name: DrawRendererNode
+          position: {x: 455, y: 157}
           groupGuid: 
       m_GroupMap:
         m_KeyData: []

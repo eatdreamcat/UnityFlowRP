@@ -49,7 +49,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         /**
          * Store the cullingResult
          */
-        struct FlowRPCullingResults
+        public struct FlowRPCullingResults
         {
             public CullingResults cullingResults;
 
@@ -64,7 +64,7 @@ namespace UnityEngine.Rendering.FlowPipeline
         /**
          *  Store render data
          */
-        struct RenderRequest
+        public struct RenderRequest
         {
             public FlowRPCullingResults cullingResults;
             public int index;
@@ -267,27 +267,28 @@ namespace UnityEngine.Rendering.FlowPipeline
                                 case FlowRenderGraphData.NodeType.DrawRendererNode:
                                 case FlowRenderGraphData.NodeType.DrawFullScreenNode:
                                 {
+                                    
+                                    // pass node only has one flow output.
+                                    renderRequests.Add(new RenderRequest()
+                                    {
+                                        cullingResults = cullingResults,
+                                        index = renderRequests.Count,
+                                        frpCamera = frpCamera, 
+                                
+                                        nodeType = flowNode.dataType,
+                                        nodeID = flowNode.dataID,
+                                        name = flowNode.name,
+                                            
+                                        currentGraphData = currentGraphData
+                                    });
+                                    
                                     // draw flow edge
                                     if (flowNode.flowOut.Count > 0)
                                     {
                                         var targetNodeID = flowNode.flowOut[0];
                                         Debug.Assert(!string.IsNullOrEmpty(targetNodeID), $"[GraphView.Draw] Node {flowNode.guid} flow out connection target {targetNodeID} is null ");
-                                        // pass node only has one flow output.
+                                        // move next...
                                         flowNode = currentGraphData.TryGetFlowNode(flowNode.flowOut[0]);
-                                        
-                                        renderRequests.Add(new RenderRequest()
-                                        {
-                                            cullingResults = cullingResults,
-                                            index = renderRequests.Count,
-                                            frpCamera = frpCamera, 
-                                
-                                            nodeType = flowNode.dataType,
-                                            nodeID = flowNode.dataID,
-                                            name = flowNode.name,
-                                            
-                                            currentGraphData = currentGraphData
-                                        });
-                                        
                                     }
                                     else
                                     {
@@ -418,7 +419,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             
             try
             {
-                ExecuteWithRenderGraph(renderRequest, /*aovRequest, aovBuffers, aovCustomPassBuffers,*/ renderContext, cmd);
+                ExecuteWithRenderGraph(renderRequest, renderContext, cmd);
             }
             catch (Exception e)
             {
@@ -551,13 +552,13 @@ namespace UnityEngine.Rendering.FlowPipeline
 
         /// Create Renderer List Desc
 
-        static RendererListDesc CreateOpaqueRendererListDesc(
+        static RendererListDesc CreateDrawRendererListDesc(
             CullingResults cull,
             Camera camera,
             ShaderTagId[] passNames,
-            PerObjectData rendererConfiguration = 0,
-            RenderQueueRange? renderQueueRange = null,
-            RenderStateBlock? stateBlock = null,
+            PerObjectData rendererConfiguration,
+            RenderQueueRange renderQueueRange,
+            RenderStateBlock stateBlock,
             Material overrideMaterial = null,
             bool excludeObjectMotionVectors = false
         )
@@ -565,7 +566,7 @@ namespace UnityEngine.Rendering.FlowPipeline
             var result = new RendererListDesc(passNames, cull, camera)
             {
                 rendererConfiguration = rendererConfiguration,
-                renderQueueRange = renderQueueRange != null ? renderQueueRange.Value : FlowRenderQueue.k_RenderQueue_AllOpaque,
+                renderQueueRange = renderQueueRange,
                 sortingCriteria = SortingCriteria.CommonOpaque,
                 stateBlock = stateBlock,
                 overrideMaterial = overrideMaterial,
